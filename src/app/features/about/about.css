@@ -9,17 +9,19 @@
 body {
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
-    color: #2b2b2b;
+    color: var(--dark);
+    background: var(--background);
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
 }
 
+
 /* Page Header */
 .page-header {
     padding: 60px 0 40px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+    background: var(--gradient-header);
     text-align: left;
 }
 
@@ -29,10 +31,11 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: -1px;
 }
 
+
 /* About Section */
 .about-section {
     padding: 70px 0;
-    background-color: #fff;
+    background-color: var(--section-bg);
 }
 
 .about-content h2 {
@@ -40,11 +43,12 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 800;
     margin-bottom: 18px;
     letter-spacing: -0.5px;
+    color: var(--primary); /* headings use primary color */
 }
 
 .about-content p {
     font-size: 15px;
-    color: #6c757d;
+    color: var(--gray);
     line-height: 1.9;
     margin-bottom: 14px;
 }
@@ -61,11 +65,12 @@ h1, h2, h3, h4, h5, h6 {
     object-fit: cover;
 }
 
+
 /* Stats Section */
 .stats-section {
     padding: 60px 0;
-    background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%);
-    color: white;
+    background: var(--dark2);
+    color: #fff;
 }
 
 .stat-box {
@@ -76,7 +81,7 @@ h1, h2, h3, h4, h5, h6 {
 .stat-number {
     font-size: 34px;
     font-weight: 800;
-    color: #ffc107;
+    color: var(--accent);
     margin-bottom: 6px;
     font-family: 'Playfair Display', serif;
 }
@@ -88,10 +93,11 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
 }
 
+
 /* Values Section */
 .values-section {
     padding: 70px 0;
-    background-color: #f8f9fa;
+    background: var(--background);
 }
 
 .section-title {
@@ -104,25 +110,27 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 800;
     margin-bottom: 12px;
     letter-spacing: -0.5px;
+    color: var(--primary);
 }
 
 .section-title p {
-    color: #6c757d;
+    color: var(--gray);
     font-size: 15px;
     max-width: 520px;
     margin: 0 auto;
     line-height: 1.8;
 }
 
+
 /* Team Section */
 .team-section {
     padding: 70px 0;
-    background-color: #fff;
+    background-color: var(--section-bg);
 }
 
 /* simple team cards (names + empty pictures) */
 .team-card.simple-team {
-    background: white;
+    background: var(--section-bg);
     border-radius: 16px;
     padding: 18px 10px;
     text-align: center;
@@ -140,30 +148,32 @@ h1, h2, h3, h4, h5, h6 {
     height: 80px;
     border-radius: 50%;
     margin: 0 auto 10px;
-    background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%);
+    background: var(--gradient-team-avatar);
 }
 
 .team-info h3 {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 4px;
+    color: var(--dark);
 }
 
 .team-info p {
     font-size: 11px;
-    color: #6c757d;
+    color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.8px;
 }
 
+
 /* Testimonials (verified customers without images) */
 .testimonial-section {
     padding: 70px 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+    background: var(--gradient-testimonial);
 }
 
 .testimonial-card {
-    background: white;
+    background: var(--section-bg);
     border-radius: 18px;
     padding: 28px 24px;
     box-shadow: 0 10px 28px rgba(0,0,0,0.06);
@@ -171,14 +181,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .testimonial-rating {
-    color: #ffc107;
+    color: var(--accent);
     font-size: 18px;
     margin-bottom: 16px;
 }
 
 .testimonial-text {
     font-size: 14px;
-    color: #6c757d;
+    color: var(--gray);
     line-height: 1.8;
     margin-bottom: 18px;
     font-style: italic;
@@ -194,13 +204,15 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 3px;
+    color: var(--dark);
 }
 
 .testimonial-author-info p {
     font-size: 12px;
-    color: #6c757d;
+    color: var(--gray);
     margin: 0;
 }
+
 
 /* Responsive tweaks */
 @media (max-width: 992px) {

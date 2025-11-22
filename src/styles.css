@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --background: #f8f9fa;
+  --section-bg: #fff;
+  --dark: #2b2b2b;
+  --dark2: #1a1a1a;
+  --accent: #ffc107;
+  /* Example gradient templates based on your about.css */
+  --bg-gradient-header: linear-gradient(135deg, var(--background) 0%, var(--section-bg) 50%, var(--background) 100%);
+  --bg-gradient-stats: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 100%);
+  --bg-gradient-about: linear-gradient(135deg, var(--background) 0%, var(--section-bg) 100%);
+}
