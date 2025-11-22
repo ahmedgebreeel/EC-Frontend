@@ -1,0 +1,239 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    color: #2b2b2b;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Page Header */
+.page-header {
+    padding: 60px 0 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+    text-align: left;
+}
+
+.page-header h1 {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* About Section */
+.about-section {
+    padding: 70px 0;
+    background-color: #fff;
+}
+
+.about-content h2 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    letter-spacing: -0.5px;
+}
+
+.about-content p {
+    font-size: 15px;
+    color: #6c757d;
+    line-height: 1.9;
+    margin-bottom: 14px;
+}
+
+.about-image {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+.about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Stats Section */
+.stats-section {
+    padding: 60px 0;
+    background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%);
+    color: white;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 20px 10px;
+}
+
+.stat-number {
+    font-size: 34px;
+    font-weight: 800;
+    color: #ffc107;
+    margin-bottom: 6px;
+    font-family: 'Playfair Display', serif;
+}
+
+.stat-label {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+/* Values Section */
+.values-section {
+    padding: 70px 0;
+    background-color: #f8f9fa;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.section-title p {
+    color: #6c757d;
+    font-size: 15px;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* Team Section */
+.team-section {
+    padding: 70px 0;
+    background-color: #fff;
+}
+
+/* simple team cards (names + empty pictures) */
+.team-card.simple-team {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 10px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.team-card.simple-team:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+}
+
+.team-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%);
+}
+
+.team-info h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.team-info p {
+    font-size: 11px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Testimonials (verified customers without images) */
+.testimonial-section {
+    padding: 70px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+    text-align: left;
+}
+
+.testimonial-rating {
+    color: #ffc107;
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.testimonial-text {
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.8;
+    margin-bottom: 18px;
+    font-style: italic;
+}
+
+.testimonial-author.no-avatar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.testimonial-author-info h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.testimonial-author-info p {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+    .page-header {
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-section {
+        padding: 50px 0;
+    }
+
+    .section-title h2 {
+        font-size: 26px;
+    }
+
+    .stats-section {
+        padding: 45px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .team-card.simple-team {
+        padding: 14px 8px;
+    }
+
+    .team-avatar-placeholder {
+        width: 70px;
+        height: 70px;
+    }
+}
