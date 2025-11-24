@@ -89,9 +89,9 @@ export class Shop {
       delPrice:99.00
     },
     {
-      image:"https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400",
+      image:"https://images.unsplash.com/photo-1756483510820-4b9302a27556?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category:"Fashion",
-      title:"Elegant Summer Dress",
+      title:"Elegant Dress",
       rating:29,
       price:75.00
     },
@@ -120,7 +120,6 @@ export class Shop {
   }
 
   updateSlider() {
-    // Prevent min from going above max
     if (this.minValue > this.maxValue) {
       this.minValue = this.maxValue;
     }

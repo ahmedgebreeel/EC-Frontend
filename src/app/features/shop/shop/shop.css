@@ -304,9 +304,8 @@
 
  }
 
- .list .product-card {
-     display: flex;
-     align-items: center;
+ .product-card {
+    
      gap: 20px;
      margin-bottom: 20px;
      background: white;
@@ -323,14 +322,6 @@
      width: 350px;
  }
 
- .grid .product-card {
-     background: white;
-     border-radius: 20px;
-     overflow: hidden;
-     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-     transition: all 0.4s;
-     position: relative;
- }
 
  .product-card:hover {
      transform: translateY(-10px);

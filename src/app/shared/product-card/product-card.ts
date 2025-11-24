@@ -10,19 +10,7 @@ import { IProduct } from '../../features/shop/shop/shop';
 })
 export class ProductCard {
   productData = input.required<IProduct>();
-  // @Input() viewType!: 'grid' | 'list';
-viewType = input.required<string>();
-/**
- *
- */
-constructor() {
-console.log(this.viewType);  
-}
+  viewType = input.required<string>();
 
 
-    // viewType: string = 'grid';
-
-  // setView(type: string) {
-  //   this.viewType = type;
-  // }
 }
