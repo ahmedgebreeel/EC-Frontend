@@ -1,24 +1,28 @@
 <!-- Page Title -->
-<div class="page-title light-background">
+<div class="page-title ">
   <div class="container d-lg-flex justify-content-between align-items-center">
     <h1 class="mb-2 mb-lg-0">Account</h1>
     <nav class="breadcrumbs">
-      <ol>
-        <li><a routerLink="/">Home</a></li>
-        <li class="current">Account</li>
-      </ol>
+      <ul class="d-flex gap-3  list-unstyled">
+        <li><a  class="cursor-pointer text-decoration-none text-dark"
+           routerLink="/">Home</a></li>
+        <li>/</li>
+         <li><a  class="cursor-pointer text-decoration-none text-dark" 
+          routerLink="/Account">Account</a></li>
+
+      </ul>
     </nav>
   </div>
-</div><!-- End Page Title -->
+</div>
 
 <!-- Account Section -->
 <section id="account" class="account section">
 
-  <div class="container" data-aos="fade-up" data-aos-delay="100">
+  <div class="container">
 
     <!-- Mobile Menu Toggle -->
-    <div class="mobile-menu d-lg-none mb-4">
-      <button class="mobile-menu-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#profileMenu">
+    <div class="mobile-menu d-lg-none my-4">
+      <button class="mobile-menu-toggle fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#profileMenu">
         <i class="bi bi-grid"></i>
         <span>Menu</span>
       </button>
@@ -34,10 +38,8 @@
               <img src="assets/img/person/person-f-1.webp" alt="Profile" loading="lazy">
               <span class="status-badge"><i class="bi bi-shield-check"></i></span>
             </div>
-            <h4>{{currentUser?.name}}</h4>
             <div class="user-status">
               <i class="bi bi-envelope"></i>
-              <span>{{currentUser?.email}}</span>
             </div>
           </div>
 
@@ -128,28 +130,25 @@
               </div>
 
               <div class="orders-grid">
-                <div class="order-card" *ngFor="let order of orders" data-aos="fade-up">
                   <div class="order-header">
                     <div class="order-id">
                       <span class="label">Order ID:</span>
-                      <span class="value">#{{order.id}}</span>
                     </div>
-                    <div class="order-date">{{order.date | date}}</div>
                   </div>
                   <div class="order-content">
                     <div class="order-info">
                       <div class="info-row">
                         <span>Status</span>
-                        <span class="status"
-                          [ngClass]="order.status.toLowerCase().replace(' ', '-')">{{order.status}}</span>
+                        <span class="status">
+                          </span>
                       </div>
                       <div class="info-row">
                         <span>Items</span>
-                        <span>{{order.items}} items</span>
+                        
                       </div>
                       <div class="info-row">
                         <span>Total</span>
-                        <span class="price">${{order.total}}</span>
+                       
                       </div>
                     </div>
                   </div>
@@ -158,7 +157,7 @@
                   </div>
                 </div>
 
-                <div *ngIf="orders.length === 0" class="text-center py-5">
+                <div>
                   <i class="bi bi-box-seam display-1 text-muted"></i>
                   <p class="mt-3">No orders found</p>
                   <a routerLink="/category" class="btn btn-primary mt-2">Start Shopping</a>
@@ -500,38 +499,7 @@
                 <!-- Personal Information -->
                 <div class="settings-section" data-aos="fade-up">
                   <h3>Personal Information</h3>
-                  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="php-email-form settings-form">
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label for="firstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstName" formControlName="firstName"
-                          [class.is-invalid]="f['firstName'].touched && f['firstName'].invalid">
-                      </div>
-                      <div class="col-md-6">
-                        <label for="lastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" formControlName="lastName"
-                          [class.is-invalid]="f['lastName'].touched && f['lastName'].invalid">
-                      </div>
-                      <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" formControlName="email"
-                          [class.is-invalid]="f['email'].touched && f['email'].invalid">
-                      </div>
-                      <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" id="phone" formControlName="phone"
-                          [class.is-invalid]="f['phone'].touched && f['phone'].invalid">
-                      </div>
-                    </div>
-
-                    <div class="form-buttons">
-                      <button type="submit" class="btn-save" [disabled]="profileForm.invalid || loading">
-                        {{ loading ? 'Saving...' : 'Save Changes' }}
-                      </button>
-                    </div>
-
-                    <div class="sent-message d-block" *ngIf="successMessage">{{successMessage}}</div>
-                  </form>
+                  
                 </div>
 
                 <!-- Email Preferences -->
@@ -614,6 +582,6 @@
       </div>
     </div>
 
-  </div>
+  
 
 </section><!-- /Account Section -->
