@@ -27,6 +27,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/cart/cart').then(m => m.Cart)
     },
     {
+        path:'shop',
+        loadComponent: () => import('./features/shop/shop/shop').then(m => m.Shop)
+    },
+    {
+        path:'product-details',
+        loadComponent: () => import('./features/shop/product-details/product-details').then(m => m.ProductDetails)
+    },
+    {
         path: 'checkout',
         loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout)
     },
@@ -42,5 +50,6 @@ export const routes: Routes = [
         path: '**',
         loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound)
     },
+    
 
 ];

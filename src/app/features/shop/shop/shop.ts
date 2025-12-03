@@ -1,7 +1,7 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProductCard } from '../../../shared/product-card/product-card';
+import { ProductCard } from '../../../shared/components/product-card/product-card';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 export interface IProduct{
