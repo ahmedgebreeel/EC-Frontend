@@ -69,7 +69,19 @@ export const routes: Routes = [
             {
                 path: 'products/add',
                 loadComponent: () => import('./admin/product/add/add').then(m => m.Add)
-            }
+            },
+            {
+                path: 'categories',
+                loadComponent: () => import('./admin/Category/list/list').then(m => m.List)
+            },
+            {
+                path: 'categories/edit/:id',
+                loadComponent: () => import('./admin/Category/edit/edit').then(m => m.Edit)
+            },
+            {
+                path: 'categories/add',
+                loadComponent: () => import('./admin/Category/add/add').then(m => m.Add)
+            },
         ]
     },
     {
