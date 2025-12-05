@@ -49,7 +49,11 @@ export const routes: Routes = [
             {
                 path: 'shipinginfo',
                 loadComponent: () => import('./features/shiping-info/shiping-info').then(m =>m.ShipingInfo)
-            }
+            },
+            {
+                path: 'orderconfirmation',
+                loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m =>m.OrderConfirmation)
+            },
         ]
 
     },
