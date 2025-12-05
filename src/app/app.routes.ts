@@ -54,14 +54,18 @@ export const routes: Routes = [
                 path: 'orderconfirmation',
                 loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m =>m.OrderConfirmation)
             },
-                        {
+            {
                 path: 'paymentmethods',
                 loadComponent: () => import('./features/payment-methods/payment-methods').then(m =>m.PaymentMethods)
             },
-                                    {
+            {
                 path: 'privacy',
                 loadComponent: () => import('./features/privacy/privacy').then(m =>m.Privacy)
             },
+            {
+                path: 'returnpolicy',
+                loadComponent: () => import('./features/return-policy/return-policy').then(m =>m.ReturnPolicy)
+            }
         ]
 
     },
