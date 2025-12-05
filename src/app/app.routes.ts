@@ -65,6 +65,10 @@ export const routes: Routes = [
             {
                 path: 'returnpolicy',
                 loadComponent: () => import('./features/return-policy/return-policy').then(m =>m.ReturnPolicy)
+            },
+            {
+                path: 'searchresults',
+                loadComponent: () => import('./features/search-results/search-results').then(m =>m.SearchResults)
             }
         ]
 
