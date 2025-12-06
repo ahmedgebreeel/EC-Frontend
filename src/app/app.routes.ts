@@ -113,6 +113,14 @@ export const routes: Routes = [
             {
                 path: 'orders/edit/:id',
                 loadComponent: () => import('./admin/orders/edit-order/edit-order').then(m => m.OrderEditComponent)
+            },
+            {
+                path: 'users',
+                loadComponent: () => import('./admin/users/users').then(m => m.UsersListComponent)
+            },
+            {
+                path: 'users/edit/:id',
+                loadComponent: () => import('./admin/users/user-edit/user-edit').then(m => m.UserEditComponent)
             }
         ]
     },
