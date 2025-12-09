@@ -7,7 +7,7 @@ import { filter, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class Product {
+export class ProductService {
   private readonly baseUrl: string = environment.url + 'api/Product/';
   private http = inject(HttpClient);
 
@@ -23,8 +23,8 @@ export class Product {
       if(filters.categoryId){
         params = params.append('category', filters.categoryId);
       }
-      if(filters.serach){
-        params = params.append('search', filters.serach);
+      if(filters.search){
+        params = params.append('search', filters.search);
       }
       if(filters.minPrice ){
         params = params.append('minPrice', filters.minPrice);

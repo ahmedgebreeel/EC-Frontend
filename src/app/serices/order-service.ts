@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class Order {
+export class OrderService {
   private readonly baseUrl: string = environment.url + 'api/Order/';
   private http = inject(HttpClient);
 

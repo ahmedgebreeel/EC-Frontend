@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
-export class OrderItems {
+export class OrderItemsService {
   private readonly baseUrl: string = environment.url + 'api/OrderItems/';
   private http = inject(HttpClient);
 

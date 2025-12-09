@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 @Injectable({
   providedIn: 'root',
 })
-export class Category {
+export class CategoryService {
   private readonly baseUrl: string = environment.url + 'api/Category/';
   private http = inject(HttpClient);
 

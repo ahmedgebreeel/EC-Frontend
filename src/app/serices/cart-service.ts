@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 @Injectable({
   providedIn: 'root',
 })
-export class Cart {
+export class CartService {
   private readonly baseUrl: string = environment.url + 'api/ShoppingCart/';
   private http = inject(HttpClient);
 
