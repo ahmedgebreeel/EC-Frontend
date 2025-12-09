@@ -15,6 +15,14 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/home/home').then(m => m.Home)
             },
             {
+                path: 'productsdetails/:id',
+                loadComponent: () => import('./features/shop/product-details/product-details').then(m => m.ProductDetails)
+            },
+            {
+                path: 'shop',
+                loadComponent: () => import('./features/shop/shop/shop').then(m => m.Shop)
+            },
+            {
                 path: 'register',
                 loadComponent: () => import('./features/auth/register/register').then(m => m.Register)
             },
@@ -67,8 +75,16 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/return-policy/return-policy').then(m => m.ReturnPolicy)
             },
             {
+                path: 'support',
+                loadComponent: () => import('./features/support/support').then(m => m.Support)
+            },
+            {
                 path: 'searchresults',
                 loadComponent: () => import('./features/search-results/search-results').then(m => m.SearchResults)
+            },
+            {
+                path: 'tos',
+                loadComponent: () => import('./features/tos/tos').then(m => m.Tos)
             }
         ]
 
@@ -79,20 +95,20 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'products',
+                redirectTo: 'home',
                 pathMatch: 'full'
             },
             {
                 path: 'products',
-                loadComponent: () => import('./admin/product/getall/getall').then(m => m.Getall)
+                loadComponent: () => import('./admin/product/getall/getall').then(m => m.ProductListComponent)
             },
             {
                 path: 'products/edit/:id',
-                loadComponent: () => import('./admin/product/edit/edit').then(m => m.Edit)
+                loadComponent: () => import('./admin/product/edit/edit').then(m => m.ProductEditComponent)
             },
             {
                 path: 'products/add',
-                loadComponent: () => import('./admin/product/add/add').then(m => m.Add)
+                loadComponent: () => import('./admin/product/add/add').then(m => m.ProductAddComponent)
             },
             {
                 path: 'categories',
