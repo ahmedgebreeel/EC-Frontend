@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
+import { CartService } from '../../../serices/cart-service';
 
 @Component({
   selector: 'app-header',
@@ -9,7 +10,7 @@ import { RouterLink } from "@angular/router";
 })
 export class Header {
 showUserDropdown: boolean = false;
-
+constructor(public cartService: CartService) {}
   toggleUserDropdown() {
     this.showUserDropdown = !this.showUserDropdown;
   }

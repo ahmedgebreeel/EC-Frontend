@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../../serices/product-service';
+import { CartItemsService } from '../../../serices/cart-items-service';
 
 @Component({
   selector: 'app-product-details',
@@ -9,58 +10,58 @@ import { ProductService } from '../../../serices/product-service';
   styleUrl: './product-details.css',
 })
 export class ProductDetails {
-
   activeRoute = inject(ActivatedRoute);
   productService = inject(ProductService);
+  cartItemService = inject(CartItemsService);
   productData = signal<any>({});
-  productId= this.activeRoute.snapshot.paramMap.get('id');
+  productId = this.activeRoute.snapshot.paramMap.get('id');
   mainImage = signal<any>({});
   activeImage = signal(0);
+  quantity: number = 1;
 
-
-
-  constructor() { 
+  constructor() {
     this.productService.getProductById(this.productId!).subscribe((res) => {
-      res.images.sort((a:any,b:any) => a.position - b.position);
+      res.images.sort((a: any, b: any) => a.position - b.position);
       this.productData.set(res);
       this.mainImage.set(res.images[0]);
       this.activeImage.set(0);
     });
-    
   }
   selectImage(index: number) {
-  this.mainImage.set(this.productData().images[index]);
-  this.activeImage.set(index);
-}
-prevImage() {
-  const index = this.activeImage() > 0 ? this.activeImage() - 1 : this.productData().images.length - 1;
-  this.selectImage(index);
-}
+    this.mainImage.set(this.productData().images[index]);
+    this.activeImage.set(index);
+  }
+  prevImage() {
+    const index =
+      this.activeImage() > 0 ? this.activeImage() - 1 : this.productData().images.length - 1;
+    this.selectImage(index);
+  }
 
-nextImage() {
-  const index = this.activeImage() < this.productData().images.length - 1 ? this.activeImage() + 1 : 0;
-  this.selectImage(index);
-}
-
+  nextImage() {
+    const index =
+      this.activeImage() < this.productData().images.length - 1 ? this.activeImage() + 1 : 0;
+    this.selectImage(index);
+  }
 
   increaseQty(): void {
-    const qtyInput = document.getElementById('quantity') as HTMLInputElement | null;
-
-    if (qtyInput) {
-      qtyInput.value = (parseInt(qtyInput.value, 10) + 1).toString();
-    }
+    this.quantity++;
   }
 
   decreaseQty(): void {
-    const qtyInput = document.getElementById('quantity') as HTMLInputElement | null;
-
-    if (qtyInput) {
-      const currentVal = parseInt(qtyInput.value, 10);
-
-      if (currentVal > 1) {
-        qtyInput.value = (currentVal - 1).toString();
-      }
+    if (this.quantity > 1) {
+      this.quantity--;
     }
   }
-
+  addToCart(){
+    this.cartItemService.AddCartItems({
+      cartId:"1",
+      productId: this.productId,
+      quantity: this.quantity,
+    }).subscribe({
+      error:(err)=>{
+        console.log(err);
+      }
+    });
+console.log ("added to cart");
+  }
 }

@@ -127,7 +127,7 @@
                       <button class="quantity-btn decrease" (click)="decreaseQty()" type="button">
                         <i class="bi bi-dash"></i>
                       </button>
-                      <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="18">
+                      <input type="number" class="quantity-input" id="quantity" value={{quantity}} min="1" max="{{productData().stock}}">
                       <button class="quantity-btn increase" (click)="increaseQty()" type="button">
                         <i class="bi bi-plus"></i>
                       </button>
@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="action-buttons">
-                  <button class="btn primary-action">
+                  <button class="btn primary-action" (click)="addToCart()">
                     <i class="bi bi-bag-plus"></i>
                     Add to Cart
                   </button>
