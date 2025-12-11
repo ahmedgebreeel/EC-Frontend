@@ -11,7 +11,7 @@
         <button [routerLink]="['/product-details', productData().id]" type="button" class="action-btn" data-bs-toggle="tooltip" title="Quick View">
           <i class="bi bi-eye"></i>
         </button>
-        <button type="button" class="action-btn" data-bs-toggle="tooltip" title="Add to Cart">
+        <button type="button" class="action-btn" data-bs-toggle="tooltip" title="Add to Cart" (click)="addToCart()">
           <i class="bi bi-cart-plus"></i>
         </button>
       </div>
