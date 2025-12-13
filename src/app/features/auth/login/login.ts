@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
 import { AuthService, UserService } from '../../../core/services';
+import { RoleType } from '../../../core/Types/roleType';
 
 
 @Component({
@@ -46,7 +47,7 @@ export class Login {
         localStorage.setItem('accessToken', res.accessToken);
 
         this.authService.user.set(res.user);
-        this.router.navigate(['home']);
+        (res.user.roles.includes(RoleType.Admin) || res.user.roles.includes(RoleType.Seller)) ? this.router.navigate(['admin']) : this.router.navigate(['']);
       }
     })
     

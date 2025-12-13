@@ -6,14 +6,14 @@
 
         <!-- Logo -->
         <a routerLink="/admin/home" class="logo d-flex align-items-center text-dark">
-          <h1 class="sitename mb-0">Hello Admin</h1>
+          <h1 class="sitename mb-0">Hello {{authService.user().userName}}</h1>
         </a>
         
         <!-- Actions -->
         <div class="header-actions d-flex align-items-center justify-content-end">
 
           <!-- Account if the admin will adjust his account -->
-          <!-- <div class="dropdown account-dropdown">
+          <div class="dropdown account-dropdown">
             <button class="header-action-btn text-dark" data-bs-toggle="dropdown">
               <i class="bi bi-person"></i>
             </button>
@@ -40,7 +40,7 @@
                 <button class="btn btn-danger w-100">Logout</button>
               </div>
             </div>
-          </div> -->
+          </div>
 
           <!-- Mobile Navigation Toggle -->
           <i class="mobile-nav-toggle d-xl-none bi bi-list me-0 text-dark"></i>

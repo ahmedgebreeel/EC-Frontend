@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth-guard';
+import { roleGuard } from './core/guards/role-guard';
+import { RoleType } from './core/Types/roleType';
 
 export const routes: Routes = [
     {
@@ -32,11 +35,13 @@ export const routes: Routes = [
             },
             {
                 path: "cart",
-                loadComponent: () => import('./features/cart/cart').then(m => m.Cart)
+                loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
+                canActivate: [authGuard]
             },
             {
                 path: "checkout",
-                loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout)
+                loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout),
+                canActivate: [authGuard]
             },
             {
                 path: "about",
@@ -52,7 +57,8 @@ export const routes: Routes = [
             },
             {
                 path: 'account',
-                loadComponent: () => import('./features/account/account').then(m => m.Account)
+                loadComponent: () => import('./features/account/account').then(m => m.Account),
+                canActivate: [authGuard]
             },
             {
                 path: 'shipinginfo',
@@ -60,7 +66,8 @@ export const routes: Routes = [
             },
             {
                 path: 'orderconfirmation',
-                loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m => m.OrderConfirmation)
+                loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m => m.OrderConfirmation),
+                canActivate: [authGuard]
             },
             {
                 path: 'paymentmethods',
@@ -91,6 +98,8 @@ export const routes: Routes = [
     },
     {
         path: 'admin',
+        canActivate: [authGuard, roleGuard],
+        data: { roles: [RoleType.Admin, RoleType.Seller] },
         loadComponent: () => import('./layouts/admin-layout/admin-layout').then(m => m.AdminLayout),
         children: [
             {
@@ -132,11 +141,15 @@ export const routes: Routes = [
             },
             {
                 path: 'users',
-                loadComponent: () => import('./admin/users/users').then(m => m.UsersListComponent)
+                loadComponent: () => import('./admin/users/users').then(m => m.UsersListComponent),
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [RoleType.Admin] }
             },
             {
                 path: 'users/edit/:id',
-                loadComponent: () => import('./admin/users/user-edit/user-edit').then(m => m.UserEditComponent)
+                loadComponent: () => import('./admin/users/user-edit/user-edit').then(m => m.UserEditComponent),
+                canActivate: [authGuard, roleGuard],
+                data: { roles: [RoleType.Admin] }
             },
             {
                 path: 'home',

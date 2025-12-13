@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from "@angular/router";
+import { AuthService } from '../../../core/services';
 
 @Component({
   selector: 'app-header',
@@ -8,4 +9,7 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   styleUrl: './header.css'
 })
 export class Header {
+  constructor(
+    public readonly authService: AuthService
+  ) {}
 }

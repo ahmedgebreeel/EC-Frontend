@@ -2,14 +2,18 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services';
 import { isTokenExpired } from '../../utils/checkToken';
-import { catchError, switchMap, throwError, of } from 'rxjs';
+import { catchError, switchMap, of } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = localStorage.getItem('accessToken');
-
   req = req.clone({ withCredentials: true });
 
+  if (req.url.includes('refresh-token')) {
+    return next(req);
+  }
+  
+  
+  const token = localStorage.getItem('accessToken');
   if (!token) {
     return next(req);
   }
@@ -39,7 +43,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError((err) => {
       // authService.logout();
-      return throwError(() => err);
+      return of(err);
     })
   );
 };

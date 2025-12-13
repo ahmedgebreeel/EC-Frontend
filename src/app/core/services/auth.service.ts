@@ -28,6 +28,7 @@ export class AuthService {
 
   logout(): Observable<any> {
     localStorage.clear();
+    this.user.set(null);
     return this.http.post(`${this.baseUrl}revoke-token`, {});
   }
   
