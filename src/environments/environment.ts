@@ -1,4 +1,8 @@
 export const environment = {
   production: false,
-  url: 'https://localhost:5024',
+
+  url: 'https://finalproject1.runasp.net'
+
+  //for loacal
+  // url: 'https://localhost:5024'
 };
