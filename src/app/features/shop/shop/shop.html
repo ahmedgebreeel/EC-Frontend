@@ -21,48 +21,71 @@
           <div class="product-categories-widget widget-item">
             <h3 class="widget-title">Categories</h3>
             @if(allCategories().length > 0){
-
-            <ul class="category-tree list-unstyled mb-0">
-              @for(parent of categoryTree();track $index){
-              <li class="category-item">
-                <div
-                  class="d-flex justify-content-between align-items-center category-header collapsed"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#categories-1-clothing-subcategories"
-                  aria-expanded="false"
-                  aria-controls="categories-1-clothing-subcategories"
-                >
-                  <a (click)="sortByCategory(parent)" class="category-link">{{ parent.name }}</a>
-                  @if(parent.children.length > 0){
-                  <span class="category-toggle">
+            <div class="category-list">
+              @for(parent of categoryTree(); track parent.id){
+              <div class="category-group">
+                <!-- Level 1: Parent Category -->
+                <div class="category-item parent-category">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" [id]="'cat-' + parent.id"
+                      [checked]="selectedCategory() === parent.id" [class.child-selected]="hasChildSelected(parent)"
+                      (change)="selectCategory(parent)" />
+                    <label class="form-check-label" [for]="'cat-' + parent.id" [title]="parent.description">
+                      {{ parent.name }}
+                    </label>
+                  </div>
+                  @if(parent.children?.length > 0){
+                  <button class="btn btn-link btn-sm category-expand p-0" type="button" data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#subcats-' + parent.id" aria-expanded="false">
                     <i class="bi bi-chevron-down"></i>
-                    <i class="bi bi-chevron-up"></i>
-                  </span>
+                  </button>
                   }
                 </div>
-                @if(parent.children.length > 0){
-
-                <ul
-                  id="categories-1-clothing-subcategories"
-                  class="subcategory-list list-unstyled collapse ps-3 mt-2"
-                >
-                  @for(child of parent.children; track $index){
-                  <li>
-                    <a
-                      (click)="sortByCategory(child)"
-                      class="subcategory-link"
-                      style="cursor: pointer"
-                      >{{ child.name }}</a
-                    >
-                  </li>
-
+                <!-- Level 2: Subcategories -->
+                @if(parent.children?.length > 0){
+                <div class="collapse subcategory-list" [id]="'subcats-' + parent.id">
+                  @for(child of parent.children; track child.id){
+                  <div class="category-item-wrapper">
+                    <div class="category-item subcategory">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" [id]="'cat-' + child.id"
+                          [checked]="selectedCategory() === child.id" [class.child-selected]="hasChildSelected(child)"
+                          (change)="selectCategory(child)" />
+                        <label class="form-check-label" [for]="'cat-' + child.id" [title]="child.description">
+                          {{ child.name }}
+                        </label>
+                      </div>
+                      @if(child.children?.length > 0){
+                      <button class="btn btn-link btn-sm category-expand p-0" type="button" data-bs-toggle="collapse"
+                        [attr.data-bs-target]="'#subcats-' + child.id" aria-expanded="false">
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
+                      }
+                    </div>
+                    <!-- Level 3: Sub-subcategories -->
+                    @if(child.children?.length > 0){
+                    <div class="collapse subcategory-list level-3" [id]="'subcats-' + child.id">
+                      @for(grandchild of child.children; track grandchild.id){
+                      <div class="category-item subcategory">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" [id]="'cat-' + grandchild.id"
+                            [checked]="selectedCategory() === grandchild.id" (change)="selectCategory(grandchild)" />
+                          <label class="form-check-label" [for]="'cat-' + grandchild.id"
+                            [title]="grandchild.description">
+                            {{ grandchild.name }}
+                          </label>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                    }
+                  </div>
                   }
-                </ul>
+                </div>
                 }
-              </li>
-
+              </div>
               }
-            </ul>
+            </div>
             }
           </div>
           <!--/Product Categories Widget -->
@@ -79,31 +102,12 @@
 
               <div class="range-slider">
                 <div class="slider-track"></div>
-                <div
-                  class="slider-progress"
-                  [style.left.%]="minPercent"
-                  [style.width.%]="maxPercent - minPercent"
-                ></div>
-                <input
-                  type="range"
-                  class="min-range"
-                  min="0"
-                  max="1000"
-                  value="0"
-                  step="10"
-                  [(ngModel)]="minValue"
-                  (input)="updateSlider()"
-                />
-                <input
-                  type="range"
-                  class="max-range"
-                  min="0"
-                  max="1000"
-                  value="500"
-                  step="10"
-                  [(ngModel)]="maxValue"
-                  (input)="updateSlider()"
-                />
+                <div class="slider-progress" [style.left.%]="minPercent" [style.width.%]="maxPercent - minPercent">
+                </div>
+                <input type="range" class="min-range" min="0" max="1000" value="0" step="10" [(ngModel)]="minValue"
+                  (input)="updateSlider()" />
+                <input type="range" class="max-range" min="0" max="1000" value="500" step="10" [(ngModel)]="maxValue"
+                  (input)="updateSlider()" />
               </div>
 
               <div class="price-inputs mt-3">
@@ -111,29 +115,15 @@
                   <div class="col-6">
                     <div class="input-group input-group-sm">
                       <span class="input-group-text">$</span>
-                      <input
-                        type="number"
-                        class="form-control min-price-input"
-                        placeholder="Min"
-                        min="0"
-                        max="1000"
-                        value="{{ minValue }}"
-                        step="10"
-                      />
+                      <input type="number" class="form-control min-price-input" placeholder="Min" min="0" max="1000"
+                        value="{{ minValue }}" step="10" />
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="input-group input-group-sm">
                       <span class="input-group-text">$</span>
-                      <input
-                        type="number"
-                        class="form-control max-price-input"
-                        placeholder="Max"
-                        min="0"
-                        max="1000"
-                        value="{{ maxValue }}"
-                        step="10"
-                      />
+                      <input type="number" class="form-control max-price-input" placeholder="Max" min="0" max="1000"
+                        value="{{ maxValue }}" step="10" />
                     </div>
                   </div>
                 </div>
@@ -261,14 +251,8 @@
                   <div class="filter-item search-form">
                     <label for="productSearch" class="form-label">Search Products</label>
                     <div class="input-group">
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="productSearch"
-                        placeholder="Search for products..."
-                        aria-label="Search for products"
-                        (input)="search.set($event.target.value)"
-                      />
+                      <input type="text" class="form-control" id="productSearch" placeholder="Search for products..."
+                        aria-label="Search for products" (input)="search.set($event.target.value)" />
                       <button class="btn search-btn" type="button">
                         <i class="bi bi-search"></i>
                       </button>
@@ -279,11 +263,7 @@
                 <div class="col-12 col-md-6 col-lg-2">
                   <div class="filter-item">
                     <label for="priceRange" class="form-label">Price Range</label>
-                    <select
-                      class="form-select"
-                      id="priceRange"
-                      (change)="filterProductsPrice($event)"
-                    >
+                    <select class="form-select" id="priceRange" (change)="filterProductsPrice($event)">
                       <option value="default" selected="">All Prices</option>
                       <option value="Under $25">Under $25</option>
                       <option value="$25 to $50">$25 to $50</option>
@@ -312,24 +292,12 @@
                     <label class="form-label">View</label>
                     <div class="d-flex align-items-center">
                       <div class="view-options me-3">
-                        <button
-                          type="button"
-                          class="btn view-btn active"
-                          data-view="grid"
-                          aria-label="Grid view"
-                          (click)="setView('grid')"
-                          [class.active]="viewType() === 'grid'"
-                        >
+                        <button type="button" class="btn view-btn active" data-view="grid" aria-label="Grid view"
+                          (click)="setView('grid')" [class.active]="viewType() === 'grid'">
                           <i class="bi bi-grid-3x3-gap-fill"></i>
                         </button>
-                        <button
-                          type="button"
-                          class="btn view-btn"
-                          data-view="list"
-                          aria-label="List view"
-                          (click)="setView('list')"
-                          [class.active]="viewType() === 'list'"
-                        >
+                        <button type="button" class="btn view-btn" data-view="list" aria-label="List view"
+                          (click)="setView('list')" [class.active]="viewType() === 'list'">
                           <i class="bi bi-list-ul"></i>
                         </button>
                       </div>
@@ -375,22 +343,15 @@
         <!-- /Category Header Section -->
 
         <!-- Category Product List Section -->
-        <section
-          [ngClass]="viewType()"
-          id="category-product-list"
-          class="category-product-list section"
-        >
+        <section [ngClass]="viewType()" id="category-product-list" class="category-product-list section">
           <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="row g-4">
-              @if(allProducts()){ 
-                @for(product of allProducts() | paginate : { itemsPerPage:
+              @if(allProducts()){
+              @for(product of allProducts() | paginate : { itemsPerPage:
               pageSize, currentPage: pageIndex(), totalItems: totalPages()}; track $index) {
 
               <div [ngClass]="viewType() === 'grid' ? 'col-6 col-xl-4' : 'col-12'">
-                <app-product-card
-                  [viewType]="viewType()"
-                  [productData]="product"
-                ></app-product-card>
+                <app-product-card [viewType]="viewType()" [productData]="product"></app-product-card>
               </div>
 
               }}
@@ -402,7 +363,7 @@
         <!-- Category Pagination Section -->
         <div class="pagination-wrapper">
           <div class="pagination">
-            <pagination-controls  (pageChange)="pageIndex.set($event); loadProducts()"></pagination-controls>
+            <pagination-controls (pageChange)="pageIndex.set($event); loadProducts()"></pagination-controls>
           </div>
         </div>
 

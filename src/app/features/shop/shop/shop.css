@@ -69,3 +69,116 @@
   transition: all 0.3s ease-in-out;
   box-shadow: 0 2px 4px color-mix(in srgb, #444444, transparent 90%);
 }
+
+/* Category Hierarchy Styles */
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.category-group {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.category-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.category-item .form-check {
+  margin: 0;
+  flex: 1;
+}
+
+.category-item .form-check-label {
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #444;
+  transition: color 0.2s ease;
+}
+
+.category-item .form-check-label:hover {
+  color: #2b2b2b;
+}
+
+.category-item .form-check-input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  transition: all 0.2s ease;
+}
+
+.category-item .form-check-input:checked {
+  background-color: #2b2b2b;
+  border-color: #2b2b2b;
+}
+
+.category-item .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(43, 43, 43, 0.25);
+}
+
+.category-expand {
+  color: #888;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.category-expand:hover {
+  color: #2b2b2b;
+}
+
+.category-expand[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+.subcategory-list {
+  padding-left: 28px;
+  margin-top: 4px;
+}
+
+.subcategory .form-check-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.subcategory .form-check-label:hover {
+  color: #444;
+}
+
+/* Indeterminate state - when a child is selected */
+.category-item .form-check-input.child-selected {
+  background-color: #2b2b2b;
+  border-color: #2b2b2b;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+
+/* Level 3 subcategories - deeper indentation */
+.subcategory-list.level-3 {
+  padding-left: 24px;
+}
+
+.subcategory-list.level-3 .form-check-label {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.subcategory-list.level-3 .form-check-label:hover {
+  color: #555;
+}
+
+.category-item-wrapper {
+  display: flex;
+  flex-direction: column;
+}
