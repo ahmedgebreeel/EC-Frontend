@@ -33,9 +33,9 @@
           <!-- Account -->
           <div class="dropdown account-dropdown">
             @if(authService.user() != null){
-              Welcome {{ authService.user().userName }}
+            Welcome {{ authService.user()?.name }}
             }@else{
-              Welcome
+            Welcome
             }
             <button class="header-action-btn" data-bs-toggle="dropdown">
               <i class="bi bi-person"></i>
@@ -64,15 +64,21 @@
                 </a>
               </div>
               @if(authService.user() == null){
-                <div class="dropdown-footer">
-                  <a routerLink="/login" class="btn btn-primary w-100 mb-2">Sign In</a>
-                  <a routerLink="/register" class="btn btn-outline-primary w-100">Register</a>
-                </div>
+              <div class="dropdown-footer">
+                <a routerLink="/login" class="btn btn-primary w-100 mb-2">Sign In</a>
+                <a routerLink="/register" class="btn btn-outline-primary w-100">Register</a>
+              </div>
               }
-              @if(authService.user()?.roles.includes(RoleType.Admin) || authService.user()?.roles.includes(RoleType.Seller) ){
-                 <div class="dropdown-footer">
-                  <a routerLink="/admin" class="btn btn-primary w-100">My Dashboard</a>
-                </div>
+              @if(authService.user()){
+              <div class="dropdown-footer">
+                @if(authService.user()!.roles.includes(RoleType.Admin) ||
+                authService.user()!.roles.includes(RoleType.Seller)){
+                <a routerLink="/admin" class="btn btn-primary w-100 mb-2">My Dashboard</a>
+                }
+                <button type="button" class="btn btn-outline-primary w-100" (click)="logout()">
+                  <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                </button>
+              </div>
               }
             </div>
           </div>

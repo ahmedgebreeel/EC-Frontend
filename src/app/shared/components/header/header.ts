@@ -11,13 +11,19 @@ import { RoleType } from '../../../core/Types/roleType';
   styleUrl: './header.css'
 })
 export class Header {
-showUserDropdown: boolean = false;
-RoleType = RoleType;
-constructor(
-  public readonly cartService: CartService, 
-  public readonly authService: AuthService
-) {}
-  toggleUserDropdown() {
+  showUserDropdown = false;
+  RoleType = RoleType;
+
+  constructor(
+    public readonly cartService: CartService,
+    public readonly authService: AuthService
+  ) { }
+
+  toggleUserDropdown(): void {
     this.showUserDropdown = !this.showUserDropdown;
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

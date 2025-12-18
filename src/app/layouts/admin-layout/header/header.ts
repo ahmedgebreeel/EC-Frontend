@@ -11,5 +11,9 @@ import { AuthService } from '../../../core/services';
 export class Header {
   constructor(
     public readonly authService: AuthService
-  ) {}
+  ) { }
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

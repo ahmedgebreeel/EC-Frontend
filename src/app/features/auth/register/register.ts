@@ -17,25 +17,26 @@ export class Register {
     private readonly authService: AuthService,
     private readonly toastr: ToastrService,
     private readonly router: Router
-  ) {}
+  ) { }
 
-  togglePassword() {
+  togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
-  register(form: NgForm) {
+  register(form: NgForm): void {
     if (form.invalid) {
-      console.log("Form invalid");
       return;
     }
 
-    console.log("Form Values:", form.value);
-    this.authService.register(form.value.firstName, form.value.lastName, form.value.email.split('@')[0], form.value.email, form.value.phone, form.value.password).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.toastr.success('Registration successful!, please login');
-        this.router.navigate(['login']);
+    const { firstName, lastName, email, phone, password } = form.value;
+    const userName = email.split('@')[0];
+
+    this.authService.register(firstName, lastName, userName, email, phone, password).subscribe({
+      next: () => {
+        this.toastr.success('Registration successful! Please login.');
+        this.router.navigate(['/login']);
       }
     });
   }
 }
+

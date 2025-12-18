@@ -3,9 +3,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
-import { AuthService, UserService } from '../../../core/services';
+import { AuthService } from '../../../core/services';
 import { RoleType } from '../../../core/Types/roleType';
-
 
 @Component({
   selector: 'app-login',
@@ -14,42 +13,34 @@ import { RoleType } from '../../../core/Types/roleType';
   styleUrl: './login.css',
 })
 export class Login {
-  showPassword: boolean = false;
-  rememberMe: boolean = false;
-
-  email: string = '';
-  password: string = '';
-
+  showPassword = false;
+  rememberMe = false;
+  email = '';
+  password = '';
 
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly userService: UserService,
     private readonly toastr: ToastrService
-  ) {}
-
+  ) { }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
-  login() {
-    console.log(this.email, this.password);
-    if(!this.email || !this.password) {
+  login(): void {
+    if (!this.email || !this.password) {
       return;
     }
 
     this.authService.login(this.email, this.password, this.rememberMe).subscribe({
       next: (res) => {
+        this.authService.setAuthState(res);
         this.toastr.success('Login successful!');
-        console.log(res);
 
-        localStorage.setItem('accessToken', res.accessToken);
-
-        this.authService.user.set(res.user);
-        (res.user.roles.includes(RoleType.Admin) || res.user.roles.includes(RoleType.Seller)) ? this.router.navigate(['admin']) : this.router.navigate(['']);
+        const isAdminOrSeller = res.user.roles.includes(RoleType.Admin) || res.user.roles.includes(RoleType.Seller);
+        this.router.navigate([isAdminOrSeller ? '/admin' : '/home']);
       }
-    })
-    
+    });
   }
 }

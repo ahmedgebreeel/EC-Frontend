@@ -4,16 +4,52 @@ import { ToastrService } from 'ngx-toastr';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+/**
+ * Backend unified error response structure
+ */
+interface ApiError {
+  statusCode: number;
+  message: string;
+  detail: string;
+  timeStamp: string;
+}
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toastr = inject(ToastrService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if(!req.url.includes('refresh-token')){
-        toastr.error(error.error.message);
+      const errorMessage = getErrorMessage(error);
+
+      if (!req.url.includes('refresh-token')) {
+        toastr.error(errorMessage);
       }
-      return throwError(() => new Error(error.error.message));
-      
+      return throwError(() => error);
     })
   );
 };
+
+/**
+ * Extracts error message from backend's unified error response
+ */
+function getErrorMessage(error: HttpErrorResponse): string {
+  const apiError = error.error as ApiError;
+
+  // Use the backend's unified error message
+  if (apiError?.message) {
+    return apiError.message;
+  }
+
+  // Fallback for detail if message is empty
+  if (apiError?.detail) {
+    return apiError.detail;
+  }
+
+  // Network error fallback
+  if (error.status === 0) {
+    return 'Unable to connect to server. Please check your internet connection.';
+  }
+
+  // Generic fallback
+  return 'An unexpected error occurred. Please try again.';
+}

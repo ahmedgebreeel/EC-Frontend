@@ -9,8 +9,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   const toastr = inject(ToastrService);
 
   if (authService.user()) {
-    console.log(authService.user());
-
     return true;
   }
 

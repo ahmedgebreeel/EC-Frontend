@@ -6,9 +6,9 @@
 
         <!-- Logo -->
         <a routerLink="/admin/home" class="logo d-flex align-items-center text-dark">
-          <h1 class="sitename mb-0">Hello {{authService.user().userName}}</h1>
+          <h1 class="sitename mb-0">Hello {{authService.user()?.name}}</h1>
         </a>
-        
+
         <!-- Actions -->
         <div class="header-actions d-flex align-items-center justify-content-end">
 
@@ -37,7 +37,7 @@
                 </a>
               </div>
               <div class="dropdown-footer">
-                <button class="btn btn-danger w-100">Logout</button>
+                <button class="btn btn-danger w-100" (click)="logout()">Logout</button>
               </div>
             </div>
           </div>

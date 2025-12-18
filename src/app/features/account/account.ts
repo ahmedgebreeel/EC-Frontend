@@ -1,7 +1,6 @@
-import { Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { AuthService } from '../../core/services';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-account',
@@ -11,22 +10,10 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class Account {
     constructor(
-        private readonly authService: AuthService,
-        private readonly toastr: ToastrService
-    ){}
+        private readonly authService: AuthService
+    ) { }
 
     logout() {
-        this.authService.logout().subscribe({
-            next: (res) => {
-                console.log(res);
-                this.toastr.success('Logout successful!');
-                // window.location.reload()
-            },
-            error: (err) => {
-                console.log(err);
-                this.toastr.error(err.error);
-            }
-        });
+        this.authService.logout();
     }
-    
 }
