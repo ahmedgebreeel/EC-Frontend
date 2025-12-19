@@ -247,9 +247,8 @@
             <!-- Filter and Sort Options -->
             <div class="filter-container mb-4" data-aos="fade-up" data-aos-delay="100">
               <div class="row g-3">
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12 col-lg-6">
                   <div class="filter-item search-form">
-                    <label for="productSearch" class="form-label">Search Products</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="productSearch" placeholder="Search for products..."
                         aria-label="Search for products" (input)="search.set($event.target.value)" />
@@ -260,24 +259,9 @@
                   </div>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-2">
+                <div class="col col-lg-auto ms-lg-auto">
                   <div class="filter-item">
-                    <label for="priceRange" class="form-label">Price Range</label>
-                    <select class="form-select" id="priceRange" (change)="filterProductsPrice($event)">
-                      <option value="default" selected="">All Prices</option>
-                      <option value="Under $25">Under $25</option>
-                      <option value="$25 to $50">$25 to $50</option>
-                      <option value="$50 to $100">$50 to $100</option>
-                      <option value="$100 to $200">$100 to $200</option>
-                      <option value="$200">$200 &amp; Above</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-2">
-                  <div class="filter-item">
-                    <label for="sortBy" class="form-label">Sort By</label>
-                    <select class="form-select" (change)="sortProducts($event)" id="sortBy">
+                    <select class="form-select w-100" (change)="sortProducts($event)" id="sortBy">
                       <option value="default" selected="">Featured</option>
                       <option value="asc">Price: Low to High</option>
                       <option value="dsc">Price: High to Low</option>
@@ -287,28 +271,17 @@
                   </div>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
-                  <div class="filter-item">
-                    <label class="form-label">View</label>
-                    <div class="d-flex align-items-center">
-                      <div class="view-options me-3">
-                        <button type="button" class="btn view-btn active" data-view="grid" aria-label="Grid view"
-                          (click)="setView('grid')" [class.active]="viewType() === 'grid'">
-                          <i class="bi bi-grid-3x3-gap-fill"></i>
-                        </button>
-                        <button type="button" class="btn view-btn" data-view="list" aria-label="List view"
-                          (click)="setView('list')" [class.active]="viewType() === 'list'">
-                          <i class="bi bi-list-ul"></i>
-                        </button>
-                      </div>
-                      <!-- <div class="items-per-page">
-                        <select class="form-select" id="itemsPerPage" aria-label="Items per page">
-                          <option value="12">12 per page</option>
-                          <option value="24">24 per page</option>
-                          <option value="48">48 per page</option>
-                          <option value="96">96 per page</option>
-                        </select>
-                      </div> -->
+                <div class="col-auto">
+                  <div class="filter-item d-flex justify-content-end">
+                    <div class="btn-group view-toggle" role="group" aria-label="View toggle">
+                      <button type="button" class="btn view-btn" [class.active]="viewType() === 'grid'"
+                        (click)="setView('grid')" aria-label="Grid view">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                      </button>
+                      <button type="button" class="btn view-btn" [class.active]="viewType() === 'list'"
+                        (click)="setView('list')" aria-label="List view">
+                        <i class="bi bi-list-ul"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
