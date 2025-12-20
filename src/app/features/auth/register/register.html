@@ -8,7 +8,6 @@
                 </div>
 
                 <form #registerForm="ngForm" (ngSubmit)="register(registerForm)">
-                    <!-- Name Row -->
                     <div class="form-row">
                         <div class="form-group" [class.has-error]="errors.firstName">
                             <label>First Name *</label>
@@ -28,7 +27,6 @@
                         </div>
                     </div>
 
-                    <!-- Username & Email Row -->
                     <div class="form-row">
                         <div class="form-group" [class.has-error]="errors.userName">
                             <label>Username *</label>
@@ -48,7 +46,6 @@
                         </div>
                     </div>
 
-                    <!-- Mobile Number -->
                     <div class="form-group" [class.has-error]="errors.phoneNumber">
                         <label>Mobile Number</label>
                         <div class="phone-input-group">
@@ -65,7 +62,6 @@
                         }
                     </div>
 
-                    <!-- Password -->
                     <div class="form-group" [class.has-error]="errors.password">
                         <label>Password *</label>
                         <div class="password-field">
@@ -78,7 +74,6 @@
                         @if (errors.password) {
                         <span class="field-error">{{ errors.password }}</span>
                         }
-                        <!-- Password Requirements -->
                         <div class="password-requirements">
                             <p class="requirements-title">Password must contain:</p>
                             <ul class="requirements-list">
@@ -104,7 +99,6 @@
                         </div>
                     </div>
 
-                    <!-- Confirm Password -->
                     <div class="form-group" [class.has-error]="errors.confirmPassword">
                         <label>Confirm Password *</label>
                         <div class="password-field">
@@ -117,7 +111,6 @@
                         }
                     </div>
 
-                    <!-- Options -->
                     <div class="form-options">
                         <div class="checkbox-option">
                             <input type="checkbox" id="agree-terms" name="agreeTerms" [(ngModel)]="agreeTerms"

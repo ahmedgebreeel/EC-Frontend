@@ -33,7 +33,7 @@ export class Register {
   showPassword = false;
   isSubmitting = false;
 
-  // Form field values
+
   firstName = '';
   lastName = '';
   userName = '';
@@ -43,7 +43,7 @@ export class Register {
   confirmPassword = '';
   agreeTerms = false;
 
-  // Field-level errors
+
   errors: FieldErrors = {
     firstName: null,
     lastName: null,
@@ -55,7 +55,7 @@ export class Register {
     agreeTerms: null
   };
 
-  // Password requirements tracking
+
   passwordRequirements: PasswordRequirements = {
     minLength: false,
     hasUppercase: false,
@@ -73,17 +73,17 @@ export class Register {
     this.showPassword = !this.showPassword;
   }
 
-  // Real-time validation for first name
+
   validateFirstName(): void {
     this.errors.firstName = this.validateNameField(this.firstName, 'First name');
   }
 
-  // Real-time validation for last name
+
   validateLastName(): void {
     this.errors.lastName = this.validateNameField(this.lastName, 'Last name');
   }
 
-  // Real-time validation for username
+
   validateUserName(): void {
     if (!this.userName) {
       this.errors.userName = null;
@@ -92,7 +92,7 @@ export class Register {
     this.errors.userName = !this.userName.trim() ? 'Username is required' : null;
   }
 
-  // Real-time validation for email
+
   validateEmailField(): void {
     if (!this.email) {
       this.errors.email = null;
@@ -106,7 +106,7 @@ export class Register {
     }
   }
 
-  // Real-time validation for phone
+
   validatePhoneField(): void {
     if (!this.phoneNumber) {
       this.errors.phoneNumber = null;
@@ -123,7 +123,7 @@ export class Register {
     }
   }
 
-  // Check password requirements as user types
+
   checkPasswordRequirements(): void {
     this.passwordRequirements = {
       minLength: this.password.length >= 8,
@@ -148,7 +148,7 @@ export class Register {
     }
   }
 
-  // Real-time validation for confirm password
+
   validateConfirmPasswordField(): void {
     if (!this.confirmPassword) {
       this.errors.confirmPassword = null;
@@ -159,7 +159,7 @@ export class Register {
       : null;
   }
 
-  // Validate name fields (no numbers, no spaces)
+
   private validateNameField(value: string, fieldName: string): string | null {
     if (!value) return null; // Don't show error while empty
     if (!value.trim()) {
@@ -171,7 +171,7 @@ export class Register {
     return null;
   }
 
-  // Validate phone for submit
+
   private validatePhoneForSubmit(): string | null {
     const digitsOnly = this.phoneNumber.replace(/\s/g, '');
     const validPrefixes = ['10', '11', '12', '15'];
@@ -183,7 +183,7 @@ export class Register {
     return null;
   }
 
-  // Run all client-side validations for submit
+
   private validateForm(): boolean {
     this.errors = {
       firstName: !this.firstName?.trim() ? 'First name is required' : this.validateNameField(this.firstName, 'First name'),
@@ -199,7 +199,7 @@ export class Register {
     return !Object.values(this.errors).some(error => error !== null);
   }
 
-  // Map API error key to form field
+
   private mapErrorToField(key: string): keyof FieldErrors | null {
     const lowerKey = key.toLowerCase();
 
@@ -213,7 +213,7 @@ export class Register {
     return null;
   }
 
-  // Parse API error detail and map to form fields
+
   private handleApiErrors(error: HttpErrorResponse): void {
     const detail = error.error?.detail;
     if (!detail || typeof detail !== 'string') {
@@ -221,7 +221,6 @@ export class Register {
       return;
     }
 
-    // Parse "Key: Message; Key2: Message2;" format
     const errorParts = detail.split(';').filter((part: string) => part.trim());
     let mappedAnyError = false;
 
@@ -239,14 +238,13 @@ export class Register {
       }
     }
 
-    // If no errors could be mapped, show a toast with the full detail
+
     if (!mappedAnyError) {
       this.toastr.error(error.error?.message || 'Registration failed. Please try again.');
     }
   }
 
   register(form: NgForm): void {
-    // Clear previous errors
     this.errors = {
       firstName: null,
       lastName: null,
@@ -258,14 +256,12 @@ export class Register {
       agreeTerms: null
     };
 
-    // Run client-side validation
     if (!this.validateForm()) {
       return;
     }
 
     this.isSubmitting = true;
 
-    // Prepare phone number (strip spaces, add country code, or null if empty)
     const phoneDigits = this.phoneNumber?.replace(/\s/g, '') || '';
     const fullPhoneNumber = phoneDigits.length > 0 ? '20' + phoneDigits : null;
 
@@ -278,7 +274,6 @@ export class Register {
       this.password
     ).subscribe({
       next: () => {
-        // Use setTimeout to avoid NG0100 (ExpressionChangedAfterItHasBeenCheckedError)
         setTimeout(() => {
           this.isSubmitting = false;
           this.toastr.success('Registration successful! Please login.');
@@ -286,7 +281,6 @@ export class Register {
         }, 0);
       },
       error: (error: HttpErrorResponse) => {
-        // Use setTimeout to avoid NG0100 and ensure UI updates
         setTimeout(() => {
           this.isSubmitting = false;
           try {

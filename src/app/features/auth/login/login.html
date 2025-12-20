@@ -8,58 +8,39 @@
         </div>
 
         <form (ngSubmit)="login()" #loginForm="ngForm">
-          <!-- Email -->
-          <div class="form-group">
-            <label>Email Address *</label>
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              required
-              placeholder="your@email.com"
-            />
+          <div class="form-group" [class.has-error]="errors.email || hasApiError">
+            <label>Email or Username *</label>
+            <input type="text" [(ngModel)]="email" name="email" (ngModelChange)="validateEmail()" required
+              placeholder="your@email.com or username" />
+            @if (errors.email && !hasApiError) {
+            <span class="field-error">{{ errors.email }}</span>
+            }
           </div>
 
-          <!-- Password -->
-          <div class="form-group">
+          <div class="form-group" [class.has-error]="errors.password || hasApiError">
             <label>Password *</label>
             <div class="password-field">
-              <input
-                [type]="showPassword ? 'text' : 'password'"
-                [(ngModel)]="password"
-                name="password"
-                required
-                placeholder="Enter your password"
-              />
-              <!-- Password toggle -->
-              <i
-                class="fas password-toggle"
-                [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
-                (click)="togglePassword()"
-                title="Show/Hide password"
-              ></i>
+              <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                (ngModelChange)="validatePassword()" required placeholder="Enter your password" />
+              <i class="fas password-toggle" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                (click)="togglePassword()" title="Show/Hide password"></i>
             </div>
+            @if (errors.password) {
+            <span class="field-error">{{ errors.password }}</span>
+            }
           </div>
 
-          <!-- Options -->
           <div class="form-options">
             <div class="remember-me">
-              <input
-                type="checkbox"
-                id="remember"
-                [(ngModel)]="rememberMe"
-                name="remember"
-              />
+              <input type="checkbox" id="remember" [(ngModel)]="rememberMe" name="remember" />
               <label for="remember">Remember me</label>
             </div>
-            <!-- <a routerLink="/forgot-password" class="forgot-password">Forgot Password?</a> -->
           </div>
 
           <button type="submit" class="btn-login">Sign In</button>
         </form>
 
 
-        <!-- Register -->
         <div class="register-link">
           Don't have an account?
           <a routerLink="/register">Create Account</a>

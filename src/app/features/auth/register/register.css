@@ -86,7 +86,6 @@
     color: #2b2b2b;
 }
 
-/* Phone Input Group */
 .phone-input-group {
     display: flex;
     align-items: center;
@@ -200,7 +199,6 @@
     color: #ffc107;
 }
 
-/* Validation Styles */
 .field-error {
     display: block;
     color: #dc3545;
@@ -224,7 +222,6 @@
     margin-bottom: 16px;
 }
 
-/* Password Requirements */
 .password-requirements {
     margin-top: 12px;
     padding: 16px;
@@ -277,7 +274,6 @@
     color: #dc3545;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .register-box {
         padding: 30px;

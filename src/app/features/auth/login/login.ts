@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
@@ -18,18 +18,59 @@ export class Login {
   email = '';
   password = '';
 
+  errors: { email: string; password: string } = {
+    email: '',
+    password: ''
+  };
+  hasApiError = false;
+
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly toastr: ToastrService
+    private readonly toastr: ToastrService,
+    private readonly cdr: ChangeDetectorRef
   ) { }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
+  clearErrors(): void {
+    this.errors = { email: '', password: '' };
+    this.hasApiError = false;
+  }
+
+  validateEmail(): void {
+    if (this.hasApiError) {
+      this.hasApiError = false;
+      this.errors.password = '';
+    }
+    this.errors.email = !this.email?.trim() ? 'Email or Username is required' : '';
+  }
+
+  validatePassword(): void {
+    if (this.hasApiError) {
+      this.hasApiError = false;
+    }
+    this.errors.password = !this.password ? 'Password is required' : '';
+  }
+
   login(): void {
-    if (!this.email || !this.password) {
+    this.clearErrors();
+
+    let hasError = false;
+
+    if (!this.email) {
+      this.errors.email = 'Email or Username is required';
+      hasError = true;
+    }
+
+    if (!this.password) {
+      this.errors.password = 'Password is required';
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -40,6 +81,12 @@ export class Login {
 
         const isAdminOrSeller = res.user.roles.includes(RoleType.Admin) || res.user.roles.includes(RoleType.Seller);
         this.router.navigate([isAdminOrSeller ? '/admin' : '/home']);
+      },
+      error: (err) => {
+        const errorDetail = err.error?.detail || 'An error occurred. Please try again.';
+        this.hasApiError = true;
+        this.errors.password = errorDetail;
+        this.cdr.detectChanges();
       }
     });
   }
