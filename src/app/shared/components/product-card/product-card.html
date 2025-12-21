@@ -16,7 +16,7 @@
   </div>
   <div class="product-details" [ngClass]="viewType()">
     <div class="product-category" [ngClass]="viewType()">
-      @for(link of productData().breadcrumbLinks; track $index; let last = $last){
+      @for(link of productData().categoryBreadcrumbLinks; track $index; let last = $last){
       <a [routerLink]="['/products']" [queryParams]="{ categoryId: link.id }" class="category-link">{{ link.name }}</a>
       @if(!last){ <span class="breadcrumb-separator"> \ </span> }
       }

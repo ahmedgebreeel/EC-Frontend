@@ -1,51 +1,63 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { filter, Observable } from 'rxjs';
-
+import { Observable } from 'rxjs';
+import { Product, ProductsResponse, ProductQueryParams } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
-  private readonly baseUrl: string = `${environment.url}/api/Products/`;
-  private http = inject(HttpClient);
+  private readonly baseUrl: string = `${environment.url}/api/Products`;
+  private readonly http = inject(HttpClient);
 
-  getAllProducts(filters:any):Observable<any>{ 
+  getAllProducts(filters?: ProductQueryParams): Observable<ProductsResponse> {
     let params = new HttpParams();
-    if(filters){
-      if(filters.pageNum){
-        params = params.append('pageNum', filters.pageNum);
+
+    if (filters) {
+      if (filters.pageIndex) {
+        params = params.append('PageIndex', filters.pageIndex.toString());
       }
-      if(filters.pageSize){
-        params = params.append('pageSize', filters.pageSize);
+      if (filters.pageSize) {
+        params = params.append('PageSize', filters.pageSize.toString());
       }
-      if(filters.categoryId){
-        params = params.append('category', filters.categoryId);
+      if (filters.categoryId) {
+        params = params.append('CategoryId', filters.categoryId.toString());
       }
-      if(filters.search){
-        params = params.append('search', filters.search);
+      if (filters.brandsIds) {
+        params = params.append('BrandsIds', filters.brandsIds);
       }
-      if(filters.minPrice ){
-        params = params.append('minPrice', filters.minPrice);
+      if (filters.search) {
+        params = params.append('Search', filters.search);
       }
-      if(filters.maxPrice ){
-        params = params.append('maxPrice', filters.maxPrice);
+      if (filters.minPrice !== undefined && filters.minPrice > 0) {
+        params = params.append('MinPrice', filters.minPrice.toString());
+      }
+      if (filters.maxPrice !== undefined && filters.maxPrice < 5000) {
+        params = params.append('MaxPrice', filters.maxPrice.toString());
+      }
+      if (filters.sort) {
+        params = params.append('Sort', filters.sort);
       }
     }
 
-    return this.http.get(this.baseUrl,{params});
+    return this.http.get<ProductsResponse>(this.baseUrl, { params });
   }
-  getProductById(id:string):Observable<any>{
-    return this.http.get(`${this.baseUrl}/${id}`);
+
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
-  AddProduct(product:any):Observable<any>{
-   return this.http.post(this.baseUrl,product);
+
+  addProduct(product: Partial<Product>): Observable<Product> {
+    return this.http.post<Product>(this.baseUrl, product);
   }
-  UpdateProduct(id:string,product:any):Observable<any>{
-    return this.http.put(`${this.baseUrl}/${id}`,product);
+
+  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, product);
   }
-  DeleteProduct(id:string):Observable<any>{
-    return this.http.delete(`${this.baseUrl}/${id}`);
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
+

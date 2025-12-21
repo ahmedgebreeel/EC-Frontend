@@ -132,7 +132,7 @@
                 <div class="brand-item">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" [id]="'brand-'+brand.id"
-                      [checked]="pendingSelectedBrands().includes(brand.id)" (click)="toggleBrand(brand.id)">
+                      [checked]="pendingSelectedBrands().includes(brand.id)" (change)="toggleBrand(brand.id)">
                     <label class="form-check-label" [for]="'brand-'+brand.id">
                       {{brand.name}}
                       <span class="brand-count">({{brand.productsCount}})</span>
@@ -182,15 +182,13 @@
                       </button>
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" [class.active]="selectedSort() === 'Featured'"
-                            (click)="setSort('default', 'Featured')">Featured</a></li>
+                            (click)="setSort('featured', 'Featured')">Featured</a></li>
                         <li><a class="dropdown-item" [class.active]="selectedSort() === 'Price: Low to High'"
-                            (click)="setSort('asc', 'Price: Low to High')">Price: Low to High</a></li>
+                            (click)="setSort('priceAsc', 'Price: Low to High')">Price: Low to High</a></li>
                         <li><a class="dropdown-item" [class.active]="selectedSort() === 'Price: High to Low'"
-                            (click)="setSort('dsc', 'Price: High to Low')">Price: High to Low</a></li>
-                        <li><a class="dropdown-item" [class.active]="selectedSort() === 'Customer Rating'"
-                            (click)="setSort('rating', 'Customer Rating')">Customer Rating</a></li>
+                            (click)="setSort('priceDesc', 'Price: High to Low')">Price: High to Low</a></li>
                         <li><a class="dropdown-item" [class.active]="selectedSort() === 'Newest Arrivals'"
-                            (click)="setSort('new', 'Newest Arrivals')">Newest Arrivals</a></li>
+                            (click)="setSort('newest', 'Newest Arrivals')">Newest Arrivals</a></li>
                       </ul>
                     </div>
                   </div>
@@ -239,8 +237,18 @@
 
         <!-- Category Product List Section -->
         <section [ngClass]="viewType()" id="category-product-list" class="category-product-list section">
-          <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <div class="row g-4">
+          <div class="container products-container" data-aos="fade-up" data-aos-delay="100">
+            <!-- Loading Overlay -->
+            <div class="products-loading-overlay" [class.active]="loadingService.isLoading()">
+              <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row g-4 products-grid" [class.loading]="loadingService.isLoading()">
               @if(allProducts()){
               @for(product of allProducts() | paginate : { itemsPerPage:
               pageSize, currentPage: pageIndex(), totalItems: totalPages()}; track $index) {
@@ -258,7 +266,7 @@
         <!-- Category Pagination Section -->
         <div class="pagination-wrapper">
           <div class="pagination">
-            <pagination-controls (pageChange)="pageIndex.set($event); loadProducts()"></pagination-controls>
+            <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
           </div>
         </div>
 

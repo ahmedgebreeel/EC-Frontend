@@ -6,132 +6,14 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ProductService } from '../../../core/services/product.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, skip } from 'rxjs';
 import { CategoryService } from '../../../core/services/category.service';
 import { BrandService } from '../../../core/services/brand.service';
 import { Category } from '../../../core/models/category.model';
 import { Brand } from '../../../core/models/brand.model';
+import { Product, ProductQueryParams } from '../../../core/models/product.model';
+import { LoadingService } from '../../../core/services/loading.service';
 import { RouterLink, ActivatedRoute } from "@angular/router";
-
-export interface IProduct {
-  id: number;
-  thumbnailUrl: string;
-  categoryBreadcrumb: string;
-  brandedName: string;
-  price: number;
-  breadcrumbLinks?: { name: string; id: number }[];
-}
-
-const DUMMY_PRODUCTS = [
-  {
-    id: 1,
-    brandedName: 'Sony - Premium Wireless Headphones',
-    price: 149.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-    categoryBreadcrumb: 'Electronics \\ Audio \\ Headphones',
-    breadcrumbLinks: [
-      { name: 'Electronics', id: 1 },
-      { name: 'Audio', id: 11 },
-      { name: 'Headphones', id: 111 }
-    ]
-  },
-  {
-    id: 2,
-    brandedName: 'Coach - Leather Crossbody Bag',
-    price: 89.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400',
-    categoryBreadcrumb: 'Fashion \\ Accessories \\ Bags',
-    breadcrumbLinks: [
-      { name: 'Fashion', id: 2 },
-      { name: 'Accessories', id: 21 },
-      { name: 'Bags', id: 211 }
-    ]
-  },
-  {
-    id: 3,
-    brandedName: 'Fitbit - Smart Fitness Watch',
-    price: 199.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-    categoryBreadcrumb: 'Electronics \\ Wearables \\ Watches',
-    breadcrumbLinks: [
-      { name: 'Electronics', id: 1 },
-      { name: 'Wearables', id: 12 },
-      { name: 'Watches', id: 121 }
-    ]
-  },
-  {
-    id: 4,
-    brandedName: 'Ikea - Minimalist Desk Lamp',
-    price: 59.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400',
-    categoryBreadcrumb: 'Home & Living \\ Lighting \\ Lamps',
-    breadcrumbLinks: [
-      { name: 'Home & Living', id: 3 },
-      { name: 'Lighting', id: 31 },
-      { name: 'Lamps', id: 311 }
-    ]
-  },
-  {
-    id: 5,
-    brandedName: 'H&M - Organic Cotton T-Shirt',
-    price: 34.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
-    categoryBreadcrumb: 'Fashion \\ Clothing \\ Tops',
-    breadcrumbLinks: [
-      { name: 'Fashion', id: 2 },
-      { name: 'Clothing', id: 22 },
-      { name: 'Tops', id: 221 }
-    ]
-  },
-  {
-    id: 6,
-    brandedName: 'Hydro Flask - Stainless Steel Water Bottle',
-    price: 24.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400',
-    categoryBreadcrumb: 'Sports \\ Accessories \\ Hydration',
-    breadcrumbLinks: [
-      { name: 'Sports', id: 4 },
-      { name: 'Accessories', id: 41 },
-      { name: 'Hydration', id: 411 }
-    ]
-  },
-  {
-    id: 7,
-    brandedName: 'JBL - Bluetooth Portable Speaker',
-    price: 79.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400',
-    categoryBreadcrumb: 'Electronics \\ Audio \\ Speakers',
-    breadcrumbLinks: [
-      { name: 'Electronics', id: 1 },
-      { name: 'Audio', id: 11 },
-      { name: 'Speakers', id: 112 }
-    ]
-  },
-  {
-    id: 8,
-    brandedName: 'West Elm - Ceramic Plant Pot Set',
-    price: 45.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400',
-    categoryBreadcrumb: 'Home & Living \\ Decor \\ Pots',
-    breadcrumbLinks: [
-      { name: 'Home & Living', id: 3 },
-      { name: 'Decor', id: 32 },
-      { name: 'Pots', id: 321 }
-    ]
-  },
-  {
-    id: 9,
-    brandedName: 'Nike - Running Sneakers',
-    price: 129.99,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-    categoryBreadcrumb: 'Sports \\ Footwear \\ Running',
-    breadcrumbLinks: [
-      { name: 'Sports', id: 4 },
-      { name: 'Footwear', id: 42 },
-      { name: 'Running', id: 421 }
-    ]
-  },
-];
 
 @Component({
   selector: 'app-shop',
@@ -143,8 +25,9 @@ export class Shop {
   productService = inject(ProductService);
   categoryService = inject(CategoryService);
   brandService = inject(BrandService);
+  loadingService = inject(LoadingService);
   activatedRoute = inject(ActivatedRoute);
-  allProducts = signal<any[]>([]);
+  allProducts = signal<Product[]>([]);
   allCategories = signal<Category[]>([]);
   allBrands = signal<Brand[]>([]);
   selectedCategory = signal<number | null>(null);
@@ -154,10 +37,8 @@ export class Shop {
   maxPercent: number = 100;
   viewType = signal<'grid' | 'list'>('grid');
   pageIndex = signal(1);
-  pageSize = 10;
+  pageSize = 9;
   totalPages = signal(0);
-  minPrice?: number | undefined;
-  maxPrice?: number | undefined;
   search = signal('');
 
   selectedSort = signal('Sort By');
@@ -165,7 +46,9 @@ export class Shop {
   selectedBrands = signal<number[]>([]);
   pendingSelectedBrands = signal<number[]>([]);
   brandSearch = signal('');
+  appliedSearch = signal('');
   appliedPriceRange = signal({ min: 0, max: 5000 });
+  private isManualSearchClear = false;
 
   filteredBrands = computed(() => {
     const search = this.brandSearch().toLowerCase();
@@ -177,8 +60,8 @@ export class Shop {
   activeFilters = computed(() => {
     const filters: { type: string; label: string; value: string; id?: number }[] = [];
 
-    if (this.search() && this.search().trim() !== '') {
-      filters.push({ type: 'search', label: 'Search', value: this.search() });
+    if (this.appliedSearch() && this.appliedSearch().trim() !== '') {
+      filters.push({ type: 'search', label: 'Search', value: this.appliedSearch() });
     }
 
     if (this.selectedCategory()) {
@@ -204,7 +87,11 @@ export class Shop {
     return filters;
   });
 
-  search$ = toObservable(this.search).pipe(debounceTime(3000), distinctUntilChanged());
+  search$ = toObservable(this.search).pipe(
+    skip(1),
+    debounceTime(500),
+    distinctUntilChanged()
+  );
 
 
   categoryTree = computed(() => this.allCategories());
@@ -236,6 +123,12 @@ export class Shop {
     });
 
     this.search$.subscribe(() => {
+      if (this.isManualSearchClear) {
+        this.isManualSearchClear = false;
+        return;
+      }
+      this.appliedSearch.set(this.search());
+      this.pageIndex.set(1);
       this.loadProducts();
     });
     this.loadProducts();
@@ -243,9 +136,63 @@ export class Shop {
     this.loadBrands();
   }
 
-  loadProducts() {
-    this.allProducts.set(DUMMY_PRODUCTS);
-    this.totalPages.set(DUMMY_PRODUCTS.length);
+  loadProducts(scrollToTop: boolean = true) {
+    const filters: ProductQueryParams = {
+      pageIndex: this.pageIndex(),
+      pageSize: this.pageSize
+    };
+
+    // Add search filter
+    if (this.appliedSearch() && this.appliedSearch().trim() !== '') {
+      filters.search = this.appliedSearch().trim();
+    }
+
+    // Add category filter
+    if (this.selectedCategory()) {
+      filters.categoryId = this.selectedCategory()!;
+    }
+
+    // Add brand filter
+    if (this.selectedBrands().length > 0) {
+      filters.brandsIds = this.selectedBrands().join(',');
+    }
+
+    // Add price filter
+    const priceRange = this.appliedPriceRange();
+    if (priceRange.min > 0) {
+      filters.minPrice = priceRange.min;
+    }
+    if (priceRange.max < 5000) {
+      filters.maxPrice = priceRange.max;
+    }
+
+    // Add sort filter
+    const sortKey = this.selectedSortKey();
+    if (sortKey) {
+      filters.sort = sortKey as ProductQueryParams['sort'];
+    }
+
+    // Set loading state and scroll to filter area if needed
+    this.loadingService.show();
+    if (scrollToTop) {
+      const filterArea = document.getElementById('category-header');
+      if (filterArea) {
+        filterArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    this.productService.getAllProducts(filters).subscribe({
+      next: (response) => {
+        this.allProducts.set(response.items);
+        this.totalPages.set(response.totalCount);
+        this.loadingService.hide();
+      },
+      error: () => {
+        this.allProducts.set([]);
+        this.totalPages.set(0);
+        this.loadingService.hide();
+      }
+    });
   }
 
   loadCategories() {
@@ -268,6 +215,11 @@ export class Shop {
         this.allBrands.set([]);
       }
     });
+  }
+
+  onPageChange(page: number) {
+    this.pageIndex.set(page);
+    this.loadProducts();
   }
 
   setView(type: 'grid' | 'list') {
@@ -313,12 +265,13 @@ export class Shop {
   }
 
   clearAllFilters() {
-    this.minPrice = undefined;
-    this.maxPrice = undefined;
     this.search.set('');
+    this.appliedSearch.set('');
     this.selectedCategory.set(null);
     this.selectedBrands.set([]);
     this.pendingSelectedBrands.set([]);
+    this.selectedSort.set('Sort By');
+    this.selectedSortKey.set(null);
 
     this.minValue = 0;
     this.maxValue = 5000;
@@ -332,7 +285,9 @@ export class Shop {
   removeFilter(type: string, id?: number) {
     switch (type) {
       case 'search':
+        this.isManualSearchClear = true;
         this.search.set('');
+        this.appliedSearch.set('');
         break;
       case 'category':
         this.selectedCategory.set(null);
@@ -387,7 +342,7 @@ export class Shop {
 
   setSort(sortKey: string, label: string) {
     this.selectedSort.set(label);
-    this.selectedSortKey.set(sortKey === 'default' ? null : sortKey);
+    this.selectedSortKey.set(sortKey);
     this.pageIndex.set(1);
     this.loadProducts();
   }

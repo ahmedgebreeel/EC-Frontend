@@ -20,15 +20,19 @@ export class ProductDetails {
   productData = signal<any>({});
   mainImage = signal<any>({});
   activeImage = signal(0);
-  
-  productId = this.activeRoute.snapshot.paramMap.get('id');
+
+  productId: number;
   quantity: number = 1;
 
   constructor() {
-    this.productService.getProductById(this.productId!).subscribe((res) => {
-      res.images.sort((a: any, b: any) => a.position - b.position);
+    const idParam = this.activeRoute.snapshot.paramMap.get('id');
+    this.productId = idParam ? parseInt(idParam, 10) : 0;
+
+    // TODO: This will be updated when product details API is integrated
+    this.productService.getProductById(this.productId).subscribe((res: any) => {
+      res.images?.sort((a: any, b: any) => a.position - b.position);
       this.productData.set(res);
-      this.mainImage.set(res.images[0]);
+      this.mainImage.set(res.images?.[0] || {});
       this.activeImage.set(0);
     });
   }
@@ -57,15 +61,15 @@ export class ProductDetails {
       this.quantity--;
     }
   }
-  addToCart(){
+  addToCart() {
     this.cartService.AddCartItem(this.productData().id).subscribe({
-      next:(res)=>{
+      next: (res) => {
         console.log(res);
         this.cartService.setCartCount(res.cartItems.length);
         this.toastr.success('Product added to cart');
         // this.router.navigate(['/cart']);
       },
-      error:(err)=>{
+      error: (err) => {
         console.log(err);
         this.toastr.error(err.error);
       }

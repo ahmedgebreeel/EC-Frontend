@@ -420,3 +420,52 @@
   width: calc(100% - 30px);
   overflow: visible !important;
 }
+
+/* Loading State - Overlay Approach */
+.products-container {
+  position: relative;
+  min-height: 400px;
+}
+
+.products-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.products-loading-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-spinner .spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Products Grid Loading State */
+.products-grid {
+  transition: opacity 0.2s ease;
+}
+
+.products-grid.loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
