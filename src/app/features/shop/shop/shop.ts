@@ -31,7 +31,7 @@ export class Shop {
   categoryService = inject(CategoryService);
   allProducts = signal<any[]>([]);
   allCategories = signal<any[]>([]);
-  parentCategoryId = signal<any[]>([]);
+  parentId = signal<any[]>([]);
   minValue: number = 0;
   maxValue: number = 500;
   minPercent: number = 0;
@@ -50,12 +50,18 @@ export class Shop {
 
   categoryTree = computed(() => {
     const cats = this.allCategories();
-    return cats
-      .filter(c => !("parentCategoryId" in c))
-      .map((parent) => ({
-        ...parent,
-        children: cats.filter((c) => c.parentCategoryId === parent.id),
-      }));
+
+    // Recursive function to build tree with all levels
+    const buildTree = (parentId: number | null): any[] => {
+      return cats
+        .filter(c => c.parentId === parentId)
+        .map(category => ({
+          ...category,
+          children: buildTree(category.id)
+        }));
+    };
+
+    return buildTree(null);
   });
 
   constructor() {
@@ -100,7 +106,7 @@ export class Shop {
   sortByCategory(cat: any) {
     this.pageIndex.set(1);
     this.activeFilters.set([cat.name]);
-    this.loadProducts(undefined, undefined, undefined, cat.name);
+    this.loadProducts(undefined, undefined, undefined, undefined, undefined, cat.id.toString());
   }
   updateSlider() {
     if (this.minValue > this.maxValue) {

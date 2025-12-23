@@ -40,7 +40,7 @@ export class ProductService {
     return this.http.get(`${this.baseUrl}/${id}`);
   }
   AddProduct(product:any):Observable<any>{
-   return this.http.post(this.baseUrl,product);
+   return this.http.post(`${this.baseUrl}/admin`,product);
   }
   UpdateProduct(id:string,product:any):Observable<any>{
     return this.http.put(`${this.baseUrl}/${id}`,product);

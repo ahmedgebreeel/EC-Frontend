@@ -23,44 +23,64 @@
             @if(allCategories().length > 0){
 
             <ul class="category-tree list-unstyled mb-0">
-              @for(parent of categoryTree();track $index){
+              @for(category of categoryTree(); track category.id){
               <li class="category-item">
                 <div
-                  class="d-flex justify-content-between align-items-center category-header collapsed"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#categories-1-clothing-subcategories"
-                  aria-expanded="false"
-                  aria-controls="categories-1-clothing-subcategories"
+                  class="d-flex justify-content-between align-items-center category-header"
+                  [class.collapsed]="category.children.length > 0"
+                  [attr.data-bs-toggle]="category.children.length > 0 ? 'collapse' : null"
+                  [attr.data-bs-target]="category.children.length > 0 ? '#category-' + category.id : null"
+                  [attr.aria-expanded]="false"
+                  [attr.aria-controls]="category.children.length > 0 ? 'category-' + category.id : null"
                 >
-                  <a (click)="sortByCategory(parent)" class="category-link">{{ parent.name }}</a>
-                  @if(parent.children.length > 0){
+                  <a (click)="sortByCategory(category)" class="category-link" style="cursor: pointer">{{ category.name }}</a>
+                  @if(category.children.length > 0){
                   <span class="category-toggle">
                     <i class="bi bi-chevron-down"></i>
                     <i class="bi bi-chevron-up"></i>
                   </span>
                   }
                 </div>
-                @if(parent.children.length > 0){
-
+                @if(category.children.length > 0){
                 <ul
-                  id="categories-1-clothing-subcategories"
+                  [id]="'category-' + category.id"
                   class="subcategory-list list-unstyled collapse ps-3 mt-2"
                 >
-                  @for(child of parent.children; track $index){
-                  <li>
-                    <a
-                      (click)="sortByCategory(child)"
-                      class="subcategory-link"
-                      style="cursor: pointer"
-                      >{{ child.name }}</a
+                  @for(subCategory of category.children; track subCategory.id){
+                  <li class="category-item">
+                    <div
+                      class="d-flex justify-content-between align-items-center category-header"
+                      [class.collapsed]="subCategory.children.length > 0"
+                      [attr.data-bs-toggle]="subCategory.children.length > 0 ? 'collapse' : null"
+                      [attr.data-bs-target]="subCategory.children.length > 0 ? '#category-' + subCategory.id : null"
+                      [attr.aria-expanded]="false"
+                      [attr.aria-controls]="subCategory.children.length > 0 ? 'category-' + subCategory.id : null"
                     >
+                      <a (click)="sortByCategory(subCategory)" class="subcategory-link" style="cursor: pointer">{{ subCategory.name }}</a>
+                      @if(subCategory.children.length > 0){
+                      <span class="category-toggle">
+                        <i class="bi bi-chevron-down"></i>
+                        <i class="bi bi-chevron-up"></i>
+                      </span>
+                      }
+                    </div>
+                    @if(subCategory.children.length > 0){
+                    <ul
+                      [id]="'category-' + subCategory.id"
+                      class="subcategory-list list-unstyled collapse ps-3 mt-2"
+                    >
+                      @for(thirdLevel of subCategory.children; track thirdLevel.id){
+                      <li>
+                        <a (click)="sortByCategory(thirdLevel)" class="subcategory-link" style="cursor: pointer">{{ thirdLevel.name }}</a>
+                      </li>
+                      }
+                    </ul>
+                    }
                   </li>
-
                   }
                 </ul>
                 }
               </li>
-
               }
             </ul>
             }

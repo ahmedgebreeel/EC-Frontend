@@ -4,11 +4,13 @@ import { AuthService } from '../services';
 import { isTokenExpired } from '../../utils/checkToken';
 import { catchError, switchMap, of } from 'rxjs';
 
+const EXCLUDED_ENDPOINTS = ['refresh-token', 'login', 'register', 'products', 'categories'];
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   req = req.clone({ withCredentials: true });
 
-  if (req.url.includes('refresh-token') || req.url.includes('login') || req.url.includes('register')) {
+  if (EXCLUDED_ENDPOINTS.some(endpoint => req.url.includes(endpoint))) {
     return next(req);
   }
   
