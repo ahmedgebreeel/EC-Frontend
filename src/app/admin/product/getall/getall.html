@@ -40,7 +40,7 @@
   </div>
 
   <!-- Products Table -->
-  <div class="table-container">
+  <div class="table-container" (scroll)="onScroll($event)">
     @if (filteredProducts().length > 0) {
       <table class="products-table">
         <thead>
@@ -52,7 +52,7 @@
             <th>Price</th>
             <th>Stock</th>
             <th>Status</th>
-            <th>Created Date</th>
+            <!-- <th>Created Date</th> -->
             <th>Actions</th>
           </tr>
         </thead>
@@ -63,9 +63,9 @@
                 <span class="product-id">#{{ product.id }}</span>
               </td>
               <td>
-                <img 
-                  [src]="product.imageUrl" 
-                  [alt]="product.name" 
+                <img
+                  [src]="product.thumbnailUrl"
+                  [alt]="product.name"
                   class="product-image">
               </td>
               <td>
@@ -75,32 +75,32 @@
                 </div>
               </td>
               <td>
-                <span class="category-badge">{{ product.category }}</span>
+                <span class="category-badge">{{ product.categoryBreadcrumb.split('\\')[0] }}</span>
               </td>
               <td>
                 <span class="price-text">\${{ product.price | number:'1.2-2' }}</span>
               </td>
               <td>
-                <span class="stock-number">{{ product.stock }}</span>
+                <span class="stock-number">{{ product.stockQuantity }}</span>
               </td>
               <td>
                 <span class="stock-badge" [ngClass]="getStockBadgeClass(product.status)">
-                  {{ product.status }}
+                  {{ product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock' }}
                 </span>
               </td>
-              <td>
+              <!-- <td>
                 <span class="date-text">{{ product.createdDate }}</span>
-              </td>
+              </td> -->
               <td>
                 <div class="action-buttons">
-                  <a 
-                    [routerLink]="['/admin/products/edit', product.id]" 
-                    class="btn-icon btn-edit" 
+                  <a
+                    [routerLink]="['/admin/products/edit', product.id]"
+                    class="btn-icon btn-edit"
                     title="Edit Product">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <button 
-                    class="btn-icon btn-delete" 
+                  <button
+                    class="btn-icon btn-delete"
                     title="Delete Product"
                     (click)="deleteProduct(product.id)">
                     <i class="fas fa-trash-alt"></i>
@@ -111,6 +111,21 @@
           }
         </tbody>
       </table>
+
+      <!-- Loading Indicator -->
+      @if (isLoading()) {
+        <div class="loading-indicator">
+          <div class="spinner"></div>
+          <p>Loading more products...</p>
+        </div>
+      }
+
+      <!-- End of Results Indicator -->
+      @if (!hasMore() && !isLoading()) {
+        <div class="end-of-results">
+          <p>You've reached the end of the product list</p>
+        </div>
+      }
     } @else {
       <div class="empty-state">
         <i class="fas fa-box-open"></i>

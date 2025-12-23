@@ -33,7 +33,7 @@
           <!-- Account -->
           <div class="dropdown account-dropdown">
             @if(authService.user() != null){
-              Welcome {{ authService.user().userName }}
+              Welcome {{ authService.user().name }}
             }@else{
               Welcome
             }

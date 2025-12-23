@@ -1,17 +1,19 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { ProductService } from '../../../core/services';
+import { ToastrService } from 'ngx-toastr';
 
 interface Product {
   id: number;
   name: string;
   description: string;
-  category: string;
+  categoryBreadcrumb: string;
   price: number;
-  stock: number;
+  stockQuantity: number;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   createdDate: string;
-  imageUrl: string;
+  thumbnailUrl: string;
 }
 
 @Component({
@@ -21,142 +23,86 @@ interface Product {
   templateUrl: './getall.html',
   styleUrls: ['../style.css']
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
   // Search query signal
   searchQuery = signal<string>('');
-  
-  // Mock products data
-  products = signal<Product[]>([
-    {
-      id: 1,
-      name: 'Premium Wireless Headphones',
-      description: 'High-quality noise-cancelling headphones with superior sound quality',
-      category: 'Electronics',
-      price: 299.99,
-      stock: 45,
-      status: 'In Stock',
-      createdDate: 'Jan 15, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200'
-    },
-    {
-      id: 2,
-      name: 'Designer Leather Bag',
-      description: 'Elegant handcrafted leather handbag with premium materials',
-      category: 'Fashion',
-      price: 189.00,
-      stock: 23,
-      status: 'In Stock',
-      createdDate: 'Feb 10, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=200'
-    },
-    {
-      id: 3,
-      name: 'Smart Fitness Tracker',
-      description: 'Track your health and fitness goals with advanced sensors',
-      category: 'Electronics',
-      price: 129.99,
-      stock: 67,
-      status: 'In Stock',
-      createdDate: 'Mar 05, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=200'
-    },
-    {
-      id: 4,
-      name: 'Organic Cotton T-Shirt',
-      description: 'Sustainable and comfortable everyday wear made from organic cotton',
-      category: 'Clothing',
-      price: 45.00,
-      stock: 120,
-      status: 'In Stock',
-      createdDate: 'Apr 12, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200'
-    },
-    {
-      id: 5,
-      name: 'Stainless Steel Water Bottle',
-      description: 'Insulated bottle keeps drinks cold for 24 hours',
-      category: 'Accessories',
-      price: 32.50,
-      stock: 89,
-      status: 'In Stock',
-      createdDate: 'May 20, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200'
-    },
-    {
-      id: 6,
-      name: 'Mechanical Gaming Keyboard',
-      description: 'RGB backlit mechanical keyboard with customizable keys',
-      category: 'Electronics',
-      price: 159.99,
-      stock: 34,
-      status: 'In Stock',
-      createdDate: 'Jun 08, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=200'
-    },
-    {
-      id: 7,
-      name: 'Leather Wallet',
-      description: 'Minimalist genuine leather wallet with RFID protection',
-      category: 'Accessories',
-      price: 68.00,
-      stock: 15,
-      status: 'Low Stock',
-      createdDate: 'Jul 14, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=200'
-    },
-    {
-      id: 8,
-      name: 'Wireless Bluetooth Speaker',
-      description: 'Portable waterproof speaker with 360-degree sound',
-      category: 'Electronics',
-      price: 89.99,
-      stock: 0,
-      status: 'Out of Stock',
-      createdDate: 'Aug 22, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=200'
-    },
-    {
-      id: 9,
-      name: 'Running Shoes',
-      description: 'Lightweight performance running shoes with cushioning',
-      category: 'Footwear',
-      price: 135.00,
-      stock: 58,
-      status: 'In Stock',
-      createdDate: 'Sep 18, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200'
-    },
-    {
-      id: 10,
-      name: 'Ceramic Coffee Mug Set',
-      description: 'Set of 4 handmade ceramic mugs with unique patterns',
-      category: 'Home & Kitchen',
-      price: 52.00,
-      stock: 72,
-      status: 'In Stock',
-      createdDate: 'Oct 03, 2024',
-      imageUrl: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=200'
-    }
-  ]);
+
+  // Products data
+  products = signal<Product[]>([]);
+
+  // Pagination state
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(20);
+  totalCount = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  hasMore = signal<boolean>(true);
 
   // Computed signal for filtered products based on search query
   filteredProducts = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    
+
     if (!query) {
       return this.products();
     }
-    
+
     return this.products().filter(product =>
       product.name.toLowerCase().includes(query) ||
       product.description.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query) ||
+      product.categoryBreadcrumb.toLowerCase().includes(query) ||
       product.id.toString().includes(query)
     );
   });
 
   // Computed signal for product count
-  productCount = computed(() => this.filteredProducts().length);
+  productCount = computed(() => this.totalCount() || this.filteredProducts().length);
+
+  constructor(
+    private readonly productsService: ProductService,
+    private toastr: ToastrService,
+    private readonly router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  loadProducts(append: boolean = false): void {
+    if (this.isLoading() || (!append && this.currentPage() > 1)) {
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    const filters = {
+      pageNum: this.currentPage(),
+      pageSize: this.pageSize()
+    };
+
+    this.productsService.getAllProducts(filters).subscribe({
+      next: (res) => {
+        console.log(res);
+
+        if (append) {
+          this.products.update(products => [...products, ...res.items]);
+        } else {
+          this.products.set(res.items);
+        }
+
+        this.totalCount.set(res.totalCount || res.items.length);
+
+        // Check if there are more products to load
+        const loadedCount = this.products().length;
+        this.hasMore.set(loadedCount < this.totalCount());
+
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.log(err);
+        this.toastr.error(err.error);
+        this.isLoading.set(false);
+      }
+    });
+  }
 
   // Handle search input change
   onSearchChange(event: Event): void {
@@ -169,10 +115,33 @@ export class ProductListComponent {
     this.searchQuery.set('');
   }
 
+  // Handle scroll event for infinite scroll
+  onScroll(event: Event): void {
+    const container = event.target as HTMLElement;
+    const scrollTop = container.scrollTop;
+    const scrollHeight = container.scrollHeight;
+    const clientHeight = container.clientHeight;
+
+    // Load more when scrolled to 80% of the container
+    if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+      this.loadMore();
+    }
+  }
+
+  // Load more products
+  loadMore(): void {
+    if (!this.hasMore() || this.isLoading()) {
+      return;
+    }
+
+    this.currentPage.update(page => page + 1);
+    this.loadProducts(true);
+  }
+
   // Delete product with confirmation
   deleteProduct(id: number): void {
     const product = this.products().find(p => p.id === id);
-    
+
     if (product && confirm(`Are you sure you want to delete "${product.name}"?`)) {
       this.products.update(products => products.filter(p => p.id !== id));
     }
