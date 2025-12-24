@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CheckoutPreviewResponse, PlaceOrderRequest } from '../models';
+import { CheckoutPreviewResponse, OrderConfirmationResponse, PlaceOrderRequest } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,7 @@ export class CheckoutService {
         });
     }
 
-    placeOrder(request: PlaceOrderRequest): Observable<any> {
-        return this.http.post(`${this.baseUrl}`, request);
+    placeOrder(request: PlaceOrderRequest): Observable<OrderConfirmationResponse> {
+        return this.http.post<OrderConfirmationResponse>(`${this.baseUrl}`, request);
     }
 }

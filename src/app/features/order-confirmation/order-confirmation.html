@@ -1,224 +1,283 @@
-  <main class="main">
+<main class="main">
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Order Confirmation</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a routerLink="/home">Home</a></li>
-            <li class="current">Order Confirmation</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+  <!-- Page Title -->
+  <div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+      <h1 class="mb-2 mb-lg-0">Order Confirmation</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a routerLink="/home">Home</a></li>
+          <li class="current">Order Confirmation</li>
+        </ol>
+      </nav>
+    </div>
+  </div><!-- End Page Title -->
 
-    <!-- Order Confirmation Section -->
-    <section id="order-confirmation" class="order-confirmation section">
+  <!-- Order Confirmation Section -->
+  <section id="order-confirmation" class="order-confirmation section">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="order-confirmation-3">
-          <div class="row g-0">
-            <!-- Left sidebar with order summary -->
-            <div class="col-lg-4 sidebar" data-aos="fade-right">
-              <div class="sidebar-content">
-                <!-- Success animation -->
-                <div class="success-animation">
-                  <i class="bi bi-check-lg"></i>
-                </div>
+      <div class="order-confirmation-3">
+        <div class="row g-0">
+          <!-- Left sidebar with order summary -->
+          <div class="col-lg-4 sidebar" data-aos="fade-right">
+            <div class="sidebar-content">
+              <!-- Success animation -->
+              <div class="success-animation">
+                <i class="bi bi-check-lg"></i>
+              </div>
 
-                <!-- Order number and date -->
-                <div class="order-id">
-                  <h4>Order #ORD-935721</h4>
-                  <div class="order-date">March 2, 2025</div>
-                </div>
+              <!-- Order number and date -->
+              <div class="order-id">
+                <h4>Order #{{ order?.id }}</h4>
+                <div class="order-date">{{ order?.created | date:'MMMM d, y' }}</div>
+              </div>
 
-                <!-- Order progress stepper -->
-                <div class="order-progress">
-                  <div class="stepper-container">
-                    <div class="stepper-item completed">
-                      <div class="stepper-icon">1</div>
-                      <div class="stepper-text">Confirmed</div>
+              <!-- Order progress stepper -->
+              <div class="order-progress">
+                <div class="stepper-container">
+                  <div class="stepper-item current">
+                    <div class="stepper-icon">
+                      <i class="bi bi-clock-history"></i>
                     </div>
-                    <div class="stepper-item current">
-                      <div class="stepper-icon">2</div>
-                      <div class="stepper-text">Processing</div>
+                    <div class="stepper-text">
+                      <h6>Pending</h6>
+                      <span>Order Received</span>
                     </div>
-                    <div class="stepper-item">
-                      <div class="stepper-icon">3</div>
-                      <div class="stepper-text">Shipped</div>
+                  </div>
+                  <div class="stepper-item">
+                    <div class="stepper-icon">
+                      <i class="bi bi-bag-check"></i>
                     </div>
-                    <div class="stepper-item">
-                      <div class="stepper-icon">4</div>
-                      <div class="stepper-text">Delivered</div>
+                    <div class="stepper-text">
+                      <h6>Confirmed</h6>
+                      <span>Payment Verified</span>
+                    </div>
+                  </div>
+                  <div class="stepper-item">
+                    <div class="stepper-icon">
+                      <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="stepper-text">
+                      <h6>Processing</h6>
+                      <span>Items Packaging</span>
+                    </div>
+                  </div>
+                  <div class="stepper-item">
+                    <div class="stepper-icon">
+                      <i class="bi bi-truck"></i>
+                    </div>
+                    <div class="stepper-text">
+                      <h6>Shipped</h6>
+                      <span>In Transit</span>
+                    </div>
+                  </div>
+                  <div class="stepper-item">
+                    <div class="stepper-icon">
+                      <i class="bi bi-house-check"></i>
+                    </div>
+                    <div class="stepper-text">
+                      <h6>Delivered</h6>
+                      <span>Order Arrived</span>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <!-- Price summary -->
-                <div class="price-summary">
-                  <h5>Order Summary</h5>
-                  <ul class="summary-list">
-                    <li>
-                      <span>Subtotal</span>
-                      <span>$219.97</span>
-                    </li>
-                    <li>
-                      <span>Shipping</span>
-                      <span>$0.00</span>
-                    </li>
-                    <li>
-                      <span>Tax</span>
-                      <span>$18.70</span>
-                    </li>
-                    <li class="total">
-                      <span>Total</span>
-                      <span>$238.67</span>
-                    </li>
-                  </ul>
-                </div>
+              <!-- Price summary -->
+              <div class="price-summary">
+                <h5>Order Summary</h5>
+                <ul class="summary-list">
+                  <li>
+                    <span>Subtotal</span>
+                    <span>{{ order?.subtotal | number:'1.2-2' }} <span class="currency-suffix">EGP</span></span>
+                  </li>
+                  <li>
+                    <span>Shipping</span>
+                    <span>{{ order?.shippingFees | number:'1.2-2' }} <span class="currency-suffix">EGP</span></span>
+                  </li>
+                  <li>
+                    <span>Tax</span>
+                    <span>{{ order?.taxes | number:'1.2-2' }} <span class="currency-suffix">EGP</span></span>
+                  </li>
+                  <li class="total">
+                    <span>Total</span>
+                    <span>{{ order?.totalAmount | number:'1.2-2' }} <span class="currency-suffix">EGP</span></span>
+                  </li>
+                </ul>
+              </div>
 
-                <!-- Delivery info -->
-                <div class="delivery-info">
-                  <h5>Delivery Information</h5>
-                  <p class="delivery-estimate">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>Estimated delivery: March 7-9, 2025</span>
-                  </p>
-                  <p class="shipping-method">
-                    <i class="bi bi-truck"></i>
-                    <span>Free Shipping</span>
-                  </p>
-                </div>
+              <!-- Delivery info -->
+              <div class="delivery-info">
+                <h5>Delivery Information</h5>
+                <p class="delivery-estimate">
+                  <i class="bi bi-calendar-check"></i>
+                  <span>Estimated delivery: {{ order?.estimatedDeliveryDateStart | date:'MMM d' }} - {{
+                    order?.estimatedDeliveryDateEnd | date:'MMM d, y' }}</span>
+                </p>
+                <p class="shipping-method">
+                  <i class="bi bi-truck"></i>
+                  <span>{{ order?.shippingMethod | titlecase }} Shipping</span>
+                </p>
+              </div>
 
-                <!-- Customer service -->
-                <div class="customer-service">
-                  <h5>Need Help?</h5>
-                  <a routerLink="/contact-us" class="help-link">
-                    <i class="bi bi-chat-dots"></i>
-                    <span>Contact Support</span>
-                  </a>
-                  <a routerLink="/faq" class="help-link">
-                    <i class="bi bi-question-circle"></i>
-                    <span>FAQs</span>
-                  </a>
-                </div>
+              <!-- Customer service -->
+              <div class="customer-service">
+                <h5>Need Help?</h5>
+                <a routerLink="/contact-us" class="help-link">
+                  <i class="bi bi-chat-dots"></i>
+                  <span>Contact Support</span>
+                </a>
+                <a routerLink="/faq" class="help-link">
+                  <i class="bi bi-question-circle"></i>
+                  <span>FAQs</span>
+                </a>
               </div>
             </div>
+          </div>
 
-            <!-- Main content area -->
-            <div class="col-lg-8 main-content" data-aos="fade-in">
-              <!-- Thank you message -->
-              <div class="thank-you-message">
-                <h1>Thanks for your order!</h1>
-                <p>We've received your order and will begin processing it right away.
-                  We'll send you updates via email as your order progresses.</p>
-              </div>
+          <!-- Main content area -->
+          <div class="col-lg-8 main-content" data-aos="fade-in">
+            <!-- Thank you message -->
+            <div class="thank-you-message">
+              <h1>Thanks for your order!</h1>
+              <p>We've received your order and will begin processing it right away.
+                We'll send you updates via email as your order progresses.</p>
+            </div>
 
-              <!-- Shipping details -->
-              <div class="details-card" data-aos="fade-up">
-                <div class="card-header" data-toggle="collapse">
-                  <h3>
-                    <i class="bi bi-geo-alt"></i>
-                    Shipping Details
-                  </h3>
-                  <i class="bi bi-chevron-down toggle-icon"></i>
-                </div>
-                <div class="card-body">
-                  <div class="row g-4">
-                    <div class="col-md-6">
-                      <div class="detail-group">
-                        <label>Ship To</label>
-                        <address>
-                          Michael Thompson<br>
-                          789 Oakwood Lane<br>
-                          Seattle, WA 98101<br>
-                          United States
-                        </address>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="detail-group">
-                        <label>Contact</label>
-                        <div class="contact-info">
-                          <p><i class="bi bi-envelope"></i> michael.t@example.com</p>
-                          <p><i class="bi bi-telephone"></i> (206) 555-1234</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Payment details -->
-              <div class="details-card" data-aos="fade-up">
-                <div class="card-header" data-toggle="collapse">
-                  <h3>
-                    <i class="bi bi-credit-card"></i>
-                    Payment Details
-                  </h3>
-                  <i class="bi bi-chevron-down toggle-icon"></i>
-                </div>
-                <div class="card-body">
-                  <div class="payment-method">
-                    <div class="payment-icon">
-                      <i class="bi bi-credit-card-2-front"></i>
-                    </div>
-                    <div class="payment-details">
-                      <div class="card-type">American Express</div>
-                      <div class="card-number">•••• •••• •••• 3782</div>
-                    </div>
-                  </div>
-                  <div class="billing-address mt-4">
-                    <h5>Billing Address</h5>
-                    <p>Same as shipping address</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Order items -->
-              <div class="details-card" data-aos="fade-up">
-            <div class=" card-header" data-toggle="collapse">
+            <!-- Shipping details -->
+            <div class="details-card" data-aos="fade-up">
+              <div class="card-header" data-toggle="collapse">
                 <h3>
-                  <i class="bi bi-bag-check"></i>
-                  Order Items
+                  <i class="bi bi-geo-alt"></i>
+                  Shipping Details
                 </h3>
                 <i class="bi bi-chevron-down toggle-icon"></i>
               </div>
               <div class="card-body">
-                <div class="item">
-                  <div class="item-image">
-                    <img src="assets/img/product/product-7.webp" alt="Product" loading="lazy">
-                  </div>
-                  <div class="item-details">
-                    <h4>Wireless Bluetooth Speaker</h4>
-                    <div class="item-meta">
-                      <span>Color: Navy Blue</span>
+                <div class="row">
+                  <!-- Shipping Column -->
+                  <div class="col-md-7">
+                    <div class="detail-group">
+                      <label>Ship To</label>
+                      <div class="address-details">
+                        <p class="address-line">
+                          <i class="bi bi-shop me-2"></i>
+                          <span>{{ order?.shippingAddress?.street }}, {{ order?.shippingAddress?.building }}</span>
+                        </p>
+                        <p class="address-line">
+                          <i class="bi bi-geo me-2"></i>
+                          <span>{{ order?.shippingAddress?.district }}</span>
+                        </p>
+                        <p class="address-line">
+                          <i class="bi bi-geo-alt me-2"></i>
+                          <span>{{ order?.shippingAddress?.city }}, {{ order?.shippingAddress?.governorate }}</span>
+                        </p>
+                        <p class="address-line">
+                          <i class="bi bi-mailbox me-2"></i>
+                          <span>Zip: {{ order?.shippingAddress?.zipCode }}</span>
+                        </p>
+                        <p class="address-line">
+                          <i class="bi bi-globe-americas me-2"></i>
+                          <span>{{ order?.shippingAddress?.country }}</span>
+                        </p>
+                        @if (order?.shippingAddress?.hints) {
+                        <p class="address-hints mt-2">
+                          <i class="bi bi-info-circle-fill me-2"></i>
+                          <span>{{ order?.shippingAddress?.hints }}</span>
+                        </p>
+                        }
+                      </div>
                     </div>
-                    <div class="item-price">
-                      <span class="quantity">1 ×</span>
-                      <span class="price">$129.99</span>
-                    </div>
                   </div>
-                </div>
 
-                <div class="item">
-                  <div class="item-image">
-                    <img src="assets/img/product/product-9.webp" alt="Product" loading="lazy">
-                  </div>
-                  <div class="item-details">
-                    <h4>Smart Fitness Tracker</h4>
-                    <div class="item-meta">
-                      <span>Color: Black</span>
-                      <span>Size: Medium</span>
-                    </div>
-                    <div class="item-price">
-                      <span class="quantity">1 ×</span>
-                      <span class="price">$89.98</span>
+                  <!-- Contact Column -->
+                  <div class="col-md-5">
+                    <div class="detail-group">
+                      <label>Contact Info</label>
+                      <div class="contact-info">
+                        <p>
+                          <i class="bi bi-person"></i>
+                          {{ order?.shippingAddress?.fullName }}
+                        </p>
+                        <p>
+                          <i class="bi bi-telephone"></i>
+                          <span>+20 {{ order?.shippingAddress?.mobileNumber }}</span>
+                        </p>
+                        <p>
+                          <i class="bi bi-envelope"></i>
+                          {{ order?.userEmail }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Payment details -->
+            <div class="details-card" data-aos="fade-up">
+              <div class="card-header" data-toggle="collapse">
+                <h3>
+                  <i class="bi bi-credit-card"></i>
+                  Payment Details
+                </h3>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+              </div>
+              <div class="card-body">
+                <div class="payment-method">
+                  <div class="payment-icon">
+                    <i class="bi" [ngClass]="{
+                        'bi-cash-stack': order?.paymentMethod === 'cashOnDelivery',
+                        'bi-credit-card': order?.paymentMethod === 'stripe',
+                        'bi-wallet2': order?.paymentMethod === 'paymob'
+                      }"></i>
+                  </div>
+                  <div class="payment-details">
+                    <div class="card-type">
+                      {{ order?.paymentMethod === 'cashOnDelivery' ? 'Cash on Delivery' :
+                      order?.paymentMethod === 'stripe' ? 'Credit / Debit Card' : 'Online Payment' }}
+                    </div>
+                  </div>
+                </div>
+                <div class="billing-address mt-4">
+                  <h5>Billing Address</h5>
+                  <p>Same as shipping address</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order items -->
+            <div class="details-card" data-aos="fade-up">
+              <div class=" card-header" data-toggle="collapse">
+                <h3>
+                  <i class="bi bi-bag-check"></i>
+                  Order Items ({{ order?.itemsCount }} Item{{ order?.itemsCount !== 1 ? 's' : '' }})
+                </h3>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+              </div>
+              <div class="card-body">
+                @for (item of order?.items; track item.productId) {
+                <div class="order-item d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="order-item-image me-3">
+                      <img [src]="item.productThumbnailUrl" [alt]="item.productName" class="img-fluid" loading="lazy">
+                    </div>
+                    <div class="order-item-details">
+                      <h4 class="mb-2">{{ item.productName }}</h4>
+                      <div class="order-item-price">
+                        <span class="quantity">{{ item.quantity }} × </span>
+                        <span class="price">{{ item.productPrice | number:'1.2-2' }} <span
+                            class="currency-suffix">EGP</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="order-item-total fw-bold text-end">
+                    <span>{{ item.total | number:'1.2-2' }} <span class="currency-suffix">EGP</span></span>
+                  </div>
+                </div>
+                }
               </div>
             </div>
 
@@ -226,7 +285,7 @@
             <div class="action-area" data-aos="fade-up">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <a routerLink="/home" class="btn btn-back">
+                  <a routerLink="/products" class="btn btn-back">
                     <i class="bi bi-arrow-left"></i>
                     Return to Shop
                   </a>
@@ -240,57 +299,12 @@
               </div>
             </div>
 
-            <!-- Recommended products -->
-            <div class="recommended" data-aos="fade-up">
-              <h3>You Might Also Like</h3>
-              <div class="row g-4">
-                <div class="col-6 col-md-4">
-                  <div class="product-card">
-                    <div class="product-image">
-                      <img src="assets/img/product/product-11.webp" alt="Product" loading="lazy">
-                    </div>
-                    <h5>Wireless Earbuds</h5>
-                    <div class="product-price">$59.99</div>
-                    <a routerLink="#" class="btn btn-add-cart">
-                      <i class="bi bi-plus"></i>
-                      Add to Cart
-                    </a>
-                  </div>
-                </div>
-                <div class="col-6 col-md-4">
-                  <div class="product-card">
-                    <div class="product-image">
-                      <img src="assets/img/product/product-10.webp" alt="Product" loading="lazy">
-                    </div>
-                    <h5>Portable Phone Charger</h5>
-                    <div class="product-price">$34.99</div>
-                    <a routerLink="/cart" class="btn btn-add-cart">
-                      <i class="bi bi-plus"></i>
-                      Add to Cart
-                    </a>
-                  </div>
-                </div>
-                <div class="col-6 col-md-4 d-none d-md-block">
-                  <div class="product-card">
-                    <div class="product-image">
-                      <img src="assets/img/product/product-8.webp" alt="Product" loading="lazy">
-                    </div>
-                    <h5>Smart Watch</h5>
-                    <div class="product-price">$149.99</div>
-                    <a routerLink="/cart" class="btn btn-add-cart">
-                      <i class="bi bi-plus"></i>
-                      Add to Cart
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      </div>
+    </div>
 
-    </section><!-- /Order Confirmation Section -->
+  </section><!-- /Order Confirmation Section -->
 
-  </main>
+</main>

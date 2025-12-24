@@ -1,4 +1,5 @@
 import { CartItem } from './cart.model';
+import { OrderItem, OrderAddress } from './order.model';
 
 export interface CheckoutPreviewResponse {
     subtotal: number;
@@ -13,5 +14,22 @@ export interface CheckoutPreviewResponse {
 export interface PlaceOrderRequest {
     shippingAddressId: number;
     shippingMethod: 'standard' | 'express';
-    paymentMethod: 'CashOnDelivery' | 'Stripe' | 'Paymob';
+    paymentMethod: 'cashOnDelivery' | 'stripe' | 'paymob';
+}
+
+export interface OrderConfirmationResponse {
+    id: number;
+    created: string;
+    subtotal: number;
+    shippingFees: number;
+    taxes: number;
+    totalAmount: number;
+    estimatedDeliveryDateStart: string;
+    estimatedDeliveryDateEnd: string;
+    shippingMethod: 'standard' | 'express';
+    shippingAddress: OrderAddress;
+    userEmail: string;
+    paymentMethod: 'cashOnDelivery' | 'stripe' | 'paymob';
+    itemsCount: number;
+    items: OrderItem[];
 }

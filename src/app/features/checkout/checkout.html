@@ -197,19 +197,19 @@
                 </div>
                 <div class="section-content">
                   <div class="payment-options">
-                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'Stripe'"
-                      (click)="setPaymentMethod('Stripe')">
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'stripe'"
+                      (click)="setPaymentMethod('stripe')">
                       <input type="radio" name="payment-method" id="credit-card"
-                        [checked]="selectedPaymentMethod === 'Stripe'">
+                        [checked]="selectedPaymentMethod === 'stripe'">
                       <label for="credit-card">
                         <span class="payment-icon"><i class="bi bi-credit-card-2-front"></i></span>
                         <span class="payment-label">Credit / Debit Card (Stripe)</span>
                       </label>
                     </div>
-                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'CashOnDelivery'"
-                      (click)="setPaymentMethod('CashOnDelivery')">
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'cashOnDelivery'"
+                      (click)="setPaymentMethod('cashOnDelivery')">
                       <input type="radio" name="payment-method" id="cod"
-                        [checked]="selectedPaymentMethod === 'CashOnDelivery'">
+                        [checked]="selectedPaymentMethod === 'cashOnDelivery'">
                       <label for="cod">
                         <span class="payment-icon"><i class="bi bi-cash-stack"></i></span>
                         <span class="payment-label">Cash on Delivery</span>
@@ -217,7 +217,7 @@
                     </div>
                   </div>
 
-                  <div class="payment-details" id="credit-card-details" *ngIf="selectedPaymentMethod === 'Stripe'">
+                  <div class="payment-details" id="credit-card-details" *ngIf="selectedPaymentMethod === 'stripe'">
                     <div class="form-group">
                       <label for="card-number">Card Number</label>
                       <div class="card-number-wrapper">
@@ -253,7 +253,7 @@
                     </div>
                   </div>
 
-                  <div class="payment-details" id="cod-details" *ngIf="selectedPaymentMethod === 'CashOnDelivery'">
+                  <div class="payment-details" id="cod-details" *ngIf="selectedPaymentMethod === 'cashOnDelivery'">
                     <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
                       <i class="bi bi-info-circle-fill me-2 fs-5"></i>
                       <div>

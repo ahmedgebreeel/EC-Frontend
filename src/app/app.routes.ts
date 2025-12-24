@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
+import { checkoutGuard } from './core/guards/checkout-guard';
+import { orderConfirmationGuard } from './core/guards/order-confirmation-guard';
 import { RoleType } from './core/Types/roleType';
 
 export const routes: Routes = [
@@ -41,7 +43,7 @@ export const routes: Routes = [
             {
                 path: "checkout",
                 loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout),
-                canActivate: [authGuard]
+                canActivate: [authGuard, checkoutGuard]
             },
             {
                 path: "about",
@@ -67,7 +69,7 @@ export const routes: Routes = [
             {
                 path: 'orderconfirmation',
                 loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m => m.OrderConfirmation),
-                canActivate: [authGuard]
+                canActivate: [authGuard, orderConfirmationGuard]
             },
             {
                 path: 'paymentmethods',

@@ -1,11 +1,12 @@
 import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CityService } from '../../core/services/city.service';
 import { AddressService } from '../../core/services/address.service';
 import { CheckoutService } from '../../core/services/checkout.service';
-import { Address, AddressRequest, CheckoutPreviewResponse, CartItem, PlaceOrderRequest } from '../../core/models';
+import { CartService } from '../../core/services/cart.service';
+import { Address, AddressRequest, CheckoutPreviewResponse, CartItem, PlaceOrderRequest, OrderConfirmationResponse } from '../../core/models';
 import { ToastrService } from 'ngx-toastr';
 
 declare var bootstrap: any;
@@ -21,7 +22,9 @@ export class Checkout implements OnInit, AfterViewInit {
   private addressService = inject(AddressService);
   private cityService = inject(CityService);
   private checkoutService = inject(CheckoutService);
+  private cartService = inject(CartService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private toastr = inject(ToastrService);
 
@@ -41,7 +44,7 @@ export class Checkout implements OnInit, AfterViewInit {
   currentAddress: Address | null = null;
   tempSelectedAddress: Address | null = null;
 
-  selectedPaymentMethod = 'Stripe';
+  selectedPaymentMethod = 'stripe';
   checkoutItems: CartItem[] = [];
   subtotal = 0;
   shippingFees = 0;
@@ -399,13 +402,14 @@ export class Checkout implements OnInit, AfterViewInit {
     const request: PlaceOrderRequest = {
       shippingAddressId: this.currentAddress.id,
       shippingMethod: this.shippingMethod as 'standard' | 'express',
-      paymentMethod: this.selectedPaymentMethod as 'CashOnDelivery' | 'Stripe' | 'Paymob'
+      paymentMethod: this.selectedPaymentMethod as 'cashOnDelivery' | 'stripe' | 'paymob'
     };
 
     this.checkoutService.placeOrder(request).subscribe({
-      next: (response) => {
+      next: (response: OrderConfirmationResponse) => {
         this.toastr.success('Order placed successfully!');
-        console.log('Order response:', response);
+        this.cartService.clearLocalCart();
+        this.router.navigate(['/orderconfirmation'], { state: { order: response } });
       },
       error: (err) => {
         console.error('Error placing order', err);

@@ -97,7 +97,8 @@ export class Cart {
 
   proceedToCheckout(): void {
     this.router.navigate(['/checkout'], {
-      queryParams: { shippingMethod: this.shippingMethod }
+      queryParams: { shippingMethod: this.shippingMethod },
+      state: { fromCart: true }
     });
   }
 }
