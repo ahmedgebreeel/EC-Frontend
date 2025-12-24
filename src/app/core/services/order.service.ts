@@ -7,25 +7,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class OrderService {
-  private readonly baseUrl: string = environment.url + 'api/Order/';
+  private readonly baseUrl: string = `${environment.url}/api/Orders`;
   private http = inject(HttpClient);
 
-  getAllOrders():Observable<any> {
+  getUserOrders():Observable<any>{
     return this.http.get(this.baseUrl);
   }
-  getOrderById(id:string):Observable<any>{
-    return this.http.get(this.baseUrl + id);
-  }
-  getOrderByUserId(userId:string):Observable<any>{
-    return this.http.get(this.baseUrl + 'user/' + userId);
-  }
   AddOrder(order:any):Observable<any>{
-    return this.http.post(this.baseUrl,order);
+    return this.http.post(`${this.baseUrl}/checkout`,order);
+  }
+
+  //For Admin
+  getAllAdminOrders(pageIndex: number = 1, pageSize: number = 10):Observable<any> {
+    return this.http.get(`${this.baseUrl}/admin?pageIndex=${pageIndex}&pageSize=${pageSize}`);
+  }
+  getOrderById(id:string):Observable<any>{
+    return this.http.get(`${this.baseUrl}/admin/${id}`);
   }
   UpdateOrder(id:string,order:any):Observable<any>{
-    return this.http.put(this.baseUrl + id,order);
+    return this.http.put(`${this.baseUrl}/admin/${id}`,order);
   }
   DeleteOrder(id:string):Observable<any>{
-    return this.http.delete(this.baseUrl + id);
+    return this.http.delete(`${this.baseUrl}/admin/${id}`);
   }
 }
