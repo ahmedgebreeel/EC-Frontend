@@ -1,13 +1,14 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { CategoryService } from '../../../core/services';
 
 interface Category {
   id: number;
   name: string;
   description: string;
   icon: string;
-  parentCategory: string | null;
+  parentCategory: any;
   createdDate: string;
   updatedDate: string;
 }
@@ -19,7 +20,7 @@ interface Category {
   templateUrl: './list.html',
   styleUrls: ['../style.css']
 })
-export class List {
+export class List implements OnInit {
   // Mock data using signals
   categories = signal<Category[]>([
     {
@@ -146,6 +147,29 @@ export class List {
   });
 
   categoryCount = computed(() => this.filteredCategories().length);
+
+
+  constructor(
+    private categoryService: CategoryService
+  ) { }
+
+  ngOnInit(): void {
+    this.categoryService.getAllCategories().subscribe({
+      next: (res) => {
+        console.log("categories", res);
+        res.map((cat: any ) => {
+          if(cat.parentId) {
+            const parent = res.find((parent: any) => parent.id === cat.parentId);
+            cat.parentCategory = parent;
+          }
+        });
+        this.categories.set(res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
 
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;

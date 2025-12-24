@@ -26,7 +26,9 @@ export class ProductCard implements OnInit {
   }
 
   ngOnInit(): void {
-    this.categoryName.set(this.productData().categoryName);
+    this.categoryName.set(this.productData().categoryBreadcrumb.split("\\")[2]);
+    console.log(this.categoryName());
+    
   }
   addToCart(){
     

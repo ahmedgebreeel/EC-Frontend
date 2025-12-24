@@ -42,8 +42,8 @@
           <th>Category Name</th>
           <th>Description</th>
           <th>Parent Category</th>
-          <th>Created Date</th>
-          <th>Updated Date</th>
+          <!-- <th>Created Date</th>
+          <th>Updated Date</th> -->
           <th>Actions</th>
         </tr>
       </thead>
@@ -55,24 +55,24 @@
             </td>
             <td>
               <div class="category-name-cell">
-                <i class="fas {{ category.icon }} category-icon"></i>
+                <!-- <i class="fas {{ category.icon }} category-icon"></i> -->
                 <h5>{{ category.name }}</h5>
               </div>
             </td>
             <td>
-              <p class="category-description">{{ category.description }}</p>
+              <p class="category-description">{{ category.description || 'No description' }}</p>
             </td>
             <td>
               <span [class]="category.parentCategory ? 'parent-badge' : 'parent-badge none'">
-                {{ category.parentCategory || 'Root Category' }}
+                {{ category.parentCategory?.name || 'Root Category' }}
               </span>
             </td>
-            <td>
+            <!-- <td>
               <span class="date-text">{{ category.createdDate }}</span>
             </td>
             <td>
               <span class="date-text">{{ category.updatedDate }}</span>
-            </td>
+            </td> -->
             <td>
               <div class="action-buttons">
                 <a [routerLink]="['/admin/categories/edit', category.id]" class="btn-icon btn-edit" title="Edit Category">
