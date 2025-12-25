@@ -78,7 +78,7 @@
                 <span class="category-badge">{{ product.categoryBreadcrumb.split('\\')[0] }}</span>
               </td>
               <td>
-                <span class="price-text">\${{ product.price | number:'1.2-2' }}</span>
+                <span class="price-text">${{ product.price | number:'1.2-2' }}</span>
               </td>
               <td>
                 <span class="stock-number">{{ product.stockQuantity }}</span>

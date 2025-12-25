@@ -8,7 +8,7 @@ import { filter, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ProductService {
-  private readonly baseUrl: string = `${environment.url}/api/Products/`;
+  private readonly baseUrl: string = `${environment.url}/api/Products`;
   private http = inject(HttpClient);
 
   getAllProducts(filters:any):Observable<any>{ 

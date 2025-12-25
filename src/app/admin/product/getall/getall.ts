@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ProductService } from '../../../core/services';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 interface Product {
   id: number;
@@ -142,8 +143,28 @@ export class ProductListComponent implements OnInit {
   deleteProduct(id: number): void {
     const product = this.products().find(p => p.id === id);
 
-    if (product && confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      this.products.update(products => products.filter(p => p.id !== id));
+    if (product) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You want to delete "${product.name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.products.update(products => products.filter(p => p.id !== id));
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Product has been deleted.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      });
     }
   }
 

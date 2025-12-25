@@ -18,6 +18,14 @@ interface RecentUser {
   role: string;
 }
 
+// Recent Product interface
+interface RecentProduct {
+  id: string;
+  name: string;
+  price: number;
+  stock: number;
+}
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -98,6 +106,34 @@ export class AdminDashboard implements OnInit {
       name: 'Robert Brown',
       email: 'robert.brown@example.com',
       role: 'Customer'
+    }
+  ];
+
+  // Recent Activity - Products
+  recentProducts: RecentProduct[] = [
+    {
+      id: 'PRD-2024-156',
+      name: 'Wireless Headphones',
+      price: 129.99,
+      stock: 45
+    },
+    {
+      id: 'PRD-2024-155',
+      name: 'Smart Watch Pro',
+      price: 299.99,
+      stock: 12
+    },
+    {
+      id: 'PRD-2024-154',
+      name: 'USB-C Cable',
+      price: 19.99,
+      stock: 150
+    },
+    {
+      id: 'PRD-2024-153',
+      name: 'Laptop Stand',
+      price: 49.99,
+      stock: 8
     }
   ];
 

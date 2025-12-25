@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -9,6 +9,9 @@ import { Observable } from 'rxjs/internal/Observable';
 export class CategoryService {
   private readonly baseUrl: string = `${environment.url}/api/Categories`;
   private http = inject(HttpClient);
+
+  categories = signal<any[]>([]);
+
 
   getAllCategories():Observable<any> {
     return this.http.get(this.baseUrl);

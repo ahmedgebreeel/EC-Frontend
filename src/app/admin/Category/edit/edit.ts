@@ -1,7 +1,9 @@
-import { Component, signal, computed, effect, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CategoryService } from '../../../core/services';
+import { ToastrService } from 'ngx-toastr';
 
 interface ParentCategory {
   id: number;
@@ -9,7 +11,7 @@ interface ParentCategory {
 }
 
 interface Subcategory {
-  icon: string;
+  id: number;
   name: string;
 }
 
@@ -32,51 +34,17 @@ interface CategoryData {
 })
 export class Edit implements OnInit {
   categoryForm: FormGroup;
-  categoryId = signal<number>(0);
-  
-  // Mock data using signals
-  currentCategory = signal<CategoryData>({
-    id: 1,
-    name: 'Electronics',
-    description: 'All electronic devices and gadgets including computers, smartphones, tablets, and accessories',
-    parentCategoryId: null,
-    subcategories: [
-      { icon: 'fa-mobile-alt', name: 'Smartphones' },
-      { icon: 'fa-laptop', name: 'Computers' },
-      { icon: 'fa-gamepad', name: 'Gaming' }
-    ],
-    createdDate: 'January 10, 2024',
-    updatedDate: 'November 28, 2024'
-  });
-
-  parentCategories = signal<ParentCategory[]>([
-    { id: 3, name: 'Fashion' },
-    { id: 6, name: 'Home & Kitchen' },
-    { id: 7, name: 'Sports & Fitness' },
-    { id: 8, name: 'Books & Media' },
-    { id: 10, name: 'Beauty & Personal Care' }
-  ]);
-
+  currentCategory = signal({} as any);
+  parentCategories = signal<ParentCategory[]>([]);
   descriptionLength = signal(0);
-
-  // Computed signals
-  categoryPath = computed(() => {
-    const parentId = this.categoryForm?.get('parentCategoryId')?.value;
-    const categoryName = this.categoryForm?.get('name')?.value || 'Category';
-    
-    if (parentId) {
-      const parent = this.parentCategories().find(p => p.id === +parentId);
-      return parent ? `Root → ${parent.name} → ${categoryName}` : `Root → ${categoryName}`;
-    }
-    return `Root → ${categoryName}`;
-  });
-
-  subcategoryCount = computed(() => this.currentCategory().subcategories.length);
+  subcategories = signal<Subcategory[]>([]); 
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private categoryService: CategoryService,
+    private toastr: ToastrService
   ) {
     this.categoryForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(200)]],
@@ -86,23 +54,48 @@ export class Edit implements OnInit {
   }
 
   ngOnInit(): void {
-    // Get category ID from route
-    this.route.params.subscribe(params => {
-      const id = +params['id'];
-      this.categoryId.set(id);
-      this.loadCategory(id);
-    });
+    
+    if(this.categoryService.categories().length === 0) {
+      this.categoryService.getAllCategories().subscribe({
+        next: (res) => {
+          console.log("categories", res);
+          this.categoryService.categories.set(res);
+          this.parentCategories.set(this.categoryService.categories().filter(cat => cat.parentId === null));
+          // Get category ID from route
+          this.route.params.subscribe(params => {
+            const id = +params['id'];
+            this.loadCategory(id);
+          });
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+    }else{
+      this.parentCategories.set(this.categoryService.categories().filter(cat => cat.parentId === null));
+  
+      // Get category ID from route
+      this.route.params.subscribe(params => {
+        const id = +params['id'];
+        this.loadCategory(id);
+      });
+    }
+    
   }
 
   loadCategory(id: number): void {
     // In a real application, you would fetch from API
-    const category = this.currentCategory();
+    const category = this.categoryService.categories().find(cat => cat.id === id);
+    this.currentCategory.set(category);
+    console.log(this.currentCategory());
+    this.subcategories.set(this.categoryService.categories().filter(cat => cat.parentId === category.id));
     this.categoryForm.patchValue({
       name: category.name,
-      description: category.description,
-      parentCategoryId: category.parentCategoryId || ''
+      description: category.description, 
+      parentCategoryId: category.parentId || ''
     });
-    this.descriptionLength.set(category.description.length);
+
+    this.descriptionLength.set(category.description?.length || 0);
   }
 
   onDescriptionChange(event: Event): void {
@@ -113,11 +106,18 @@ export class Edit implements OnInit {
   onSubmit(): void {
     if (this.categoryForm.valid) {
       console.log('Updated Category Data:', this.categoryForm.value);
-      // Here you would call your API service
-      alert('Category updated successfully!');
-      this.router.navigate(['/admin/categories']);
+      this.categoryService.UpdateCategory(this.currentCategory().id.toString(),this.categoryForm.value).subscribe({
+        next: (res) => {
+          console.log("updated", res);
+          this.toastr.success('Category updated successfully!');
+          this.router.navigate(['/admin/categories']);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
     } else {
-      alert('Please fill in all required fields');
+      this.toastr.error('Please fill in all required fields.');
     }
   }
 
