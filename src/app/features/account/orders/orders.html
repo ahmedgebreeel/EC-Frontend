@@ -1,21 +1,40 @@
 <div class="section-header" data-aos="fade-up">
     <h2>My Orders</h2>
     <div class="header-actions">
-        <div class="search-box">
-            <i class="bi bi-search"></i>
-            <input type="text" placeholder="Search orders...">
+        <div class="dropdown">
+            <button class="filter-btn" data-bs-toggle="dropdown">
+                <i class="bi bi-sort-down"></i>
+                <span>{{ currentSort }}</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setSort('Date: Newest First')">Date:
+                        Newest First</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setSort('Date: Oldest First')">Date:
+                        Oldest First</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="javascript:void(0)"
+                        (click)="setSort('Order Total: Low to High')">Order Total: Low to High</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)"
+                        (click)="setSort('Order Total: High to Low')">Order Total: High to Low</a></li>
+            </ul>
         </div>
         <div class="dropdown">
             <button class="filter-btn" data-bs-toggle="dropdown">
                 <i class="bi bi-funnel"></i>
-                <span>Filter</span>
+                <span>{{ currentFilter }}</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">All Orders</a></li>
-                <li><a class="dropdown-item" href="#">Processing</a></li>
-                <li><a class="dropdown-item" href="#">Shipped</a></li>
-                <li><a class="dropdown-item" href="#">Delivered</a></li>
-                <li><a class="dropdown-item" href="#">Cancelled</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setFilter('All Orders')">All Orders</a>
+                </li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setFilter('Processing')">Processing</a>
+                </li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setFilter('Shipped')">Shipped</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setFilter('Delivered')">Delivered</a>
+                </li>
+                <li><a class="dropdown-item" href="javascript:void(0)" (click)="setFilter('Cancelled')">Cancelled</a>
+                </li>
             </ul>
         </div>
     </div>

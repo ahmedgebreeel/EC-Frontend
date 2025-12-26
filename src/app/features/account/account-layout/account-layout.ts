@@ -11,6 +11,25 @@ import { AuthService } from '../../../core/services';
 export class AccountLayout {
     authService = inject(AuthService);
 
+    getInitials(): string {
+        const fullName = this.authService.user()?.fullName || 'Guest';
+        const names = fullName.trim().split(' ');
+        if (names.length >= 2) {
+            return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+        }
+        return fullName.substring(0, 2).toUpperCase();
+    }
+
+    getRoleIcon(): string {
+        const role = this.authService.user()?.roles?.[0];
+        switch (role) {
+            case 'Admin': return 'bi-shield-lock';
+            case 'Seller': return 'bi-shop';
+            case 'Customer': return 'bi-person';
+            default: return 'bi-award';
+        }
+    }
+
     logout() {
         this.authService.logout();
     }

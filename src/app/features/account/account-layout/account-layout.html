@@ -33,13 +33,19 @@
             <!-- User Info -->
             <div class="user-info" data-aos="fade-right">
               <div class="user-avatar">
-                <img src="assets/img/person/person-f-1.webp" alt="Profile" loading="lazy">
+                @if (authService.user()?.image) {
+                <img [src]="authService.user()?.image" alt="Profile" loading="lazy">
+                } @else {
+                <div class="avatar-placeholder">
+                  <span class="avatar-initials">{{ getInitials() }}</span>
+                </div>
+                }
                 <span class="status-badge"><i class="bi bi-shield-check"></i></span>
               </div>
-              <h4>{{ authService.user()?.fullName || 'Guest' }}</h4>
+              <h4 class="user-fullname">{{ authService.user()?.fullName || 'Guest' }}</h4>
               <div class="user-status">
-                <i class="bi bi-award"></i>
-                <span>Premium Member</span>
+                <i [class]="'bi ' + getRoleIcon()"></i>
+                <span>{{ authService.user()?.roles?.[0] || 'Member' }}</span>
               </div>
             </div>
 
