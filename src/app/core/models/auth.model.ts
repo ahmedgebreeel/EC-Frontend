@@ -1,4 +1,4 @@
-import { Role } from '../Types/roleType';
+import { Role } from '../types/role.type';
 
 export interface RegisterRequest {
     firstName: string;

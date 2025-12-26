@@ -1,5 +1,5 @@
 
-export interface PagedResponse<T> { //Input : PagedResponseDto<T>
+export interface PagedResponse<T> { 
     pageIndex: number;
     pageSize: number;
     totalCount: number;

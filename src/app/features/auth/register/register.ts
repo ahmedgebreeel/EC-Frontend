@@ -1,10 +1,13 @@
+//Angular Imports
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
-import { AuthService } from '../../../core/services/auth.service';
-import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
+//Libraries
+import { ToastrService } from 'ngx-toastr';
+//Services
+import { AuthService } from '../../../core/services';
 
 interface FieldErrors {
   firstName: string | null;
@@ -30,6 +33,7 @@ interface PasswordRequirements {
   styleUrl: './register.css',
 })
 export class Register {
+  //State
   showPassword = false;
   isSubmitting = false;
   firstName = '';
@@ -59,10 +63,13 @@ export class Register {
   };
 
   constructor(
-    private readonly authService: AuthService,
-    private readonly toastr: ToastrService,
+    //Angular
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    //Libraries
+    private readonly toastr: ToastrService,
+    //Services
+    private readonly authService: AuthService
   ) { }
 
   togglePassword(): void {

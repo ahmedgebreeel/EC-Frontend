@@ -1,33 +1,22 @@
-import { HttpClient } from '@angular/common/http';
+//Angular Imports
 import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+//Libraries
+import { Observable } from 'rxjs';
+//Environment
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs/internal/Observable';
-import { Category } from '../models/category.model';
+//Models
+import { CategorySummaryDto } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
   private readonly baseUrl: string = `${environment.url}/api/Categories`;
+  //Angular
   private readonly http = inject(HttpClient);
 
-  getAllCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.baseUrl);
-  }
-
-  getCategoryById(id: number): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/${id}`);
-  }
-
-  addCategory(category: Partial<Category>): Observable<Category> {
-    return this.http.post<Category>(this.baseUrl, category);
-  }
-
-  updateCategory(id: number, category: Partial<Category>): Observable<Category> {
-    return this.http.put<Category>(`${this.baseUrl}/${id}`, category);
-  }
-
-  deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  getAllStoreCategories(): Observable<CategorySummaryDto[]> {
+    return this.http.get<CategorySummaryDto[]>(this.baseUrl);
   }
 }

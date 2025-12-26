@@ -1,13 +1,18 @@
+//Angular Imports
 import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { CityService } from '../../core/services/city.service';
-import { AddressService } from '../../core/services/address.service';
-import { CheckoutService } from '../../core/services/checkout.service';
-import { CartService } from '../../core/services/cart.service';
-import { Address, AddressRequest, CheckoutPreviewResponse, CartItem, PlaceOrderRequest, OrderConfirmationResponse } from '../../core/models';
+//Libraries
 import { ToastrService } from 'ngx-toastr';
+//Services
+import { AddressService, CartService, CheckoutService, CityService } from '../../../core/services';
+//Models
+import {
+  AddressSummaryDto, CreateAddressRequest,
+  CartItemDto,
+  CheckoutPreviewResponse, CheckoutRequest, OrderConfirmationResponse
+} from '../../../core/models';
 
 declare var bootstrap: any;
 
@@ -19,33 +24,40 @@ declare var bootstrap: any;
   styleUrl: './checkout.css',
 })
 export class Checkout implements OnInit, AfterViewInit {
-  private addressService = inject(AddressService);
-  private cityService = inject(CityService);
-  private checkoutService = inject(CheckoutService);
-  private cartService = inject(CartService);
+  //Angular
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  //Libraries
   private toastr = inject(ToastrService);
+  //Services
+  private addressService = inject(AddressService);
+  private cartService = inject(CartService);
+  private checkoutService = inject(CheckoutService);
+  private cityService = inject(CityService);
 
-  addresses: Address[] = [];
+  //Address State
+  addresses: AddressSummaryDto[] = [];
+  currentAddress: AddressSummaryDto | null = null;
+  tempSelectedAddress: AddressSummaryDto | null = null;
+
+  //City Autocomplete State
   availableCities: string[] = [];
   filteredCities: string[] = [];
   showCitySuggestions = false;
   highlightedIndex = -1;
   cityInvalid = false;
 
+  //Country Autocomplete State
   availableCountries: string[] = [];
   filteredCountries: string[] = [];
   showCountrySuggestions = false;
   countryHighlightedIndex = -1;
   countryInvalid = false;
 
-  currentAddress: Address | null = null;
-  tempSelectedAddress: Address | null = null;
-
-  selectedPaymentMethod = 'stripe';
-  checkoutItems: CartItem[] = [];
+  //Checkout State
+  selectedPaymentMethod = 'cashOnDelivery';
+  checkoutItems: CartItemDto[] = [];
   subtotal = 0;
   shippingFees = 0;
   taxes = 0;
@@ -55,6 +67,7 @@ export class Checkout implements OnInit, AfterViewInit {
   estimatedDeliveryEnd = '';
   termsAgreed = false;
 
+  //New Address Form
   newAddress = {
     label: '',
     fullName: '',
@@ -69,7 +82,15 @@ export class Checkout implements OnInit, AfterViewInit {
     hints: ''
   };
 
+  // ==================== Lifecycle ====================
+
   ngOnInit() {
+    if (this.cartService.cartItems().length === 0) {
+      this.toastr.info('Your cart is empty');
+      this.router.navigate(['/cart']);
+      return;
+    }
+
     this.route.queryParams.subscribe(params => {
       this.shippingMethod = params['shippingMethod'] || 'standard';
       this.loadCheckoutPreview();
@@ -79,6 +100,20 @@ export class Checkout implements OnInit, AfterViewInit {
     this.availableCountries = this.cityService.getCountries();
     this.onCountryChange();
   }
+
+  ngAfterViewInit() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((el) => new bootstrap.Tooltip(el));
+
+    const addressModal = document.getElementById('addressModal');
+    if (addressModal) {
+      addressModal.addEventListener('hide.bs.modal', () => {
+        (document.activeElement as HTMLElement)?.blur();
+      });
+    }
+  }
+
+  // ==================== Checkout Preview ====================
 
   loadCheckoutPreview() {
     this.checkoutService.getCheckoutPreview(this.shippingMethod).subscribe({
@@ -105,12 +140,206 @@ export class Checkout implements OnInit, AfterViewInit {
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }
 
+  // ==================== Address Management ====================
+
+  loadAddresses() {
+    this.addressService.getUserAddresses().subscribe({
+      next: (data) => {
+        this.addresses = data;
+        const defaultAddr = this.addresses.find(a => a.isDefault);
+        if (defaultAddr) {
+          this.currentAddress = defaultAddr;
+          this.tempSelectedAddress = defaultAddr;
+        } else if (this.addresses.length > 0) {
+          this.currentAddress = this.addresses[0];
+          this.tempSelectedAddress = this.addresses[0];
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load addresses', err);
+      }
+    });
+  }
+
+  formatAddressText(address: AddressSummaryDto): string {
+    const parts = [
+      address.street,
+      address.building,
+      address.district,
+      address.city,
+      address.governorate,
+      address.country
+    ].filter(part => part && part.trim() !== '');
+    return parts.join(', ');
+  }
+
+  selectAddress(address: AddressSummaryDto) {
+    this.tempSelectedAddress = address;
+  }
+
+  saveSelectedAddress() {
+    if (this.tempSelectedAddress) {
+      this.currentAddress = this.tempSelectedAddress;
+    }
+
+    const collapseElement = document.getElementById('otherAddressesContainer');
+    if (collapseElement) {
+      const bsCollapse = bootstrap.Collapse.getInstance(collapseElement);
+      if (bsCollapse) {
+        bsCollapse.hide();
+      } else {
+        new bootstrap.Collapse(collapseElement).hide();
+      }
+    }
+  }
+
+  saveNewAddress(form: NgForm) {
+    this.validateCity();
+    this.validateCountry();
+
+    if (form.valid && !this.cityInvalid && !this.countryInvalid) {
+      const payload: CreateAddressRequest = {
+        label: this.newAddress.label?.trim() || 'Home',
+        fullName: this.newAddress.fullName,
+        mobileNumber: this.newAddress.mobileNumber,
+        street: this.newAddress.street,
+        building: this.newAddress.building,
+        city: this.newAddress.city,
+        country: this.newAddress.country
+      };
+
+      if (this.newAddress.district?.trim()) payload.district = this.newAddress.district;
+      if (this.newAddress.governorate?.trim()) payload.governorate = this.newAddress.governorate;
+      if (this.newAddress.zipCode?.trim()) payload.zipCode = this.newAddress.zipCode;
+      if (this.newAddress.hints?.trim()) payload.hints = this.newAddress.hints;
+
+      this.addressService.addAddress(payload).subscribe({
+        next: (res: AddressSummaryDto) => {
+          const newAddress = { ...res, label: res.label || 'No Label' };
+          this.addresses = [...this.addresses, newAddress];
+
+          if (newAddress.isDefault) {
+            this.currentAddress = newAddress;
+            this.tempSelectedAddress = newAddress;
+          }
+
+          this.cdr.detectChanges();
+          this.toastr.success('Address added successfully');
+
+          const modalElement = document.getElementById('addressModal');
+          if (modalElement) {
+            bootstrap.Modal.getInstance(modalElement)?.hide();
+          }
+
+          this.newAddress = {
+            label: '',
+            fullName: '',
+            mobileNumber: '',
+            street: '',
+            building: '',
+            district: '',
+            city: '',
+            governorate: '',
+            zipCode: '',
+            country: 'Egypt',
+            hints: ''
+          };
+          form.resetForm();
+          this.newAddress.country = 'Egypt';
+        },
+        error: (err) => {
+          console.error('Error adding address', err);
+          this.toastr.error('Failed to add address');
+        }
+      });
+    } else {
+      Object.keys(form.controls).forEach(key => form.controls[key].markAsTouched());
+    }
+  }
+
+  // ==================== Country Autocomplete ====================
+
   onCountryChange() {
     this.availableCities = this.cityService.getCities(this.newAddress.country);
     this.newAddress.city = '';
     this.filteredCities = [];
     this.cityInvalid = false;
   }
+
+  onCountryInput() {
+    const input = this.newAddress.country?.toLowerCase().trim();
+    this.countryHighlightedIndex = -1;
+
+    if (!input) {
+      this.filteredCountries = [];
+      this.showCountrySuggestions = false;
+      return;
+    }
+
+    this.filteredCountries = this.availableCountries.filter(c =>
+      c.toLowerCase().includes(input)
+    );
+    this.showCountrySuggestions = this.filteredCountries.length > 0;
+  }
+
+  selectCountry(country: string) {
+    this.newAddress.country = country;
+    this.showCountrySuggestions = false;
+    this.countryHighlightedIndex = -1;
+    this.countryInvalid = false;
+    this.onCountryChange();
+  }
+
+  hideCountrySuggestions() {
+    setTimeout(() => {
+      this.showCountrySuggestions = false;
+      this.validateCountry();
+    }, 200);
+  }
+
+  validateCountry() {
+    if (!this.newAddress.country) {
+      this.countryInvalid = false;
+      return;
+    }
+    const isValid = this.availableCountries.some(c => c.toLowerCase() === this.newAddress.country.toLowerCase());
+    this.countryInvalid = !isValid;
+    if (isValid) {
+      this.availableCities = this.cityService.getCities(this.newAddress.country);
+    }
+  }
+
+  onCountryKeyDown(event: KeyboardEvent) {
+    if (!this.showCountrySuggestions || this.filteredCountries.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.countryHighlightedIndex = (this.countryHighlightedIndex + 1) % this.filteredCountries.length;
+      this.scrollToHighlightedCountry();
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.countryHighlightedIndex = (this.countryHighlightedIndex - 1 + this.filteredCountries.length) % this.filteredCountries.length;
+      this.scrollToHighlightedCountry();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      if (this.countryHighlightedIndex >= 0) {
+        this.selectCountry(this.filteredCountries[this.countryHighlightedIndex]);
+      }
+    } else if (event.key === 'Escape') {
+      this.hideCountrySuggestions();
+    }
+  }
+
+  scrollToHighlightedCountry() {
+    setTimeout(() => {
+      const container = document.querySelector('.country-suggestions-dropdown');
+      const activeItem = container?.children[this.countryHighlightedIndex] as HTMLElement;
+      if (activeItem) activeItem.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  // ==================== City Autocomplete ====================
 
   onCityInput() {
     const input = this.newAddress.city.toLowerCase().trim();
@@ -185,221 +414,20 @@ export class Checkout implements OnInit, AfterViewInit {
     this.cityInvalid = !isValid;
   }
 
-  onCountryInput() {
-    const input = this.newAddress.country?.toLowerCase().trim();
-    this.countryHighlightedIndex = -1;
-
-    if (!input) {
-      this.filteredCountries = [];
-      this.showCountrySuggestions = false;
-      return;
-    }
-
-    this.filteredCountries = this.availableCountries.filter(c =>
-      c.toLowerCase().includes(input)
-    );
-    this.showCountrySuggestions = this.filteredCountries.length > 0;
-  }
-
-  selectCountry(country: string) {
-    this.newAddress.country = country;
-    this.showCountrySuggestions = false;
-    this.countryHighlightedIndex = -1;
-    this.countryInvalid = false;
-    this.onCountryChange();
-  }
-
-  hideCountrySuggestions() {
-    setTimeout(() => {
-      this.showCountrySuggestions = false;
-      this.validateCountry();
-    }, 200);
-  }
-
-  validateCountry() {
-    if (!this.newAddress.country) {
-      this.countryInvalid = false;
-      return;
-    }
-    const isValid = this.availableCountries.some(c => c.toLowerCase() === this.newAddress.country.toLowerCase());
-    this.countryInvalid = !isValid;
-    if (isValid) {
-      // Update cities if changed
-      this.availableCities = this.cityService.getCities(this.newAddress.country);
-    }
-  }
-
-  onCountryKeyDown(event: KeyboardEvent) {
-    if (!this.showCountrySuggestions || this.filteredCountries.length === 0) return;
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      this.countryHighlightedIndex = (this.countryHighlightedIndex + 1) % this.filteredCountries.length;
-      this.scrollToHighlightedCountry();
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      this.countryHighlightedIndex = (this.countryHighlightedIndex - 1 + this.filteredCountries.length) % this.filteredCountries.length;
-      this.scrollToHighlightedCountry();
-    } else if (event.key === 'Enter') {
-      event.preventDefault();
-      if (this.countryHighlightedIndex >= 0) {
-        this.selectCountry(this.filteredCountries[this.countryHighlightedIndex]);
-      }
-    } else if (event.key === 'Escape') {
-      this.hideCountrySuggestions();
-    }
-  }
-
-  scrollToHighlightedCountry() {
-    setTimeout(() => {
-      const container = document.querySelector('.country-suggestions-dropdown'); // Will add class to HTML
-      const activeItem = container?.children[this.countryHighlightedIndex] as HTMLElement;
-      if (activeItem) activeItem.scrollIntoView({ block: 'nearest' });
-    });
-  }
-
-  ngAfterViewInit() {
-    // Initialize Bootstrap tooltips
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltipTriggerList.forEach((el) => new bootstrap.Tooltip(el));
-
-    // Fix aria-hidden focus issue: blur active element before modal hides
-    const addressModal = document.getElementById('addressModal');
-    if (addressModal) {
-      addressModal.addEventListener('hide.bs.modal', () => {
-        (document.activeElement as HTMLElement)?.blur();
-      });
-    }
-  }
-
-  loadAddresses() {
-    this.addressService.getUserAddresses().subscribe({
-      next: (data) => {
-        this.addresses = data;
-        const defaultAddr = this.addresses.find(a => a.isDefault);
-        if (defaultAddr) {
-          this.currentAddress = defaultAddr;
-          this.tempSelectedAddress = defaultAddr;
-        } else if (this.addresses.length > 0) {
-          // Fallback to first address if no default
-          this.currentAddress = this.addresses[0];
-          this.tempSelectedAddress = this.addresses[0];
-        }
-        // Manually trigger change detection to ensure template updates
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Failed to load addresses', err);
-      }
-    });
-  }
-
-  formatAddressText(address: Address): string {
-    const parts = [
-      address.street,
-      address.building,
-      address.district,
-      address.city,
-      address.governorate,
-      address.country
-    ].filter(part => part && part.trim() !== '');
-    return parts.join(', ');
-  }
-
-  selectAddress(address: Address) {
-    this.tempSelectedAddress = address;
-  }
-
-  saveSelectedAddress() {
-    if (this.tempSelectedAddress) {
-      this.currentAddress = this.tempSelectedAddress;
-    }
-
-    const collapseElement = document.getElementById('otherAddressesContainer');
-    if (collapseElement) {
-      const bsCollapse = bootstrap.Collapse.getInstance(collapseElement);
-      if (bsCollapse) {
-        bsCollapse.hide();
-      } else {
-        new bootstrap.Collapse(collapseElement).hide();
-      }
-    }
-  }
+  // ==================== Payment ====================
 
   setPaymentMethod(method: string) {
     this.selectedPaymentMethod = method;
   }
 
-  saveNewAddress(form: NgForm) {
-    this.validateCity();
-    this.validateCountry();
-
-    if (form.valid && !this.cityInvalid && !this.countryInvalid) {
-      const payload: AddressRequest = {
-        fullName: this.newAddress.fullName,
-        mobileNumber: this.newAddress.mobileNumber,
-        street: this.newAddress.street,
-        building: this.newAddress.building,
-        city: this.newAddress.city,
-        country: this.newAddress.country
-      };
-
-      if (this.newAddress.label?.trim()) payload.label = this.newAddress.label;
-      if (this.newAddress.district?.trim()) payload.district = this.newAddress.district;
-      if (this.newAddress.governorate?.trim()) payload.governorate = this.newAddress.governorate;
-      if (this.newAddress.zipCode?.trim()) payload.zipCode = this.newAddress.zipCode;
-      if (this.newAddress.hints?.trim()) payload.hints = this.newAddress.hints;
-
-      this.addressService.addAddress(payload).subscribe({
-        next: (res: Address) => {
-          const newAddress = { ...res, label: res.label || 'No Label' };
-          this.addresses = [...this.addresses, newAddress];
-
-          if (newAddress.isDefault) {
-            this.currentAddress = newAddress;
-            this.tempSelectedAddress = newAddress;
-          }
-
-          this.cdr.detectChanges();
-          this.toastr.success('Address added successfully');
-
-          const modalElement = document.getElementById('addressModal');
-          if (modalElement) {
-            bootstrap.Modal.getInstance(modalElement)?.hide();
-          }
-
-          this.newAddress = {
-            label: '',
-            fullName: '',
-            mobileNumber: '',
-            street: '',
-            building: '',
-            district: '',
-            city: '',
-            governorate: '',
-            zipCode: '',
-            country: 'Egypt',
-            hints: ''
-          };
-          form.resetForm();
-          this.newAddress.country = 'Egypt';
-        },
-        error: (err) => {
-          console.error('Error adding address', err);
-          this.toastr.error('Failed to add address');
-        }
-      });
-    } else {
-      Object.keys(form.controls).forEach(key => form.controls[key].markAsTouched());
-    }
-  }
+  // ==================== Place Order ====================
 
   placeOrder() {
     if (!this.currentAddress || !this.selectedPaymentMethod || !this.termsAgreed) {
       return;
     }
 
-    const request: PlaceOrderRequest = {
+    const request: CheckoutRequest = {
       shippingAddressId: this.currentAddress.id,
       shippingMethod: this.shippingMethod as 'standard' | 'express',
       paymentMethod: this.selectedPaymentMethod as 'cashOnDelivery' | 'stripe' | 'paymob'

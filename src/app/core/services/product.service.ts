@@ -1,18 +1,22 @@
+//Angular Imports
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
+//Libraries
 import { Observable } from 'rxjs';
-import { Product, ProductQueryParams, ProductDetails } from '../models/product.model';
-import { PagedResponse } from '../models/pagedResponse.model';
+//Environment
+import { environment } from '../../../environments/environment';
+//Models
+import { PagedResponse, ProductQueryParams, ProductSummaryDto, ProductDetailsResponse } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   private readonly baseUrl: string = `${environment.url}/api/Products`;
+  //Angular
   private readonly http = inject(HttpClient);
 
-  getAllProducts(filters?: ProductQueryParams): Observable<PagedResponse<Product>> {
+  getAllProducts(filters?: ProductQueryParams): Observable<PagedResponse<ProductSummaryDto>> {
     let params = new HttpParams();
 
     if (filters) {
@@ -25,8 +29,8 @@ export class ProductService {
       if (filters.categoryId) {
         params = params.append('CategoryId', filters.categoryId.toString());
       }
-      if (filters.brandsIds) {
-        params = params.append('BrandsIds', filters.brandsIds);
+      if (filters.brandsIds?.length) {
+        params = params.append('BrandsIds', filters.brandsIds.join(','));
       }
       if (filters.search) {
         params = params.append('Search', filters.search);
@@ -42,22 +46,10 @@ export class ProductService {
       }
     }
 
-    return this.http.get<PagedResponse<Product>>(this.baseUrl, { params });
+    return this.http.get<PagedResponse<ProductSummaryDto>>(this.baseUrl, { params });
   }
 
-  getProductById(id: number): Observable<ProductDetails> {
-    return this.http.get<ProductDetails>(`${this.baseUrl}/${id}`);
-  }
-
-  addProduct(product: Partial<Product>): Observable<Product> {
-    return this.http.post<Product>(this.baseUrl, product);
-  }
-
-  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
-    return this.http.put<Product>(`${this.baseUrl}/${id}`, product);
-  }
-
-  deleteProduct(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  getProductById(id: number): Observable<ProductDetailsResponse> {
+    return this.http.get<ProductDetailsResponse>(`${this.baseUrl}/${id}`);
   }
 }

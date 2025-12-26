@@ -1,10 +1,14 @@
-import { NgClass } from '@angular/common';
+//Angular Imports
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from "@angular/router";
+//Libraries
 import { ToastrService } from 'ngx-toastr';
+//Services
 import { AuthService, CartService } from '../../../core/services';
-import { RoleType } from '../../../core/Types/roleType';
+//Types
+import { RoleType } from '../../../core/types/role.type';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +17,7 @@ import { RoleType } from '../../../core/Types/roleType';
   styleUrl: './login.css',
 })
 export class Login {
+  //State
   showPassword = false;
   rememberMe = false;
   identifier = '';
@@ -21,11 +26,14 @@ export class Login {
   hasApiError = false;
 
   constructor(
-    private readonly authService: AuthService,
-    private readonly cartService: CartService,
+    //Angular
     private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
+    //Libraries
     private readonly toastr: ToastrService,
-    private readonly cdr: ChangeDetectorRef
+    //Services
+    private readonly authService: AuthService,
+    private readonly cartService: CartService
   ) { }
 
   togglePassword(): void {

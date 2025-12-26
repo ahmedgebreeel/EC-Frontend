@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
-import { checkoutGuard } from './core/guards/checkout-guard';
-import { orderConfirmationGuard } from './core/guards/order-confirmation-guard';
-import { RoleType } from './core/Types/roleType';
+import { RoleType } from './core/types/role.type';
 
 export const routes: Routes = [
     {
@@ -37,25 +35,25 @@ export const routes: Routes = [
             },
             {
                 path: "cart",
-                loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
+                loadComponent: () => import('./features/checkout-flow/cart/cart').then(m => m.Cart),
                 canActivate: [authGuard]
             },
             {
                 path: "checkout",
-                loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout),
-                canActivate: [authGuard, checkoutGuard]
+                loadComponent: () => import('./features/checkout-flow/checkout/checkout').then(m => m.Checkout),
+                canActivate: [authGuard]
             },
             {
                 path: "about",
-                loadComponent: () => import('./features/about/about').then(m => m.About)
+                loadComponent: () => import('./features/static/about/about').then(m => m.About)
             },
             {
                 path: "contact-us",
-                loadComponent: () => import('./features/contact/contact').then(m => m.Contact)
+                loadComponent: () => import('./features/static/contact/contact').then(m => m.Contact)
             },
             {
                 path: "faq",
-                loadComponent: () => import('./features/faq/faq').then(m => m.Faq)
+                loadComponent: () => import('./features/static/faq/faq').then(m => m.Faq)
             },
             {
                 path: 'account',
@@ -72,29 +70,29 @@ export const routes: Routes = [
                 ]
             },
             {
-                path: 'shipinginfo',
-                loadComponent: () => import('./features/shiping-info/shiping-info').then(m => m.ShipingInfo)
+                path: 'shippinginfo',
+                loadComponent: () => import('./features/static/shipping-info/shipping-info').then(m => m.ShippingInfo)
             },
             {
                 path: 'orderconfirmation',
-                loadComponent: () => import('./features/order-confirmation/order-confirmation').then(m => m.OrderConfirmation),
-                canActivate: [authGuard, orderConfirmationGuard]
+                loadComponent: () => import('./features/checkout-flow/order-confirmation/order-confirmation').then(m => m.OrderConfirmation),
+                canActivate: [authGuard]
             },
             {
                 path: 'paymentmethods',
-                loadComponent: () => import('./features/payment-methods/payment-methods').then(m => m.PaymentMethods)
+                loadComponent: () => import('./features/static/payment-methods/payment-methods').then(m => m.PaymentMethods)
             },
             {
                 path: 'privacy',
-                loadComponent: () => import('./features/privacy/privacy').then(m => m.Privacy)
+                loadComponent: () => import('./features/static/privacy/privacy').then(m => m.Privacy)
             },
             {
                 path: 'returnpolicy',
-                loadComponent: () => import('./features/return-policy/return-policy').then(m => m.ReturnPolicy)
+                loadComponent: () => import('./features/static/return-policy/return-policy').then(m => m.ReturnPolicy)
             },
             {
                 path: 'support',
-                loadComponent: () => import('./features/support/support').then(m => m.Support)
+                loadComponent: () => import('./features/static/support/support').then(m => m.Support)
             },
             {
                 path: 'searchresults',
@@ -102,7 +100,7 @@ export const routes: Routes = [
             },
             {
                 path: 'tos',
-                loadComponent: () => import('./features/tos/tos').then(m => m.Tos)
+                loadComponent: () => import('./features/static/tos/tos').then(m => m.Tos)
             }
         ]
 
@@ -120,56 +118,56 @@ export const routes: Routes = [
             },
             {
                 path: 'products',
-                loadComponent: () => import('./admin/product/getall/getall').then(m => m.ProductListComponent)
+                loadComponent: () => import('./features/admin/product/getall/getall').then(m => m.ProductListComponent)
             },
             {
                 path: 'products/edit/:id',
-                loadComponent: () => import('./admin/product/edit/edit').then(m => m.ProductEditComponent)
+                loadComponent: () => import('./features/admin/product/edit/edit').then(m => m.ProductEditComponent)
             },
             {
                 path: 'products/add',
-                loadComponent: () => import('./admin/product/add/add').then(m => m.ProductAddComponent)
+                loadComponent: () => import('./features/admin/product/add/add').then(m => m.ProductAddComponent)
             },
             {
                 path: 'categories',
-                loadComponent: () => import('./admin/Category/list/list').then(m => m.List)
+                loadComponent: () => import('./features/admin/Category/list/list').then(m => m.List)
             },
             {
                 path: 'categories/edit/:id',
-                loadComponent: () => import('./admin/Category/edit/edit').then(m => m.Edit)
+                loadComponent: () => import('./features/admin/Category/edit/edit').then(m => m.Edit)
             },
             {
                 path: 'categories/add',
-                loadComponent: () => import('./admin/Category/add/add').then(m => m.Add)
+                loadComponent: () => import('./features/admin/Category/add/add').then(m => m.Add)
             },
             {
                 path: 'orders',
-                loadComponent: () => import('./admin/orders/orders').then(m => m.OrdersListComponent)
+                loadComponent: () => import('./features/admin/orders/orders').then(m => m.OrdersListComponent)
             },
             {
                 path: 'orders/edit/:id',
-                loadComponent: () => import('./admin/orders/edit-order/edit-order').then(m => m.OrderEditComponent)
+                loadComponent: () => import('./features/admin/orders/edit-order/edit-order').then(m => m.OrderEditComponent)
             },
             {
                 path: 'users',
-                loadComponent: () => import('./admin/users/users').then(m => m.UsersListComponent),
+                loadComponent: () => import('./features/admin/users/users').then(m => m.UsersListComponent),
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [RoleType.Admin] }
             },
             {
                 path: 'users/edit/:id',
-                loadComponent: () => import('./admin/users/user-edit/user-edit').then(m => m.UserEditComponent),
+                loadComponent: () => import('./features/admin/users/user-edit/user-edit').then(m => m.UserEditComponent),
                 canActivate: [authGuard, roleGuard],
                 data: { roles: [RoleType.Admin] }
             },
             {
                 path: 'home',
-                loadComponent: () => import('./admin/home/home').then(m => m.AdminDashboard)
+                loadComponent: () => import('./features/admin/home/home').then(m => m.AdminDashboard)
             }
         ]
     },
     {
         path: '**',
-        loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound)
+        loadComponent: () => import('./features/static/not-found/not-found').then(m => m.NotFound)
     }
 ];

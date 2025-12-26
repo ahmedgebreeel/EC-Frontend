@@ -1,7 +1,11 @@
 export * from './auth.service';
 export * from './cart.service';
-export * from './category.service';
-export * from './order-items.service';
-export * from './order.service';
 export * from './product.service';
-export * from './user.service';
+export * from './category.service';
+export * from './brand.service';
+export * from './address.service';
+export * from './checkout.service';
+
+// Utils
+export * from './loading.service';
+export * from './city.service';

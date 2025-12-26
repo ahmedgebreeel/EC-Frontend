@@ -1,21 +1,26 @@
+//Angular Imports
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+//Libraries
 import { Observable } from 'rxjs';
+//Environment
 import { environment } from '../../../environments/environment';
-import { Address, AddressRequest } from '../models';
+//Models
+import { AddressSummaryDto, CreateAddressRequest } from '../models';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AddressService {
     private readonly baseUrl: string = `${environment.url}/api/Addresses`;
+    //Angular
     private http = inject(HttpClient);
 
-    getUserAddresses(): Observable<Address[]> {
-        return this.http.get<Address[]>(this.baseUrl);
+    getUserAddresses(): Observable<AddressSummaryDto[]> {
+        return this.http.get<AddressSummaryDto[]>(this.baseUrl);
     }
 
-    addAddress(address: AddressRequest): Observable<Address> {
-        return this.http.post<Address>(this.baseUrl, address);
+    addAddress(address: CreateAddressRequest): Observable<AddressSummaryDto> {
+        return this.http.post<AddressSummaryDto>(this.baseUrl, address);
     }
 }

@@ -1,29 +1,58 @@
-export interface Address { //Input : AddressDto
+export interface AddressSummaryDto {
     id: number;
     isDefault: boolean;
-    label: string;
     fullName: string;
     mobileNumber: string;
+    label: string;
     street: string;
     building: string;
     city: string;
     district: string;
     governorate: string;
     country: string;
-    zipCode: string;
-    hints: string;
+    zipCode?: string;
+    hints?: string;
 }
 
-export interface AddressRequest { //Output : CreateAddressDto
-    label?: string; // Optional
+export interface CreateAddressRequest {
+    label: string;
     fullName: string;
     mobileNumber: string;
     street: string;
     building: string;
     city: string;
-    district?: string; // Optional
-    governorate?: string; // Optional
+    district?: string;
+    governorate?: string;
     country: string;
-    zipCode?: string; // Optional
-    hints?: string; // Optional
+    zipCode?: string;
+    hints?: string;
+}
+
+export interface UpdateAddressRequest {
+    label: string;
+    fullName: string;
+    mobileNumber: string;
+    street: string;
+    building: string;
+    city: string;
+    district?: string;
+    governorate?: string;
+    country: string;
+    zipCode?: string;
+    hints?: string;
+}
+
+export interface OrderAddress {
+    id: number;
+    fullName: string;
+    mobileNumber: string;
+    label: string;
+    street: string;
+    building: string;
+    city: string;
+    district: string;
+    governorate: string;
+    country: string;
+    zipCode?: string;
+    hints?: string;
 }

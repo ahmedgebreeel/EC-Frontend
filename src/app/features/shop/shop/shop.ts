@@ -1,19 +1,18 @@
-import { CommonModule } from '@angular/common';
+//Angular Imports
 import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductCard } from '../../../shared/components/product-card/product-card';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { ProductService } from '../../../core/services/product.service';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { debounceTime } from 'rxjs/internal/operators/debounceTime';
-import { distinctUntilChanged, skip } from 'rxjs';
-import { CategoryService } from '../../../core/services/category.service';
-import { BrandService } from '../../../core/services/brand.service';
-import { Category } from '../../../core/models/category.model';
-import { Brand } from '../../../core/models/brand.model';
-import { Product, ProductQueryParams } from '../../../core/models/product.model';
-import { LoadingService } from '../../../core/services/loading.service';
 import { RouterLink, ActivatedRoute, Router } from "@angular/router";
+import { toObservable } from '@angular/core/rxjs-interop';
+//Libraries
+import { NgxPaginationModule } from 'ngx-pagination';
+import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
+//Services
+import { LoadingService, ProductService, CategoryService, BrandService } from '../../../core/services';
+//Models
+import { CategorySummaryDto, ProductSummaryDto, BrandSummaryDto, ProductQueryParams } from '../../../core/models';
+//Components
+import { ProductCard } from '../../../shared/components/product-card/product-card';
 
 @Component({
   selector: 'app-shop',
@@ -22,41 +21,51 @@ import { RouterLink, ActivatedRoute, Router } from "@angular/router";
   styleUrl: './shop.css',
 })
 export class Shop {
+  //Angular
+  activatedRoute = inject(ActivatedRoute);
+  router = inject(Router);
+  //Services
   productService = inject(ProductService);
   categoryService = inject(CategoryService);
   brandService = inject(BrandService);
   loadingService = inject(LoadingService);
-  activatedRoute = inject(ActivatedRoute);
-  router = inject(Router);
 
-  allProducts = signal<Product[]>([]);
-  allCategories = signal<Category[]>([]);
-  allBrands = signal<Brand[]>([]);
+  //Products State
+  allProducts = signal<ProductSummaryDto[]>([]);
+  allCategories = signal<CategorySummaryDto[]>([]);
+  allBrands = signal<BrandSummaryDto[]>([]);
+
+  //Filter State
   selectedCategory = signal<number | null>(null);
+  selectedBrands = signal<number[]>([]);
+  pendingSelectedBrands = signal<number[]>([]);
+  brandSearch = signal('');
+  search = signal('');
+  appliedSearch = signal('');
+  appliedPriceRange = signal({ min: 0, max: 5000 });
+
+  //Price Slider State
   minValue: number = 0;
   maxValue: number = 5000;
   minPercent: number = 0;
   maxPercent: number = 100;
+
+  //Sort State
+  selectedSort = signal('Sort By');
+  selectedSortKey = signal<string | null>(null);
+
+  //Pagination State
   viewType = signal<'grid' | 'list'>('grid');
   pageIndex = signal(1);
   pageSize = 9;
   totalPages = signal(0);
-  search = signal('');
 
-  selectedSort = signal('Sort By');
-  selectedSortKey = signal<string | null>(null);
-  selectedBrands = signal<number[]>([]);
-  pendingSelectedBrands = signal<number[]>([]);
-  brandSearch = signal('');
-  appliedSearch = signal('');
-  appliedPriceRange = signal({ min: 0, max: 5000 });
-
+  //Computed Properties
   filteredBrands = computed(() => {
     const search = this.brandSearch().toLowerCase();
     if (!search) return this.allBrands();
     return this.allBrands().filter(b => b.name.toLowerCase().includes(search));
   });
-
 
   activeFilters = computed(() => {
     const filters: { type: string; label: string; value: string; id?: number }[] = [];
@@ -88,47 +97,28 @@ export class Shop {
     return filters;
   });
 
+  categoryTree = computed(() => this.allCategories());
+
   search$ = toObservable(this.search).pipe(
     skip(1),
     debounceTime(500),
     distinctUntilChanged()
   );
 
-
-  categoryTree = computed(() => this.allCategories());
-
-
-  hasChildSelected(category: Category): boolean {
-    const selected = this.selectedCategory();
-    if (!selected || category.subcategories.length === 0) return false;
-
-    const checkChildren = (subcategories: Category[]): boolean => {
-      for (const child of subcategories) {
-        if (child.id === selected) return true;
-        if (child.subcategories.length > 0 && checkChildren(child.subcategories)) return true;
-      }
-      return false;
-    };
-
-    return checkChildren(category.subcategories);
-  }
+  // ==================== Constructor ====================
 
   constructor() {
     this.activatedRoute.queryParams.subscribe(params => {
-      // Page
       const page = params['page'];
       this.pageIndex.set(page ? Number(page) : 1);
 
-      // Category
       const catId = params['categoryId'];
       this.selectedCategory.set(catId ? Number(catId) : null);
 
-      // Search
       const search = params['search'];
       if (this.search() !== search) this.search.set(search || '');
       this.appliedSearch.set(search || '');
 
-      // Brands
       const brands = params['brands'];
       if (brands) {
         const brandIds = brands.split(',').map(Number);
@@ -139,11 +129,9 @@ export class Shop {
         this.pendingSelectedBrands.set([]);
       }
 
-      // Sort
       const sort = params['sort'];
       this.selectedSortKey.set(sort || null);
       if (sort) {
-        // Ideally we lookup the label, but for now fallback or simplified
         if (sort === 'featured') this.selectedSort.set('Featured');
         else if (sort === 'priceAsc') this.selectedSort.set('Price: Low to High');
         else if (sort === 'priceDesc') this.selectedSort.set('Price: High to Low');
@@ -152,7 +140,6 @@ export class Shop {
         this.selectedSort.set('Sort By');
       }
 
-      // Price
       const minPrice = params['minPrice'];
       const maxPrice = params['maxPrice'];
       if (minPrice || maxPrice) {
@@ -171,7 +158,6 @@ export class Shop {
     });
 
     this.search$.subscribe((term) => {
-      // Debounced search updates URL
       this.updateQueryParams({ search: term || null, page: 1 });
     });
 
@@ -179,13 +165,7 @@ export class Shop {
     this.loadBrands();
   }
 
-  updateQueryParams(params: any) {
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: params,
-      queryParamsHandling: 'merge'
-    });
-  }
+  // ==================== Data Loading ====================
 
   loadProducts(scrollToTop: boolean = true) {
     const filters: ProductQueryParams = {
@@ -193,22 +173,18 @@ export class Shop {
       pageSize: this.pageSize
     };
 
-    // Add search filter
     if (this.appliedSearch() && this.appliedSearch().trim() !== '') {
       filters.search = this.appliedSearch().trim();
     }
 
-    // Add category filter
     if (this.selectedCategory()) {
       filters.categoryId = this.selectedCategory()!;
     }
 
-    // Add brand filter
     if (this.selectedBrands().length > 0) {
-      filters.brandsIds = this.selectedBrands().join(',');
+      filters.brandsIds = this.selectedBrands();
     }
 
-    // Add price filter
     const priceRange = this.appliedPriceRange();
     if (priceRange.min > 0) {
       filters.minPrice = priceRange.min;
@@ -217,13 +193,11 @@ export class Shop {
       filters.maxPrice = priceRange.max;
     }
 
-    // Add sort filter
     const sortKey = this.selectedSortKey();
     if (sortKey) {
       filters.sort = sortKey as ProductQueryParams['sort'];
     }
 
-    // Set loading state and scroll to filter area if needed
     this.loadingService.show();
     if (scrollToTop) {
       const filterArea = document.getElementById('category-header');
@@ -236,7 +210,7 @@ export class Shop {
       next: (response) => {
         this.allProducts.set(response.items);
         this.totalPages.set(response.totalCount);
-        setTimeout(() => this.loadingService.hide(), 500); // Slight delay to see loading
+        setTimeout(() => this.loadingService.hide(), 500);
       },
       error: () => {
         this.allProducts.set([]);
@@ -247,7 +221,7 @@ export class Shop {
   }
 
   loadCategories() {
-    this.categoryService.getAllCategories().subscribe({
+    this.categoryService.getAllStoreCategories().subscribe({
       next: (categories) => {
         this.allCategories.set(categories);
       },
@@ -258,7 +232,7 @@ export class Shop {
   }
 
   loadBrands() {
-    this.brandService.getAllBrands().subscribe({
+    this.brandService.getAllStoreBrands().subscribe({
       next: (brands) => {
         this.allBrands.set(brands);
       },
@@ -268,12 +242,21 @@ export class Shop {
     });
   }
 
-  onPageChange(page: number) {
-    this.updateQueryParams({ page });
-  }
+  // ==================== Category Methods ====================
 
-  setView(type: 'grid' | 'list') {
-    this.viewType.set(type);
+  hasChildSelected(category: CategorySummaryDto): boolean {
+    const selected = this.selectedCategory();
+    if (!selected || category.subcategories.length === 0) return false;
+
+    const checkChildren = (subcategories: CategorySummaryDto[]): boolean => {
+      for (const child of subcategories) {
+        if (child.id === selected) return true;
+        if (child.subcategories.length > 0 && checkChildren(child.subcategories)) return true;
+      }
+      return false;
+    };
+
+    return checkChildren(category.subcategories);
   }
 
   selectCategory(cat: any) {
@@ -287,6 +270,39 @@ export class Shop {
   sortByCategory(cat: any) {
     this.selectCategory(cat);
   }
+
+  findCategoryById(id: number): CategorySummaryDto | null {
+    const searchInCategories = (categories: CategorySummaryDto[]): CategorySummaryDto | null => {
+      for (const cat of categories) {
+        if (cat.id === id) return cat;
+        if (cat.subcategories?.length) {
+          const found = searchInCategories(cat.subcategories);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    return searchInCategories(this.allCategories());
+  }
+
+  // ==================== Brand Methods ====================
+
+  toggleBrand(brandId: number) {
+    const current = this.pendingSelectedBrands();
+    if (current.includes(brandId)) {
+      this.pendingSelectedBrands.set(current.filter(id => id !== brandId));
+    } else {
+      this.pendingSelectedBrands.set([...current, brandId]);
+    }
+  }
+
+  applyBrandFilter() {
+    const brands = this.pendingSelectedBrands();
+    this.updateQueryParams({ brands: brands.length > 0 ? brands.join(',') : null, page: 1 });
+  }
+
+  // ==================== Price Filter Methods ====================
+
   updateMinSlider() {
     if (this.minValue > this.maxValue) {
       this.maxValue = this.minValue;
@@ -314,8 +330,25 @@ export class Shop {
     });
   }
 
+  // ==================== Sort Methods ====================
+
+  setSort(sortKey: string, label: string) {
+    this.updateQueryParams({ sort: sortKey, page: 1 });
+  }
+
+  // ==================== View & Pagination ====================
+
+  onPageChange(page: number) {
+    this.updateQueryParams({ page });
+  }
+
+  setView(type: 'grid' | 'list') {
+    this.viewType.set(type);
+  }
+
+  // ==================== Filter Management ====================
+
   clearAllFilters() {
-    // Navigate with empty query params to clear them
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: {}
@@ -338,43 +371,18 @@ export class Shop {
         if (id) {
           newBrands = this.selectedBrands().filter(b => b !== id);
         }
-        // If empty, pass null to remove param
         this.updateQueryParams({ brands: newBrands.length > 0 ? newBrands.join(',') : null, page: 1 });
         break;
     }
   }
 
-  toggleBrand(brandId: number) {
-    const current = this.pendingSelectedBrands();
-    if (current.includes(brandId)) {
-      this.pendingSelectedBrands.set(current.filter(id => id !== brandId));
-    } else {
-      this.pendingSelectedBrands.set([...current, brandId]);
-    }
+  // ==================== URL Management ====================
+
+  updateQueryParams(params: any) {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: params,
+      queryParamsHandling: 'merge'
+    });
   }
-
-  applyBrandFilter() {
-    const brands = this.pendingSelectedBrands();
-    this.updateQueryParams({ brands: brands.length > 0 ? brands.join(',') : null, page: 1 });
-  }
-
-  findCategoryById(id: number): Category | null {
-    const searchInCategories = (categories: Category[]): Category | null => {
-      for (const cat of categories) {
-        if (cat.id === id) return cat;
-        if (cat.subcategories?.length) {
-          const found = searchInCategories(cat.subcategories);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    return searchInCategories(this.allCategories());
-  }
-
-  setSort(sortKey: string, label: string) {
-    this.updateQueryParams({ sort: sortKey, page: 1 });
-  }
-
-
 }

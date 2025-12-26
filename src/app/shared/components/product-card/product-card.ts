@@ -2,7 +2,7 @@ import { DecimalPipe, NgClass } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, CartService, CategoryService } from '../../../core/services';
-import { Product } from '../../../core/models/product.model';
+import { ProductSummaryDto } from '../../../core/models/product.model';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './product-card.css',
 })
 export class ProductCard {
-  productData = input.required<Product>();
+  productData = input.required<ProductSummaryDto>();
   viewType = input.required<string>();
 
   categoryService = inject(CategoryService);

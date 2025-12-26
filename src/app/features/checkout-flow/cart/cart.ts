@@ -1,9 +1,12 @@
+//Angular Imports
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CartService } from '../../core/services/cart.service';
-import { CartItem } from '../../core/models';
+//Services
+import { CartService } from '../../../core/services';
+//Models
+import { CartItemDto } from '../../../core/models';
 
 @Component({
   selector: 'app-cart',
@@ -12,10 +15,13 @@ import { CartItem } from '../../core/models';
   styleUrl: './cart.css',
 })
 export class Cart {
-  cartService = inject(CartService);
+  //Angular
   router = inject(Router);
+  //Services
+  cartService = inject(CartService);
 
-  cartItems = signal<CartItem[]>([]);
+  //State
+  cartItems = signal<CartItemDto[]>([]);
   cartTotal = signal(0);
   isLoading = signal(false);
   shippingMethod = 'standard';
@@ -36,14 +42,14 @@ export class Cart {
       next: (cart) => {
         if (cart && cart.items) {
           this.cartItems.set(cart.items);
-          this.cartTotal.set(cart.cartTotal ?? this.calculateTotal(cart.items));
+          this.cartTotal.set(cart.total ?? this.calculateTotal(cart.items));
         }
       },
       error: (err) => console.error('Failed to refresh cart:', err.message)
     });
   }
 
-  private calculateTotal(items: CartItem[]): number {
+  private calculateTotal(items: CartItemDto[]): number {
     return items.reduce((sum, item) => sum + (item.total ?? item.productPrice * item.quantity), 0);
   }
 
@@ -51,7 +57,7 @@ export class Cart {
     this.cartService.addToCart(productId, 1).subscribe({
       next: (cart) => {
         this.cartItems.set(cart.items);
-        this.cartTotal.set(cart.cartTotal ?? this.calculateTotal(cart.items));
+        this.cartTotal.set(cart.total ?? this.calculateTotal(cart.items));
       },
       error: (err) => {
         console.error('Failed to add item:', err.message);
@@ -63,7 +69,7 @@ export class Cart {
     this.cartService.removeFromCart(productId).subscribe({
       next: (cart) => {
         this.cartItems.set(cart.items);
-        this.cartTotal.set(cart.cartTotal ?? this.calculateTotal(cart.items));
+        this.cartTotal.set(cart.total ?? this.calculateTotal(cart.items));
       },
       error: (err) => {
         console.error('Failed to remove item:', err.message);
@@ -75,7 +81,7 @@ export class Cart {
     this.cartService.decreaseFromCart(productId).subscribe({
       next: (cart) => {
         this.cartItems.set(cart.items);
-        this.cartTotal.set(cart.cartTotal ?? this.calculateTotal(cart.items));
+        this.cartTotal.set(cart.total ?? this.calculateTotal(cart.items));
       },
       error: (err) => {
         console.error('Failed to decrease quantity:', err.message);
@@ -87,7 +93,7 @@ export class Cart {
     this.cartService.clearCart().subscribe({
       next: (cart) => {
         this.cartItems.set(cart?.items ?? []);
-        this.cartTotal.set(cart?.cartTotal ?? 0);
+        this.cartTotal.set(cart?.total ?? 0);
       },
       error: (err) => {
         console.error('Failed to clear cart:', err.message);

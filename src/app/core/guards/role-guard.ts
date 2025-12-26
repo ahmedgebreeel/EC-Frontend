@@ -1,13 +1,20 @@
+//Angular Imports
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+//Libraries
 import { ToastrService } from 'ngx-toastr';
-import { Role, RoleType } from '../Types/roleType';
+//Services
+import { AuthService } from '../services/auth.service';
+//Types
+import { Role, RoleType } from '../types/role.type';
 
 export const roleGuard: CanActivateFn = (route) => {
-  const authService = inject(AuthService);
+  //Angular
   const router = inject(Router);
+  //Libraries
   const toastr = inject(ToastrService);
+  //Services
+  const authService = inject(AuthService);
 
   const user = authService.user();
   const allowedRoles: Role[] = route.data['roles'];

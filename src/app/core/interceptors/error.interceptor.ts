@@ -1,11 +1,15 @@
+//Angular Imports
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
+//Libraries
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiError } from '../models/api-error.model';
+import { ToastrService } from 'ngx-toastr';
+//Models
+import { ApiError } from '../models';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  //Libraries
   const toastr = inject(ToastrService);
 
   return next(req).pipe(

@@ -1,10 +1,11 @@
+//Angular Imports
 import { Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CityService {
-
+    //Data
     private cities: { [countryName: string]: string[] } = {
         'Egypt': [
             'Cairo', 'Alexandria', 'Giza', 'Shubra El-Kheima', 'Port Said', 'Suez',

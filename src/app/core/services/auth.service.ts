@@ -1,21 +1,30 @@
+//Angular Imports
 import { inject, Injectable, signal } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../models/authentication.model';
 import { Router } from '@angular/router';
+//Libraries
+import { Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+//Environment
+import { environment } from '../../../environments/environment';
+//Services
 import { CartService } from './cart.service';
+//Models
+import { AuthResponse, LoginRequest, RegisterRequest } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly baseUrl: string = `${environment.url}/api/auth/`;
+  //Angular
   private readonly router = inject(Router);
+  //Libraries
   private readonly toastr = inject(ToastrService);
+  //Services
   private readonly cartService = inject(CartService);
 
+  //State
   user = signal<Omit<AuthResponse, 'accessToken'> | null>(null);
 
   constructor(private http: HttpClient) { }

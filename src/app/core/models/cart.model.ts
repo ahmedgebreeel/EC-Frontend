@@ -1,20 +1,18 @@
-export interface Cart { //Input : ShoppingCartDto
-    items: CartItem[];
-    cartTotal: number;
+export interface CartResponse {
+    items: CartItemDto[];
+    total: number;
 }
 
-export interface CartItem {  //Input : OrderItemDto
+export interface UpdateCartItemDto {
     productId: number;
-    productThumbnailUrl: string;
+    quantity: number;
+}
+
+export interface CartItemDto {
+    productId: number;
     productName: string;
+    productThumbnailUrl: string;
     productPrice: number;
     quantity: number;
     total: number;
 }
-
-
-export interface CartUpdateRequest { //Output : UpdateShoppingCartDto
-    items: Pick<CartItem, 'productId' | 'quantity'>[]; //Output: UpdateCartItemDto
-}
-
-

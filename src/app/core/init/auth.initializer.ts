@@ -1,8 +1,12 @@
+//Angular Imports
 import { inject } from "@angular/core";
-import { AuthService, CartService } from "../services";
+//Libraries
 import { firstValueFrom } from "rxjs";
+//Services
+import { AuthService, CartService } from "../services";
 
 export async function authInitializer() {
+  //Services
   const authService = inject(AuthService);
   const cartService = inject(CartService);
 

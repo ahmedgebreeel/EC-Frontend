@@ -1,17 +1,23 @@
+//Angular Imports
 import { inject, Injectable, signal } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+//Libraries
 import { Observable, tap } from 'rxjs';
-import { Cart, CartItem } from '../models';
+//Environment
+import { environment } from '../../../environments/environment';
+//Models
+import { CartResponse, CartItemDto, UpdateCartItemDto } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
   private readonly baseUrl: string = `${environment.url}/api/Cart`;
+  //Angular
   private http = inject(HttpClient);
 
-  cartItems = signal<CartItem[]>([]);
+  //State
+  cartItems = signal<CartItemDto[]>([]);
   private cartCount = signal(0);
   private broadcastChannel = new BroadcastChannel('cart_sync');
 
@@ -31,21 +37,18 @@ export class CartService {
     return this.cartCount();
   }
 
-  /** Clear local cart state (used on logout) */
   clearLocalCart(): void {
     this.cartItems.set([]);
     this.setCartCount(0);
   }
 
-  private updateLocalState(items: CartItem[]): void {
+  private updateLocalState(items: CartItemDto[]): void {
     this.cartItems.set(items);
-    // Count unique items instead of total quantity
     this.setCartCount(items.length);
   }
 
-  /** Get user's cart from API */
-  getUserCart(): Observable<Cart> {
-    return this.http.get<Cart>(this.baseUrl).pipe(
+  getUserCart(): Observable<CartResponse> {
+    return this.http.get<CartResponse>(this.baseUrl).pipe(
       tap((cart) => {
         if (cart && cart.items) {
           this.updateLocalState(cart.items);
@@ -54,9 +57,8 @@ export class CartService {
     );
   }
 
-  /** Update cart with new items */
-  updateCart(items: Pick<CartItem, 'productId' | 'quantity'>[]): Observable<Cart> {
-    return this.http.post<Cart>(this.baseUrl, { items }).pipe(
+  updateCart(items: UpdateCartItemDto[]): Observable<CartResponse> {
+    return this.http.post<CartResponse>(this.baseUrl, { items }).pipe(
       tap((res) => {
         if (res && res.items) {
           this.updateLocalState(res.items);
@@ -66,9 +68,8 @@ export class CartService {
     );
   }
 
-  /** Clear all items from cart */
-  clearCart(): Observable<Cart> {
-    return this.http.delete<Cart>(this.baseUrl).pipe(
+  clearCart(): Observable<CartResponse> {
+    return this.http.delete<CartResponse>(this.baseUrl).pipe(
       tap(() => {
         this.updateLocalState([]);
         this.broadcastChannel.postMessage({ type: 'UPDATE', items: [] });
@@ -76,23 +77,20 @@ export class CartService {
     );
   }
 
-  /** Add item to cart or increase quantity */
-  addToCart(productId: number, quantity: number = 1): Observable<Cart> {
+  addToCart(productId: number, quantity: number = 1): Observable<CartResponse> {
     const currentItems = [...this.cartItems()];
     const existingItem = currentItems.find((i) => i.productId === productId);
 
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      // Create minimal item for API request
-      currentItems.push({ productId, quantity } as CartItem);
+      currentItems.push({ productId, quantity } as CartItemDto);
     }
 
     return this.updateCart(currentItems.map(i => ({ productId: i.productId, quantity: i.quantity })));
   }
 
-  /** Decrease item quantity by 1 */
-  decreaseFromCart(productId: number): Observable<Cart> {
+  decreaseFromCart(productId: number): Observable<CartResponse> {
     const currentItems = [...this.cartItems()];
     const existingItem = currentItems.find((i) => i.productId === productId);
 
@@ -108,8 +106,7 @@ export class CartService {
     return this.updateCart(currentItems.map(i => ({ productId: i.productId, quantity: i.quantity })));
   }
 
-  /** Remove item from cart entirely */
-  removeFromCart(productId: number): Observable<Cart> {
+  removeFromCart(productId: number): Observable<CartResponse> {
     const currentItems = this.cartItems().filter((i) => i.productId !== productId);
     return this.updateCart(currentItems.map(i => ({ productId: i.productId, quantity: i.quantity })));
   }

@@ -1,21 +1,22 @@
-import { HttpClient } from '@angular/common/http';
+//Angular Imports
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+//Libraries
 import { Observable } from 'rxjs';
-import { Brand } from '../models/brand.model';
+//Environment
+import { environment } from '../../../environments/environment';
+//Models
+import { BrandSummaryDto } from '../models';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BrandService {
     private readonly baseUrl: string = `${environment.url}/api/brands`;
+    //Angular
     private readonly http = inject(HttpClient);
 
-    getAllBrands(): Observable<Brand[]> {
-        return this.http.get<Brand[]>(this.baseUrl);
-    }
-
-    getBrandById(id: number): Observable<Brand> {
-        return this.http.get<Brand>(`${this.baseUrl}/${id}`);
+    getAllStoreBrands(): Observable<BrandSummaryDto[]> {
+        return this.http.get<BrandSummaryDto[]>(this.baseUrl);
     }
 }

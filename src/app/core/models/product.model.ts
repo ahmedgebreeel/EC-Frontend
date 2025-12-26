@@ -1,21 +1,50 @@
-export interface ProductQueryParams { //Output : GET /api/products QueryParams
-  pageIndex?: number;
-  pageSize?: number;
-  search?: string;
-  categoryId?: number;
-  brandsIds?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  sort?: 'featured' | 'priceAsc' | 'priceDesc' | 'newest';
+export interface AdminProductSummaryDto {
+  id: number;
+  thumbnailUrl: string;
+  name: string;
+  description?: string;
+  categoryName: string;
+  brandName: string;
+  price: number;
+  inStock: boolean;
+  isFeatured: boolean;
+  created: string;
+  updated: string;
 }
-export interface ProductsResponse { //Input : PagedResponseDto<ProductDto>
-  pageIndex: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-  items: Product[];
+
+export interface AdminProductDetailsResponse {
+  id: number;
+  name: string;
+  description?: string;
+  categoryId: number;
+  brandId: number;
+  price: number;
+  stockQuantity: number;
+  isFeatured: boolean;
+  images: ProductImageDto[];
 }
-export interface Product { //Input : ProductDto
+
+export interface CreateProductRequest {
+  name: string;
+  description?: string;
+  categoryId: number;
+  brandId: number;
+  price: number;
+  stockQuantity: number;
+  isFeatured: boolean;
+}
+
+export interface UpdateProductRequest {
+  name: string;
+  description?: string;
+  categoryId: number;
+  brandId: number;
+  price: number;
+  stockQuantity: number;
+  isFeatured: boolean;
+}
+
+export interface ProductSummaryDto {
   id: number;
   thumbnailUrl: string;
   brandedName: string;
@@ -24,14 +53,9 @@ export interface Product { //Input : ProductDto
   categoryBreadcrumbLinks: BreadcrumbLink[];
 }
 
-export interface BreadcrumbLink { //Input : BreadcumbLink
+export interface ProductDetailsResponse {
   id: number;
-  name: string;
-}
-
-export interface ProductDetails { //Input : ProductDetailsDto
-  id: number;
-  images: ProductImage[];
+  images: ProductImageDto[];
   name: string;
   brandId: number;
   brandName: string;
@@ -39,15 +63,39 @@ export interface ProductDetails { //Input : ProductDetailsDto
   categoryName: string;
   price: number;
   stockQuantity: number;
-  description: string;
+  description?: string;
+
 }
 
-export interface ProductImage { // Input : ProductImageDto
+export interface BreadcrumbLink {
+  id: number;
+  name: string;
+}
+
+export interface ProductImageDto {
   id: number;
   imageUrl: string;
   isMain: boolean;
 }
 
+export interface AdminProductQueryParams {
+  status?: string;
+  search?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}
 
+export interface ProductQueryParams {
+  brandsIds?: number[];
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+  sort?: 'featured' | 'priceAsc' | 'priceDesc' | 'newest';
+  pageIndex?: number;
+  pageSize?: number;
+}
 
+export type Product = AdminProductSummaryDto;
 
+export type ProductDetails = ProductDetailsResponse;

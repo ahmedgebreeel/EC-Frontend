@@ -1,10 +1,13 @@
+//Angular Imports
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ProductService } from '../../../core/services/product.service';
-import { AuthService, CartService } from '../../../core/services';
-import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { ProductDetails as ProductDetailsModel } from '../../../core/models/product.model';
+//Libraries
+import { ToastrService } from 'ngx-toastr';
+//Services
+import { AuthService, CartService, ProductService } from '../../../core/services';
+//Models
+import { ProductDetailsResponse } from '../../../core/models';
 
 @Component({
   selector: 'app-product-details',
@@ -13,17 +16,25 @@ import { ProductDetails as ProductDetailsModel } from '../../../core/models/prod
   styleUrl: './product-details.css',
 })
 export class ProductDetails {
+  //Angular
   activeRoute = inject(ActivatedRoute);
+  router = inject(Router);
+  //Libraries
+  toastr = inject(ToastrService);
+  //Services
   productService = inject(ProductService);
   cartService = inject(CartService);
   authService = inject(AuthService);
-  toastr = inject(ToastrService);
-  router = inject(Router);
 
-  productData = signal<ProductDetailsModel | null>(null);
+  //Product State
+  productData = signal<ProductDetailsResponse | null>(null);
+  productId: number;
+
+  //Image Gallery State
   mainImage = signal<any>({});
   activeImage = signal(0);
 
+  //Size Selection State
   sizes = signal([
     { name: 'XS', available: false },
     { name: 'S', available: true },
@@ -33,28 +44,31 @@ export class ProductDetails {
   ]);
   selectedSize = signal<string | null>(null);
 
-  productId: number;
+  //Quantity State
   quantity: number = 1;
   maxStock: number = 0;
   isShaking = signal(false);
+
+  // ==================== Constructor ====================
 
   constructor() {
     const idParam = this.activeRoute.snapshot.paramMap.get('id');
     this.productId = idParam ? parseInt(idParam, 10) : 0;
 
-    this.productService.getProductById(this.productId).subscribe((res: ProductDetailsModel) => {
+    this.productService.getProductById(this.productId).subscribe((res: ProductDetailsResponse) => {
       this.productData.set(res);
       this.maxStock = res.stockQuantity;
 
       if (res.images && res.images.length > 0) {
-        // Find main image or default to first
         const mainImg = res.images.find(img => img.isMain) || res.images[0];
         this.mainImage.set(mainImg);
-        // Set active image index based on main image
         this.activeImage.set(res.images.indexOf(mainImg));
       }
     });
   }
+
+  // ==================== Image Gallery ====================
+
   selectImage(index: number) {
     const product = this.productData();
     if (product && product.images) {
@@ -62,6 +76,7 @@ export class ProductDetails {
       this.activeImage.set(index);
     }
   }
+
   prevImage() {
     const product = this.productData();
     if (product && product.images) {
@@ -80,9 +95,13 @@ export class ProductDetails {
     }
   }
 
+  // ==================== Size Selection ====================
+
   selectSize(size: string) {
     this.selectedSize.set(size);
   }
+
+  // ==================== Quantity ====================
 
   increaseQty(): void {
     if (this.quantity < this.maxStock) {
@@ -104,6 +123,8 @@ export class ProductDetails {
     this.isShaking.set(true);
     setTimeout(() => this.isShaking.set(false), 400);
   }
+
+  // ==================== Cart ====================
 
   addToCart(): void {
     if (!this.authService.user()) {

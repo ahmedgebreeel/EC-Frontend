@@ -20,7 +20,7 @@
           <!-- Product Categories Widget -->
           <div class="product-categories-widget widget-item">
             <h3 class="widget-title">Categories</h3>
-            @if(allCategories().length > 0){
+            @if(categoryTree().length > 0){
             <div class="category-list">
               @for(parent of categoryTree(); track parent.id){
               <div class="category-group">
@@ -33,14 +33,14 @@
                       {{ parent.name }}
                     </label>
                   </div>
-                  @if(parent.subcategories.length > 0){
+                  @if(parent.subcategories.length){
                   <button class="btn btn-link btn-sm category-expand p-0" type="button" data-bs-toggle="collapse"
                     [attr.data-bs-target]="'#subcats-' + parent.id" aria-expanded="false">
                     <i class="bi bi-chevron-down"></i>
                   </button>
                   }
                 </div>
-                @if(parent.subcategories.length > 0){
+                @if(parent.subcategories.length){
                 <div class="collapse subcategory-list" [id]="'subcats-' + parent.id">
                   @for(child of parent.subcategories; track child.id){
                   <div class="category-item-wrapper">

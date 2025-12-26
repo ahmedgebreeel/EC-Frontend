@@ -1,23 +1,24 @@
-import { CartItem } from './cart.model';
-import { OrderItem, OrderAddress } from './order.model';
+import { OrderAddress } from "./address.model";
+import { OrderItemDto } from "./order.model";
 
-export interface CheckoutPreviewResponse { //Input CheckoutPreviewDto
+export interface CheckoutPreviewResponse {
     subtotal: number;
     shippingFees: number;
     taxes: number;
     total: number;
     estimatedDeliveryDateStart: string;
     estimatedDeliveryDateEnd: string;
-    items: CartItem[];
+    items: OrderItemDto[];
 }
 
-export interface PlaceOrderRequest { //Output : CheckoutDto
+export interface CheckoutRequest {
     shippingAddressId: number;
     shippingMethod: 'standard' | 'express';
     paymentMethod: 'cashOnDelivery' | 'stripe' | 'paymob';
+
 }
 
-export interface OrderConfirmationResponse { //Input : OrderConfirmationDto
+export interface OrderConfirmationResponse {
     id: number;
     created: string;
     subtotal: number;
@@ -31,5 +32,5 @@ export interface OrderConfirmationResponse { //Input : OrderConfirmationDto
     userEmail: string;
     paymentMethod: 'cashOnDelivery' | 'stripe' | 'paymob';
     itemsCount: number;
-    items: OrderItem[];
+    items: OrderItemDto[];
 }

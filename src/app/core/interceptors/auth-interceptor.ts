@@ -1,18 +1,26 @@
+//Angular Imports
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services';
-import { isTokenExpired } from '../../utils/checkToken';
+//Libraries
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+//Services
+import { AuthService } from '../services';
+//Utils
+import { isTokenExpired } from '../../utils/checkToken';
 
 let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  //Angular
   const router = inject(Router);
+  //Libraries
   const toastr = inject(ToastrService);
+  //Services
+  const authService = inject(AuthService);
+
   req = req.clone({ withCredentials: true });
 
   if (req.url.includes('refresh-token') || req.url.includes('login') || req.url.includes('register')) {
