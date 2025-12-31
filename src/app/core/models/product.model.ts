@@ -48,6 +48,8 @@ export interface ProductSummaryDto {
   id: number;
   thumbnailUrl: string;
   brandedName: string;
+  averageRating: number;
+  reviewsCount: number;
   price: number;
   categoryId: number;
   categoryBreadcrumbLinks: BreadcrumbLink[];
@@ -59,6 +61,9 @@ export interface ProductDetailsResponse {
   name: string;
   brandId: number;
   brandName: string;
+  averageRating: number;
+  reviewsCount: number;
+  ratingDistribution: { [key: number]: number };
   price: number;
   stockQuantity: number;
   overviewHeadline?: string;

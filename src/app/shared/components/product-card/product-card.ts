@@ -24,6 +24,25 @@ export class ProductCard {
     this.wishlistService.wishlistIds().includes(this.productData().id)
   );
 
+  // Generates array of 5 star types: 'full', 'half', or 'empty'
+  getStarsArray(rating: number): ('full' | 'half' | 'empty')[] {
+    const stars: ('full' | 'half' | 'empty')[] = [];
+    const clampedRating = Math.max(0, Math.min(5, rating));
+    const fullStars = Math.floor(clampedRating);
+    const hasHalf = clampedRating - fullStars >= 0.5;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push('full');
+      } else if (i === fullStars && hasHalf) {
+        stars.push('half');
+      } else {
+        stars.push('empty');
+      }
+    }
+    return stars;
+  }
+
   addToCart() {
     if (!this.authService.user()) {
       this.toastr.info('Please login first');

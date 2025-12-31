@@ -66,13 +66,12 @@
               }
               <div class="rating-group">
                 <div class="stars">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
+                  @for(star of getStarsArray(productData()?.averageRating ?? 0); track $index) {
+                  <i class="bi" [class.bi-star-fill]="star === 'full'" [class.bi-star-half]="star === 'half'"
+                    [class.bi-star]="star === 'empty'"></i>
+                  }
                 </div>
-                <span class="review-text">(127 reviews)</span>
+                <span class="review-text">({{productData()?.reviewsCount ?? 0}} reviews)</span>
               </div>
             </div>
 
@@ -194,7 +193,8 @@
               <button class="nav-link active" data-bs-toggle="tab"
                 data-bs-target="#ecommerce-product-details-5-overview" type="button">Overview</button>
               <button class="nav-link" data-bs-toggle="tab"
-                data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">Reviews (127)</button>
+                data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button"
+                (click)="loadReviews()">Reviews ({{productData()?.reviewsCount ?? 0}})</button>
             </nav>
 
             <div class="tab-content">
@@ -268,154 +268,158 @@
                   <div class="reviews-header">
                     <div class="rating-overview">
                       <div class="average-score">
-                        <div class="score-display">4.6</div>
+                        <div class="score-display">{{productData()?.averageRating | number:'1.1-1'}}</div>
                         <div class="score-stars">
-                          <i class="bi bi-star-fill"></i>
-                          <i class="bi bi-star-fill"></i>
-                          <i class="bi bi-star-fill"></i>
-                          <i class="bi bi-star-fill"></i>
-                          <i class="bi bi-star-half"></i>
+                          @for(star of getStarsArray(productData()?.averageRating ?? 0); track $index) {
+                          <i class="bi" [class.bi-star-fill]="star === 'full'" [class.bi-star-half]="star === 'half'"
+                            [class.bi-star]="star === 'empty'"></i>
+                          }
                         </div>
-                        <div class="total-reviews">127 customer reviews</div>
+                        <div class="total-reviews">{{productData()?.reviewsCount ?? 0}} customer reviews</div>
                       </div>
 
                       <div class="rating-distribution">
+                        @for(starLevel of [5, 4, 3, 2, 1]; track starLevel) {
                         <div class="rating-row">
-                          <span class="stars-label">5★</span>
+                          <span class="stars-label">{{starLevel}}★</span>
                           <div class="progress-container">
-                            <div class="progress-fill" style="width: 68%;"></div>
+                            <div class="progress-fill"
+                              [style.width.%]="(productData()?.ratingDistribution?.[starLevel] ?? 0) / (productData()?.reviewsCount || 1) * 100">
+                            </div>
                           </div>
-                          <span class="count-label">86</span>
+                          <span class="count-label">{{productData()?.ratingDistribution?.[starLevel] ?? 0}}</span>
                         </div>
-                        <div class="rating-row">
-                          <span class="stars-label">4★</span>
-                          <div class="progress-container">
-                            <div class="progress-fill" style="width: 22%;"></div>
-                          </div>
-                          <span class="count-label">28</span>
-                        </div>
-                        <div class="rating-row">
-                          <span class="stars-label">3★</span>
-                          <div class="progress-container">
-                            <div class="progress-fill" style="width: 6%;"></div>
-                          </div>
-                          <span class="count-label">8</span>
-                        </div>
-                        <div class="rating-row">
-                          <span class="stars-label">2★</span>
-                          <div class="progress-container">
-                            <div class="progress-fill" style="width: 3%;"></div>
-                          </div>
-                          <span class="count-label">4</span>
-                        </div>
-                        <div class="rating-row">
-                          <span class="stars-label">1★</span>
-                          <div class="progress-container">
-                            <div class="progress-fill" style="width: 1%;"></div>
-                          </div>
-                          <span class="count-label">1</span>
-                        </div>
+                        }
                       </div>
                     </div>
 
                     <div class="write-review-cta">
+                      @if(!showReviewForm()) {
                       <h4>Share Your Experience</h4>
                       <p>Help others make informed decisions</p>
-                      <button class="btn review-btn">Write Review</button>
+                      <button class="btn review-btn" (click)="toggleReviewForm()">Write Review</button>
+                      } @else {
+                      <div class="review-form">
+                        <div class="form-header">
+                          <h4>Write Your Review</h4>
+                          <button class="btn-close-form" (click)="toggleReviewForm()" type="button">
+                            <i class="bi bi-x-lg"></i>
+                          </button>
+                        </div>
+
+                        <div class="rating-selection">
+                          <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                          <div class="star-rating-input">
+                            @for(i of [1, 2, 3, 4, 5]; track i) {
+                            <i class="bi star-input" [class.bi-star-fill]="i <= (hoverRating() || newReviewRating())"
+                              [class.bi-star]="i > (hoverRating() || newReviewRating())"
+                              (mouseenter)="hoverRating.set(i)" (mouseleave)="hoverRating.set(0)"
+                              (click)="setRating(i)"></i>
+                            }
+                            @if(newReviewRating() > 0) {
+                            <span class="rating-text">{{newReviewRating()}} out of 5</span>
+                            }
+                          </div>
+                        </div>
+
+                        <div class="comment-section">
+                          <label class="form-label" for="reviewComment">Your Review <span
+                              class="text-muted">(Optional)</span></label>
+                          <textarea class="form-control" id="reviewComment" rows="4" maxlength="200"
+                            placeholder="Tell us what you think about this product..." [value]="newReviewComment()"
+                            (input)="newReviewComment.set($any($event.target).value)"></textarea>
+                          <div class="char-counter text-muted mt-1">{{newReviewComment().length}} / 200</div>
+                        </div>
+
+                        <div class="form-actions">
+                          <button class="btn btn-outline-secondary" type="button" (click)="toggleReviewForm()"
+                            [disabled]="submittingReview()">Cancel</button>
+                          <button class="btn review-btn" type="button"
+                            [disabled]="newReviewRating() === 0 || submittingReview()" (click)="submitReview()">
+                            @if(submittingReview()) {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            Submitting...
+                            } @else {
+                            Submit Review
+                            }
+                          </button>
+                        </div>
+                      </div>
+                      }
+                      @if(showThankYou()) {
+                      <div class="thank-you-message">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Thank you for your feedback!</span>
+                      </div>
+                      }
                     </div>
                   </div>
 
                   <div class="customer-reviews-list">
+                    @if(reviewsLoading()) {
+                    <div class="reviews-loading text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading reviews...</span>
+                      </div>
+                    </div>
+                    } @else if(reviews().length === 0) {
+                    <div class="no-reviews-state text-center py-5">
+                      <i class="bi bi-chat-square-text" style="font-size: 3rem; color: #ccc;"></i>
+                      <p class="mt-3 text-muted">No reviews yet for this product.</p>
+                      <p class="text-muted">Be the first to share your experience!</p>
+                    </div>
+                    } @else {
+                    @for(review of displayedReviews(); track review.id) {
                     <div class="review-card">
                       <div class="reviewer-profile">
-                        <img src="assets/img/person/person-f-3.webp" alt="Customer" class="profile-pic">
+                        @if(review.userAvatarUrl) {
+                        <img [src]="review.userAvatarUrl" [alt]="review.userName" class="profile-pic">
+                        } @else {
+                        <div class="profile-pic profile-initials">{{getInitials(review.userName)}}</div>
+                        }
                         <div class="profile-details">
-                          <div class="customer-name">Sarah Martinez</div>
+                          <div class="customer-name">{{review.userName}}</div>
                           <div class="review-meta">
                             <div class="review-stars">
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
+                              @for(i of [1, 2, 3, 4, 5]; track i) {
+                              <i class="bi" [class.bi-star-fill]="i <= review.rating"
+                                [class.bi-star]="i > review.rating"></i>
+                              }
                             </div>
-                            <span class="review-date">March 28, 2024</span>
+                            <span class="review-date">{{review.created | date:'mediumDate'}}@if(review.updated){ ·
+                              Edited}</span>
                           </div>
                         </div>
                       </div>
-                      <h5 class="review-headline">Outstanding audio quality and comfort</h5>
                       <div class="review-text">
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                          laudantium, totam rem aperiam. Eaque ipsa quae ab illo inventore veritatis et quasi architecto
-                          beatae vitae dicta sunt explicabo.</p>
+                        @if(review.comment) {
+                        <p>{{review.comment}}</p>
+                        } @else {
+                        <p class="text-muted fst-italic">This user did not write a comment.</p>
+                        }
                       </div>
                       <div class="review-actions">
-                        <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (12)</button>
-                        <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
-                      </div>
-                    </div>
-
-                    <div class="review-card">
-                      <div class="reviewer-profile">
-                        <img src="assets/img/person/person-m-5.webp" alt="Customer" class="profile-pic">
-                        <div class="profile-details">
-                          <div class="customer-name">David Chen</div>
-                          <div class="review-meta">
-                            <div class="review-stars">
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star"></i>
-                            </div>
-                            <span class="review-date">March 15, 2024</span>
-                          </div>
+                        @if(!helpfulClicked().has(review.id)) {
+                        <button class="action-btn" (click)="markHelpful(review.id)"
+                          [disabled]="processingHelpful().has(review.id)">
+                          <i class="bi bi-hand-thumbs-up"></i> Helpful ({{review.helpfulCount}})
+                        </button>
+                        } @else {
+                        <div class="helpful-badge">
+                          <i class="bi bi-check-circle-fill"></i> Thanks for your feedback!
                         </div>
-                      </div>
-                      <h5 class="review-headline">Great value, minor connectivity issues</h5>
-                      <div class="review-text">
-                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-                          consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Overall satisfied with
-                          the purchase.</p>
-                      </div>
-                      <div class="review-actions">
-                        <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (8)</button>
-                        <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
+                        }
                       </div>
                     </div>
-
-                    <div class="review-card">
-                      <div class="reviewer-profile">
-                        <img src="assets/img/person/person-f-7.webp" alt="Customer" class="profile-pic">
-                        <div class="profile-details">
-                          <div class="customer-name">Emily Rodriguez</div>
-                          <div class="review-meta">
-                            <div class="review-stars">
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                              <i class="bi bi-star-fill"></i>
-                            </div>
-                            <span class="review-date">February 22, 2024</span>
-                          </div>
-                        </div>
-                      </div>
-                      <h5 class="review-headline">Perfect for work-from-home setup</h5>
-                      <div class="review-text">
-                        <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-                          voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-                          cupiditate non provident.</p>
-                      </div>
-                      <div class="review-actions">
-                        <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (15)</button>
-                        <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
-                      </div>
+                    }
+                    @if(reviews().length > 3 && !showAllReviews()) {
+                    <div class="view-all-section">
+                      <button class="btn btn-outline-primary view-all-btn" (click)="showAllReviews.set(true)">
+                        View All {{reviews().length}} Reviews
+                      </button>
                     </div>
-
-                    <div class="load-more-section">
-                      <button class="btn load-more-reviews">Show More Reviews</button>
-                    </div>
+                    }
+                    }
                   </div>
                 </div>
               </div>

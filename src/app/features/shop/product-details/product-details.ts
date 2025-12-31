@@ -5,9 +5,10 @@ import { CommonModule } from '@angular/common';
 //Libraries
 import { ToastrService } from 'ngx-toastr';
 //Services
-import { AuthService, CartService, ProductService, WishlistService } from '../../../core/services';
+import { AuthService, CartService, ProductService, ReviewService, WishlistService } from '../../../core/services';
 //Models
-import { ProductDetailsResponse } from '../../../core/models';
+import { ApiError, ProductDetailsResponse } from '../../../core/models';
+import { ReviewProductSummaryDto } from '../../../core/models/review.model';
 
 @Component({
   selector: 'app-product-details',
@@ -28,6 +29,7 @@ export class ProductDetails implements AfterViewInit {
   cartService = inject(CartService);
   authService = inject(AuthService);
   wishlistService = inject(WishlistService);
+  reviewService = inject(ReviewService);
 
   //Product State
   productData = signal<ProductDetailsResponse | null>(null);
@@ -57,6 +59,138 @@ export class ProductDetails implements AfterViewInit {
     this.wishlistService.wishlistIds().includes(this.productId)
   );
 
+  //Helpful State
+  helpfulClicked = signal<Set<number>>(new Set());
+  processingHelpful = signal<Set<number>>(new Set());
+
+  markHelpful(reviewId: number): void {
+    if (this.helpfulClicked().has(reviewId) || this.processingHelpful().has(reviewId)) return;
+
+    this.processingHelpful.update(set => {
+      const newSet = new Set(set);
+      newSet.add(reviewId);
+      return newSet;
+    });
+
+    this.reviewService.markReviewHelpful(reviewId).subscribe({
+      next: () => {
+        this.processingHelpful.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(reviewId);
+          return newSet;
+        });
+
+        this.helpfulClicked.update(set => {
+          const newSet = new Set(set);
+          newSet.add(reviewId);
+          return newSet;
+        });
+
+        this.reviews.update(reviews =>
+          reviews.map(r => {
+            if (r.id === reviewId) {
+              return { ...r, helpfulCount: r.helpfulCount + 1 };
+            }
+            return r;
+          })
+        );
+      },
+      error: (err) => {
+        this.processingHelpful.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(reviewId);
+          return newSet;
+        });
+
+        // Error handling delegated to global error interceptor to avoid double toasts
+      }
+    });
+  }
+
+  //Reviews State
+  reviews = signal<ReviewProductSummaryDto[]>([]);
+  reviewsLoaded = signal(false);
+  reviewsLoading = signal(false);
+  showAllReviews = signal(false);
+  displayedReviews = computed(() =>
+    this.showAllReviews() ? this.reviews() : this.reviews().slice(0, 3)
+  );
+
+  loadReviews(): void {
+    if (this.reviewsLoaded() || this.reviewsLoading()) return;
+    this.reviewsLoading.set(true);
+    this.reviewService.getProductReviews(this.productId).subscribe({
+      next: (res) => {
+        this.reviews.set(res);
+        this.reviewsLoaded.set(true);
+        this.reviewsLoading.set(false);
+      },
+      error: () => {
+        this.reviewsLoading.set(false);
+      }
+    });
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  //Write Review Form State
+  showReviewForm = signal(false);
+  newReviewRating = signal(0);
+  newReviewComment = signal('');
+  hoverRating = signal(0);
+
+  toggleReviewForm(): void {
+    this.showReviewForm.update(v => !v);
+    if (!this.showReviewForm()) {
+      this.resetReviewForm();
+    }
+  }
+
+  setRating(rating: number): void {
+    this.newReviewRating.set(rating);
+  }
+
+  resetReviewForm(): void {
+    this.newReviewRating.set(0);
+    this.newReviewComment.set('');
+    this.hoverRating.set(0);
+  }
+
+  submittingReview = signal(false);
+  showThankYou = signal(false);
+
+  submitReview(): void {
+    if (this.newReviewRating() === 0 || this.submittingReview()) return;
+
+    this.submittingReview.set(true);
+    const request = {
+      rating: this.newReviewRating(),
+      comment: this.newReviewComment() || undefined
+    };
+
+    this.reviewService.addReview(this.productId, request).subscribe({
+      next: (newReview) => {
+        // Add to local reviews array (prepend so it shows at top)
+        this.reviews.update(reviews => [newReview, ...reviews]);
+        // Reset form and hide it
+        this.resetReviewForm();
+        this.showReviewForm.set(false);
+        this.submittingReview.set(false);
+        // Show thank you message
+        this.showThankYou.set(true);
+        setTimeout(() => this.showThankYou.set(false), 4000);
+      },
+      error: () => {
+        setTimeout(() => this.submittingReview.set(false), 400);
+      }
+    });
+  }
+
   //Care Instructions Mapping
   private readonly careInstructionMap: Record<string, { icon: string; label: string }> = {
     machineWashCold: { icon: 'bi-water', label: 'Machine Wash Cold' },
@@ -79,6 +213,25 @@ export class ProductDetails implements AfterViewInit {
 
   getCareInfo(instruction: string): { icon: string; label: string } {
     return this.careInstructionMap[instruction] || { icon: 'bi-question-circle', label: instruction };
+  }
+
+  // Generates array of 5 star types: 'full', 'half', or 'empty'
+  getStarsArray(rating: number): ('full' | 'half' | 'empty')[] {
+    const stars: ('full' | 'half' | 'empty')[] = [];
+    const clampedRating = Math.max(0, Math.min(5, rating));
+    const fullStars = Math.floor(clampedRating);
+    const hasHalf = clampedRating - fullStars >= 0.5;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push('full');
+      } else if (i === fullStars && hasHalf) {
+        stars.push('half');
+      } else {
+        stars.push('empty');
+      }
+    }
+    return stars;
   }
 
   // ==================== Constructor ====================

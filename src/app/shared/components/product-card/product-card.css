@@ -180,6 +180,21 @@
 .product-card {
   transition: box-shadow 0.3s ease;
   border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid view: details section fills remaining space */
+.product-card.grid .product-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Push rating/price to bottom */
+.product-footer {
+  margin-top: auto;
 }
 
 .product-card:hover {
@@ -200,4 +215,27 @@
 
 .grid .currency-suffix {
   font-size: 0.85em;
+}
+
+/* Product Rating Styles */
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.product-rating .stars {
+  display: flex;
+  gap: 2px;
+}
+
+.product-rating .stars i {
+  font-size: 0.85rem;
+  color: #ffc107;
+}
+
+.product-rating .review-count {
+  font-size: 0.8rem;
+  color: #6c757d;
 }

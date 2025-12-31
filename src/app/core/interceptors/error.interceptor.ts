@@ -39,12 +39,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 function getErrorMessage(error: HttpErrorResponse): string {
   const apiError = error.error as ApiError;
 
-  if (apiError?.message) {
-    return apiError.message;
-  }
-
   if (apiError?.detail) {
     return apiError.detail;
+  }
+
+  if (apiError?.message) {
+    return apiError.message;
   }
 
   if (error.status === 0) {
