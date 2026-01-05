@@ -1,7 +1,9 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { CategoryService, ProductService } from '../../../core/services';
 
 interface Category {
   id: number;
@@ -20,21 +22,12 @@ interface ImagePreview {
   templateUrl: './add.html',
   styleUrls: ['../style.css']
 })
-export class ProductAddComponent {
+export class ProductAddComponent implements OnInit {
   // Reactive form
   productForm: FormGroup;
 
   // Mock categories data
-  categories = signal<Category[]>([
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Fashion' },
-    { id: 3, name: 'Clothing' },
-    { id: 4, name: 'Accessories' },
-    { id: 5, name: 'Home & Kitchen' },
-    { id: 6, name: 'Footwear' },
-    { id: 7, name: 'Sports' },
-    { id: 8, name: 'Beauty' }
-  ]);
+  categories = signal<Category[]>([]);
 
   // Image previews signal
   imagePreviews = signal<ImagePreview[]>([]);
@@ -50,7 +43,10 @@ export class ProductAddComponent {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private categoryService: CategoryService,
+    private productService: ProductService,
+    private toastr: ToastrService
   ) {
     // Initialize reactive form with validators
     this.productForm = this.fb.group({
@@ -65,6 +61,24 @@ export class ProductAddComponent {
     this.productForm.get('description')?.valueChanges.subscribe(value => {
       this.descriptionLength.set(value?.length || 0);
     });
+  }
+  ngOnInit() {
+
+    if(this.categoryService.categories().length === 0) {
+      this.categoryService.getAllCategories().subscribe({
+        next: (res) => {
+          console.log("categories", res);
+          this.categoryService.categories.set(res);
+          this.categories.set(this.categoryService.categories());
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+    }
+    
+    this.categories.set(this.categoryService.categories());
+
   }
 
   // Handle file selection for images
@@ -82,13 +96,13 @@ export class ProductAddComponent {
     files.forEach(file => {
       // Validate file type
       if (!allowedTypes.includes(file.type)) {
-        alert(`File "${file.name}" is not a valid image. Only PNG, JPG, and JPEG are allowed.`);
+        this.toastr.error(`File "${file.name}" is not a valid image. Only PNG, JPG, and JPEG are allowed.`);
         return;
       }
 
       // Validate file size
       if (file.size > maxFileSize) {
-        alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+        this.toastr.error(`File "${file.name}" is too large. Maximum size is 10MB.`);
         return;
       }
 
@@ -119,7 +133,13 @@ export class ProductAddComponent {
   onSubmit(): void {
     if (this.productForm.invalid) {
       this.markFormGroupTouched(this.productForm);
-      alert('Please fill in all required fields correctly.');
+      this.toastr.error('Please fill in all required fields correctly.');
+      return;
+    }
+
+    // Validate that at least one image is selected
+    if (this.imagePreviews().length === 0) {
+      this.toastr.error('At least one image must be added.');
       return;
     }
 
@@ -127,15 +147,16 @@ export class ProductAddComponent {
     const formData = new FormData();
     
     // Append form fields
-    formData.append('name', this.productForm.get('name')?.value);
-    formData.append('description', this.productForm.get('description')?.value || '');
-    formData.append('categoryId', this.productForm.get('categoryId')?.value);
-    formData.append('price', this.productForm.get('price')?.value);
-    formData.append('stock', this.productForm.get('stock')?.value);
+    // formData.append('name', this.productForm.get('name')?.value);
+    // formData.append('description', this.productForm.get('description')?.value || '');
+    // formData.append('categoryId', this.productForm.get('categoryId')?.value);
+    // formData.append('price', this.productForm.get('price')?.value);
+    // formData.append('stock', this.productForm.get('stock')?.value);
     
     // Append images
     this.imagePreviews().forEach((preview, index) => {
-      formData.append(`images`, preview.file, preview.file.name);
+      formData.append('Files', preview.file, preview.file.name);
+
     });
 
     console.log('Product Data to Submit:', {
@@ -143,21 +164,38 @@ export class ProductAddComponent {
       imageCount: this.imagePreviews().length
     });
     
-    // TODO: Replace with actual API call
-    // this.productService.addProduct(formData).subscribe({
-    //   next: (response) => {
-    //     alert('Product added successfully!');
-    //     this.router.navigate(['/admin/products']);
-    //   },
-    //   error: (error) => {
-    //     alert('Failed to add product. Please try again.');
-    //     console.error('Error:', error);
-    //   }
-    // });
+    this.productService.addProduct({...this.productForm.value, brandId: 1, stockQuantity: this.productForm.value.stock }).subscribe({
+      next: (response) => {
+        console.log("Response", response);
+
+        this.productService.uploadImages(response.createdProductId, formData).subscribe({
+          next: (response) => {
+            console.log("Response", response);
+            this.toastr.success('Product added successfully!');
+            this.router.navigate(['/admin/products']);
+          },
+          error: () => {
+            this.productService.deleteProduct(response.createdProductId).subscribe({
+              next: (res) => {
+                console.log("res", res);
+                this.toastr.error('Failed to add product. Please try again.');
+              },
+              error: (err) => {
+                console.log(err);
+              }
+            });
+          }
+        });
+      },
+      error: (error) => {
+        this.toastr.error('Failed to add product. Please try again.');
+        console.error('Error:', error);
+      }
+    });
 
     // Simulate successful submission
-    alert('Product added successfully!');
-    this.router.navigate(['/admin/products']);
+    // this.toastr.success('Product added successfully!');
+    // this.router.navigate(['/admin/products']);
   }
 
   // Cancel and navigate back

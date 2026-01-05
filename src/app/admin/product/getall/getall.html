@@ -126,7 +126,7 @@
           <p>You've reached the end of the product list</p>
         </div>
       }
-    } @else {
+    } @else if (!isLoading()) {
       <div class="empty-state">
         <i class="fas fa-box-open"></i>
         <h3>No products found</h3>
@@ -143,6 +143,11 @@
             Add Your First Product
           </a>
         }
+      </div>
+    } @else if (isLoading() && !hasMore()) {
+      <div class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
       </div>
     }
   </div>

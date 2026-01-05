@@ -45,6 +45,7 @@ export class Shop {
   search = signal('');
   activeFilters = signal<string[]>([]);
   categorySort = signal('');
+  categoryId = signal<string | null>(null);
 
   search$ = toObservable(this.search).pipe(debounceTime(3000), distinctUntilChanged());
 
@@ -74,20 +75,22 @@ export class Shop {
   }
 
   loadProducts(pageIndex?: number, pageSize?: number,minPrice?: number, maxPrice?: number, search?: string, categoryId?: string) {
+    console.log("7777777",this.pageIndex(), this.pageSize );
+    
     this.productService
       .getAllProducts({
-        pageIndex: pageIndex ?? this.pageIndex(),
+        pageNum: pageIndex ?? this.pageIndex(),
         pageSize: pageSize ?? this.pageSize,
-        minPrice: minPrice ?? null,
-        maxPrice: maxPrice ?? null,
-        search: search ?? null,
-        categoryId: categoryId ?? null,
+        minPrice: minPrice ?? this.minPrice ?? null,
+        maxPrice: maxPrice ?? this.maxPrice ?? null,
+        search: search ?? this.search() ?? null,
+        categoryId: categoryId ?? this.categoryId() ?? null,
       })
       .subscribe((data) => {
         console.log("products data", data);
         this.allProducts.set(data.items);
         this.totalPages.set(data.totalCount);
-        
+
       });
   }
 
@@ -106,6 +109,7 @@ export class Shop {
   sortByCategory(cat: any) {
     this.pageIndex.set(1);
     this.activeFilters.set([cat.name]);
+    this.categoryId.set(cat.id.toString());
     this.loadProducts(undefined, undefined, undefined, undefined, undefined, cat.id.toString());
   }
   updateSlider() {
@@ -176,6 +180,7 @@ export class Shop {
     this.minPrice = undefined;
     this.maxPrice = undefined;
     this.search.set('');
+    this.categoryId.set(null);
 
     // Reset slider to default values
     this.minValue = 0;

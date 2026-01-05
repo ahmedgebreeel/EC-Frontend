@@ -15,7 +15,7 @@ export class ProductService {
     let params = new HttpParams();
     if(filters){
       if(filters.pageNum){
-        params = params.append('pageNum', filters.pageNum);
+        params = params.append('PageIndex', filters.pageNum);
       }
       if(filters.pageSize){
         params = params.append('pageSize', filters.pageSize);
@@ -39,13 +39,18 @@ export class ProductService {
   getProductById(id:string):Observable<any>{
     return this.http.get(`${this.baseUrl}/${id}`);
   }
-  AddProduct(product:any):Observable<any>{
+  addProduct(product:any):Observable<any>{
    return this.http.post(`${this.baseUrl}/admin`,product);
   }
-  UpdateProduct(id:string,product:any):Observable<any>{
+  updateProduct(id:string,product:any):Observable<any>{
     return this.http.put(`${this.baseUrl}/${id}`,product);
   }
-  DeleteProduct(id:string):Observable<any>{
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  deleteProduct(id: number):Observable<any>{
+    return this.http.delete(`${this.baseUrl}/admin/${id}`);
+  }
+
+  //for images
+  uploadImages(id:number, formData:any):Observable<any>{
+    return this.http.post(`${this.baseUrl}/${id}/images`,formData);
   }
 }

@@ -48,7 +48,7 @@ export class ProductListComponent implements OnInit {
 
     return this.products().filter(product =>
       product.name.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query) ||
+      product.description?.toLowerCase().includes(query) ||
       product.categoryBreadcrumb.toLowerCase().includes(query) ||
       product.id.toString().includes(query)
     );
@@ -68,7 +68,7 @@ export class ProductListComponent implements OnInit {
   }
 
   loadProducts(append: boolean = false): void {
-    if (this.isLoading() || (!append && this.currentPage() > 1)) {
+    if (this.isLoading()) {
       return;
     }
 
@@ -118,6 +118,7 @@ export class ProductListComponent implements OnInit {
 
   // Handle scroll event for infinite scroll
   onScroll(event: Event): void {
+    
     const container = event.target as HTMLElement;
     const scrollTop = container.scrollTop;
     const scrollHeight = container.scrollHeight;
@@ -131,7 +132,7 @@ export class ProductListComponent implements OnInit {
 
   // Load more products
   loadMore(): void {
-    if (!this.hasMore() || this.isLoading()) {
+    if (!this.hasMore() || this.isLoading() || this.searchQuery()) {
       return;
     }
 
@@ -155,14 +156,18 @@ export class ProductListComponent implements OnInit {
         cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.products.update(products => products.filter(p => p.id !== id));
-          Swal.fire({
-            title: 'Deleted!',
-            text: 'Product has been deleted.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-          });
+          this.productsService.deleteProduct(id).subscribe({
+            next: (res) => {
+              console.log("res", res);
+              this.toastr.success('Product deleted successfully');
+              this.products.update(products => products.filter(p => p.id !== id));
+              this.totalCount.update(count => count - 1);
+            },
+            error: (err) => {
+              console.log(err);
+              this.toastr.error(err.error);
+            }
+          })
         }
       });
     }
