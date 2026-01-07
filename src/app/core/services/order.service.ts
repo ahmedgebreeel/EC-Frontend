@@ -21,13 +21,13 @@ export class OrderService {
   getAllAdminOrders(pageIndex: number = 1, pageSize: number = 10):Observable<any> {
     return this.http.get(`${this.baseUrl}/admin?pageIndex=${pageIndex}&pageSize=${pageSize}`);
   }
-  getOrderById(id:string):Observable<any>{
+  getOrderById(id:number):Observable<any>{
     return this.http.get(`${this.baseUrl}/admin/${id}`);
   }
-  UpdateOrder(id:string,order:any):Observable<any>{
+  UpdateOrder(id:number,order:any):Observable<any>{
     return this.http.put(`${this.baseUrl}/admin/${id}`,order);
   }
-  DeleteOrder(id:string):Observable<any>{
+  DeleteOrder(id:number):Observable<any>{
     return this.http.delete(`${this.baseUrl}/admin/${id}`);
   }
 }

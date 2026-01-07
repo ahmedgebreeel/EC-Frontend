@@ -64,7 +64,7 @@
       <table class="table m-auto" style="width: 98%">
         <thead>
           <tr>
-            <th>ORDER ID</th>
+            <!-- <th>ORDER ID</th> -->
             <th>CUSTOMER</th>
             <th>STATUS</th>
             <th>TOTAL</th>
@@ -76,7 +76,7 @@
         <tbody>
           @for (order of filteredOrders(); track order.id) {
             <tr>
-              <td><strong>{{ order.id }}</strong></td>
+              <!-- <td><strong>{{ order.id }}</strong></td> -->
               <td>{{ order.userName }}</td>
               <td>
                 <span class="status-badge status-{{ order.status }}">

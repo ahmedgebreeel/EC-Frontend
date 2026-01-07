@@ -45,7 +45,7 @@
       <table class="products-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <!-- <th>ID</th> -->
             <th>Image</th>
             <th>Product Name</th>
             <th>Category</th>
@@ -59,9 +59,9 @@
         <tbody>
           @for (product of filteredProducts(); track product.id) {
             <tr class="table-row">
-              <td>
+              <!-- <td>
                 <span class="product-id">#{{ product.id }}</span>
-              </td>
+              </td> -->
               <td>
                 <img
                   [src]="product.thumbnailUrl"

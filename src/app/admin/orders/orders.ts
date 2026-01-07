@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { OrderService } from '../../core/services';
+import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 // DTOs and Models
 interface Address {
@@ -244,7 +246,8 @@ export class OrdersListComponent implements OnInit {
   pages = signal<number[]>([]);
 
   constructor(
-    private orderService: OrderService
+    private orderService: OrderService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -322,14 +325,30 @@ export class OrdersListComponent implements OnInit {
    * Delete order with confirmation
    */
   deleteOrder(orderId: string): void {
-    if (confirm(`Are you sure you want to delete order ${orderId}?`)) {
-      const index = this.orders().findIndex(o => o.id === orderId);
-      if (index > -1) {
-        this.orders().splice(index, 1);
-        this.filterOrders();
-        alert('Order deleted successfully!');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete this order?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.orderService.DeleteOrder(+orderId).subscribe({
+          next: (res) => {
+            console.log(res);
+            this.loadOrders();
+            this.toastr.success('Order deleted successfully!');
+          },
+          error: (err) => {
+            console.log(err);
+            this.toastr.error(err.error);
+          }
+        });
       }
-    }
+    })
   }
 
   /**

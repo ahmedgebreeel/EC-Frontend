@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { OrderService } from '../../../core/services';
+import { OrderStatusList } from '../../../core/Types/orderStatus';
+import { ToastrService } from 'ngx-toastr';
 
 // DTOs matching your provided structure
 interface Address {
@@ -43,7 +46,7 @@ interface Order {
 
 // Update Order DTO - matches your provided DTO
 interface UpdateOrderDto {
-  addressId: string;
+  // addressId: string;
   status: string; // OrderStatus enum: pending, processing, shipped, delivered, cancelled
 }
 
@@ -56,11 +59,12 @@ interface UpdateOrderDto {
 })
 export class OrderEditComponent implements OnInit {
   updateOrderForm!: FormGroup;
-  currentOrder: Order | null = null;
-  isSubmitting: boolean = false;
-  isLoading: boolean = true;
+  isSubmitting = signal(false);
+  isLoading = signal(true);
   orderId: string = '';
 
+  order = signal<any | null>(null);
+  orderStatuses = OrderStatusList;
   // Mock Data - same as list component
   private mockOrders: Order[] = [
     {
@@ -241,7 +245,9 @@ export class OrderEditComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private orderService: OrderService,
+    private toastr: ToastrService
   ) {
     this.initializeForm();
   }
@@ -256,69 +262,58 @@ export class OrderEditComponent implements OnInit {
 
   /**
    * Initialize the update order form with validators
-   * Matches UpdateOrderDto structure
    */
   private initializeForm(): void {
     this.updateOrderForm = this.fb.group({
-      addressId: ['', [Validators.required]],
+      // addressId: ['', [Validators.required]],
       status: ['', [Validators.required]]
     });
   }
 
-  /**
-   * Load order data from mock data - IMMEDIATE LOAD
-   * In production, this would be an API call
-   */
   private loadOrder(): void {
-    // Find order immediately - NO DELAY
-    this.currentOrder = this.mockOrders.find(o => o.id === this.orderId) || null;
-
-    if (this.currentOrder) {
-      // Populate form with current values
-      this.updateOrderForm.patchValue({
-        addressId: this.currentOrder.address.id,
-        status: this.currentOrder.status
-      });
-      this.isLoading = false;
-    } else {
-      this.isLoading = false;
-      alert('Order not found!');
-      this.router.navigate(['/admin/orders']);
-    }
+    this.orderService.getOrderById(+this.orderId).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        console.log("order", res);
+        this.order.set(res);
+        this.updateOrderForm.patchValue({
+          // addressId: this.order().shippingAddress,
+          status: this.order().status
+        });
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    })
   }
 
-  /**
-   * Handle form submission
-   * Updates order based on UpdateOrderDto
-   */
   onSubmit(): void {
     if (this.updateOrderForm.invalid) {
       this.updateOrderForm.markAllAsTouched();
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     // Get form values matching UpdateOrderDto
     const updateDto: UpdateOrderDto = {
-      addressId: this.updateOrderForm.get('addressId')?.value,
+      // addressId: this.updateOrderForm.get('addressId')?.value,
       status: this.updateOrderForm.get('status')?.value
     };
 
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // Update order in mock data
-      const orderIndex = this.mockOrders.findIndex(o => o.id === this.orderId);
-      if (orderIndex > -1) {
-        this.mockOrders[orderIndex].status = updateDto.status;
-        this.mockOrders[orderIndex].address.id = updateDto.addressId;
-        this.mockOrders[orderIndex].updatedAt = new Date();
+    this.orderService.UpdateOrder(+this.orderId, updateDto).subscribe({
+      next: (res) => {
+        console.log("update order", res);
+        this.toastr.success('Order updated successfully!');
+        this.isSubmitting.set(false);
+        this.router.navigate(['/admin/orders']);
+      },
+      error: (err) => {
+        this.toastr.error(err.error);
+        this.isSubmitting.set(false);
+        console.error(err);
       }
-
-      this.isSubmitting = false;
-      alert('Order updated successfully!');
-      this.router.navigate(['/admin/orders']);
-    }, 1000);
+    });
   }
 
   /**

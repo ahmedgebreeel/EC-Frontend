@@ -8,14 +8,14 @@
         <h1><i class="fas fa-edit me-3"></i>Edit Order</h1>
         <p>Update order information and status</p>
       </div>
-      <button class="btn btn-cancel" routerLink="/orders">
+      <button class="btn btn-cancel" routerLink="/admin/orders">
         <i class="fas fa-arrow-left me-2"></i>Back to Orders
       </button>
     </div>
   </div>
 
   <!-- Loading State -->
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -25,7 +25,7 @@
   }
 
   <!-- Order Content -->
-  @if (!isLoading && currentOrder) {
+  @if (!isLoading() && order()) {
     <div class="row">
       <div class="col-lg-8">
 
@@ -34,33 +34,23 @@
           <h3><i class="fas fa-info-circle me-2"></i>Order Information</h3>
 
           <div class="detail-row">
-            <span class="detail-label">Order ID:</span>
-            <span class="detail-value">{{ currentOrder.id }}</span>
-          </div>
-
-          <div class="detail-row">
             <span class="detail-label">Customer:</span>
-            <span class="detail-value">{{ currentOrder.userName }}</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">User ID:</span>
-            <span class="detail-value">{{ currentOrder.userId }}</span>
+            <span class="detail-value">{{ order().userName }}</span>
           </div>
 
           <div class="detail-row">
             <span class="detail-label">Order Total:</span>
-            <span class="detail-value">{{ currentOrder.total | currency }}</span>
+            <span class="detail-value">{{ order().totalAmount | currency }}</span>
           </div>
 
           <div class="detail-row">
             <span class="detail-label">Created At:</span>
-            <span class="detail-value">{{ currentOrder.createdAt | date: 'MMM d, y, h:mm a' }}</span>
+            <span class="detail-value">{{ order().created | date: 'MMM d, y, h:mm a' }}</span>
           </div>
 
           <div class="detail-row">
             <span class="detail-label">Last Updated:</span>
-            <span class="detail-value">{{ currentOrder.updatedAt | date: 'MMM d, y, h:mm a' }}</span>
+            <span class="detail-value">{{ order().updated | date: 'MMM d, y, h:mm a' }}</span>
           </div>
         </div>
 
@@ -69,19 +59,19 @@
           <h3><i class="fas fa-box me-2"></i>Order Items</h3>
 
           <div class="order-items-section">
-            @for (item of currentOrder.orderItems; track item.id) {
+            @for (item of order().items; track item.id) {
               <div class="item-row">
                 <img 
-                  [src]="item.product.imageUrl" 
-                  [alt]="item.product.name" 
+                  [src]="item.productThumbnailUrl" 
+                  [alt]="item.productName" 
                   class="item-image">
                 <div class="item-details">
-                  <div class="item-name">{{ item.product.name }}</div>
+                  <div class="item-name">{{ item.productName }}</div>
                   <div class="item-meta">
-                    Product ID: {{ item.product.id }} | Quantity: {{ item.quantity }}
+                     Quantity: {{ item.quantity }}
                   </div>
                 </div>
-                <div class="item-price">{{ item.price * item.quantity | currency }}</div>
+                <div class="item-price">{{ item.totalPrice | currency }}</div>
               </div>
             }
           </div>
@@ -107,11 +97,9 @@
                 id="orderStatus" 
                 formControlName="status">
                 <option value="">Select Status</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+                @for(staus of orderStatuses; track staus) {
+                  <option value="{{ staus }}">{{ staus }}</option>
+                }
               </select>
               @if (updateOrderForm.get('status')?.invalid && updateOrderForm.get('status')?.touched) {
                 <div class="text-danger mt-2">
@@ -121,7 +109,7 @@
             </div>
 
             <!-- Address ID Field -->
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label class="form-label" for="addressId">
                 <i class="fas fa-map-marker-alt me-2"></i>Address ID *
               </label>
@@ -139,16 +127,15 @@
                   <small>Address ID is required</small>
                 </div>
               }
-            </div>
+            </div> -->
 
             <!-- Current Address Display -->
             <div class="info-card">
               <h5><i class="fas fa-location-arrow me-2"></i>Current Delivery Address</h5>
               <div class="address-card">
-                <strong>Address ID: {{ currentOrder.address.id }}</strong>
-                <p>{{ currentOrder.address.street }}</p>
-                <p>{{ currentOrder.address.city }}, {{ currentOrder.address.state }} {{ currentOrder.address.zipCode }}</p>
-                <p>{{ currentOrder.address.country }}</p>
+                <p>{{ order().shippingAddress.street }}</p>
+                <p>{{ order().shippingAddress.city }}, {{ order().shippingAddress.state }} {{ order().shippingAddress.zipCode }}</p>
+                <p>{{ order().shippingAddress.country }}</p>
               </div>
             </div>
 
@@ -157,15 +144,15 @@
               <button 
                 type="submit" 
                 class="btn btn-submit w-100"
-                [disabled]="updateOrderForm.invalid || isSubmitting">
+                [disabled]="updateOrderForm.invalid || isSubmitting()">
                 <i class="fas fa-save me-2"></i>
-                {{ isSubmitting ? 'Updating...' : 'Update Order' }}
+                {{ isSubmitting() ? 'Updating...' : 'Update Order' }}
               </button>
               <button 
                 type="button" 
                 class="btn btn-cancel w-100 mt-3" 
                 routerLink="/admin/orders"
-                [disabled]="isSubmitting">
+                [disabled]="isSubmitting()">
                 <i class="fas fa-times me-2"></i>Cancel
               </button>
             </div>
@@ -174,18 +161,6 @@
         </div>
 
       </div>
-    </div>
-  }
-
-  <!-- Order Not Found -->
-  @if (!isLoading && !currentOrder) {
-    <div class="text-center py-5">
-      <i class="fas fa-exclamation-circle fa-3x mb-3 text-danger"></i>
-      <h3>Order Not Found</h3>
-      <p class="text-muted">The order you're looking for doesn't exist.</p>
-      <button class="btn btn-submit mt-3" routerLink="/admin/orders">
-        <i class="fas fa-arrow-left me-2"></i>Back to Orders
-      </button>
     </div>
   }
 
