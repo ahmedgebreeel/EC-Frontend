@@ -36,14 +36,14 @@ export class ProductService {
 
     return this.http.get(this.baseUrl,{params});
   }
-  getProductById(id:string):Observable<any>{
+  getProductById(id:number):Observable<any>{
     return this.http.get(`${this.baseUrl}/${id}`);
   }
   addProduct(product:any):Observable<any>{
    return this.http.post(`${this.baseUrl}/admin`,product);
   }
-  updateProduct(id:string,product:any):Observable<any>{
-    return this.http.put(`${this.baseUrl}/${id}`,product);
+  updateProduct(id:number,product:any):Observable<any>{
+    return this.http.put(`${this.baseUrl}/admin/${id}`,product);
   }
   deleteProduct(id: number):Observable<any>{
     return this.http.delete(`${this.baseUrl}/admin/${id}`);
@@ -53,4 +53,9 @@ export class ProductService {
   uploadImages(id:number, formData:any):Observable<any>{
     return this.http.post(`${this.baseUrl}/${id}/images`,formData);
   }
+
+  deleteImage(id:number,imageId:number):Observable<any>{
+    return this.http.delete(`${this.baseUrl}/${id}/images/${imageId}`);
+  }
+
 }

@@ -25,7 +25,7 @@ export class ProductDetails {
   quantity: number = 1;
 
   constructor() {
-    this.productService.getProductById(this.productId!).subscribe((res) => {
+    this.productService.getProductById(+this.productId!).subscribe((res) => {
       res.images.sort((a: any, b: any) => a.position - b.position);
       this.productData.set(res);
       this.mainImage.set(res.images[0]);

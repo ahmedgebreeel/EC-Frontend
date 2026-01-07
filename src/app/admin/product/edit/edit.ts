@@ -2,6 +2,9 @@ import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { CategoryService, ProductService } from '../../../core/services';
+import Swal from 'sweetalert2';
 
 interface Category {
   id: number;
@@ -47,32 +50,8 @@ export class ProductEditComponent implements OnInit {
   productId = signal<number>(0);
   productName = signal<string>('');
 
-  // Mock categories data
-  categories = signal<Category[]>([
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Fashion' },
-    { id: 3, name: 'Clothing' },
-    { id: 4, name: 'Accessories' },
-    { id: 5, name: 'Home & Kitchen' },
-    { id: 6, name: 'Footwear' },
-    { id: 7, name: 'Sports' },
-    { id: 8, name: 'Beauty' }
-  ]);
-
-  // Mock product data (simulating fetched data)
-  private mockProduct = signal<Product>({
-    id: 1,
-    name: 'Premium Wireless Headphones',
-    description: 'High-quality noise-cancelling headphones with superior sound quality and long battery life. Features include 40-hour battery, premium comfort ear cushions, and wireless Bluetooth 5.0 connectivity.',
-    categoryId: 1,
-    price: 299.99,
-    stock: 45,
-    images: [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300',
-      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300',
-      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=300'
-    ]
-  });
+  // categories data
+  categories = signal<Category[]>([]);
 
   // Image previews signal
   imagePreviews = signal<ImagePreview[]>([]);
@@ -89,7 +68,10 @@ export class ProductEditComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private toastr: ToastrService
   ) {
     // Initialize reactive form with validators
     this.productForm = this.fb.group({
@@ -107,46 +89,66 @@ export class ProductEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCategories();
+
     // Get product ID from route parameters
     const id = this.route.snapshot.paramMap.get('id');
-    
-    if (id) {
-      this.productId.set(parseInt(id, 10));
-      this.loadProduct();
-    } else {
-      // Handle case where no ID is provided
-      alert('Invalid product ID');
-      this.router.navigate(['/admin/products']);
-    }
+    this.productId.set(+id!);
+    this.loadProduct();
   }
 
-  // Load product data (simulating API call)
   private loadProduct(): void {
-    const product = this.mockProduct();
-    
-    // Update form with product data
-    this.productForm.patchValue({
-      name: product.name,
-      description: product.description,
-      categoryId: product.categoryId,
-      price: product.price,
-      stock: product.stock
+    this.productService.getProductById(this.productId()).subscribe({
+        next: (product)=>{
+          console.log(product);
+          
+          // Update form with product data
+          this.productForm.patchValue({
+            name: product.name,
+            description: product.description,
+            categoryId: product.categoryId,
+            price: product.price,
+            stock: product.stockQuantity
+          });
+      
+          // Set product name for display
+          this.productName.set(product.name);
+          
+          // Set description length
+          this.descriptionLength.set(product.description.length);
+      
+          // Load existing images
+          const existingImages: ExistingImage[] = product.images.map((img:any) => ({
+            id: img.id,
+            url: img.imageUrl,
+            isExisting: true as const
+          }));
+          
+          this.imagePreviews.set(existingImages);
+        },
+        error: (err) => {
+          console.log(err);
+        }
     });
 
-    // Set product name for display
-    this.productName.set(product.name);
-    
-    // Set description length
-    this.descriptionLength.set(product.description.length);
+  }
 
-    // Load existing images
-    const existingImages: ExistingImage[] = product.images.map((url, index) => ({
-      id: index + 1,
-      url,
-      isExisting: true as const
-    }));
-    
-    this.imagePreviews.set(existingImages);
+  loadCategories() {
+    if(this.categoryService.categories().length === 0) {
+      this.categoryService.getAllCategories().subscribe({
+        next: (res) => {
+          console.log("categories", res);
+          this.categoryService.categories.set(res);
+          this.categories.set(this.categoryService.categories());
+        },
+        error: (err) => {
+          console.log(err);
+      }
+    });
+    }
+    else {
+      this.categories.set(this.categoryService.categories());
+    }
   }
 
   // Handle new file selection
@@ -193,22 +195,47 @@ export class ProductEditComponent implements OnInit {
 
   // Remove image (existing or new)
   removeImage(index: number): void {
-    const image = this.imagePreviews()[index];
+    const image = this.imagePreviews()[index]; 
     const imageType = image.isExisting ? 'existing' : 'new';
     const confirmMessage = `Are you sure you want to remove this ${imageType} image?`;
-    
-    if (confirm(confirmMessage)) {
-      this.imagePreviews.update(previews => 
-        previews.filter((_, i) => i !== index)
-      );
-    }
+
+    Swal.fire({
+      title: 'Remove Image',
+      text: confirmMessage,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if(image.isExisting) {
+          this.productService.deleteImage(this.productId(), image.id).subscribe({
+            next: (res) => {
+              console.log(res);
+              this.imagePreviews.update(previews => 
+                previews.filter((_, i) => i !== index)
+              );
+            },
+            error: (err) => {
+              console.log(err);
+              this.toastr.error(err.error);
+            }
+          })
+        }else{
+          this.imagePreviews.update(previews => 
+            previews.filter((_, i) => i !== index)
+          );
+        }
+      }
+    })
+
   }
 
   // Submit form
   onSubmit(): void {
     if (this.productForm.invalid) {
       this.markFormGroupTouched(this.productForm);
-      alert('Please fill in all required fields correctly.');
+      this.toastr.error('Please fill in all required fields correctly.');
       return;
     }
 
@@ -224,10 +251,42 @@ export class ProductEditComponent implements OnInit {
     };
 
     console.log('Updated Product Data:', formData);
+    let newImages = new FormData();
+
+    formData.newImages.forEach((image:any) => {
+      newImages.append('Files', image, image.name);
+    })
     
-    // Simulate successful update
-    alert('Product updated successfully!');
-    this.router.navigate(['/admin/products']);
+    this.productService.updateProduct(this.productId(), {
+      name: formData.name,
+      description: formData.description,
+      categoryId: formData.categoryId,
+      brandId: 1,
+      price: formData.price,
+      stockQuantity: formData.stock,
+    }).subscribe({
+      next: (response) => {
+        console.log("Response", response);
+
+        if(formData.newImages.length > 0){
+          this.productService.uploadImages(this.productId(), newImages).subscribe({
+            next: (response) => {
+              console.log("Response", response);
+              this.toastr.success('Product updated successfully!');
+              this.router.navigate(['/admin/products']);
+            },
+            error: (err) => {
+              console.log(err);
+              this.toastr.error(err.error);
+              
+            }
+          })  
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   // Cancel editing
@@ -235,9 +294,18 @@ export class ProductEditComponent implements OnInit {
     const hasUnsavedChanges = this.productForm.dirty;
     
     if (hasUnsavedChanges) {
-      if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
-        this.router.navigate(['/admin/products']);
-      }
+      Swal.fire({
+        title: 'Cancel Editing',
+        text: 'Are you sure you want to cancel? All unsaved changes will be lost.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/admin/products']);
+        }
+      });
     } else {
       this.router.navigate(['/admin/products']);
     }

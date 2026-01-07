@@ -81,8 +81,6 @@ export class ProductListComponent implements OnInit {
 
     this.productsService.getAllProducts(filters).subscribe({
       next: (res) => {
-        console.log(res);
-
         if (append) {
           this.products.update(products => [...products, ...res.items]);
         } else {
