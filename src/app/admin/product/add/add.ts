@@ -54,7 +54,8 @@ export class ProductAddComponent implements OnInit {
       description: ['', [Validators.maxLength(this.maxDescriptionLength)]],
       categoryId: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0.01), Validators.max(999999)]],
-      stock: ['', [Validators.required, Validators.min(0), Validators.max(999999)]]
+      stock: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
+      salesPercentage: ['', [Validators.min(0), Validators.max(100)]]
     });
 
     // Subscribe to description changes to update character count
@@ -164,7 +165,12 @@ export class ProductAddComponent implements OnInit {
       imageCount: this.imagePreviews().length
     });
     
-    this.productService.addProduct({...this.productForm.value, brandId: 1, stockQuantity: this.productForm.value.stock }).subscribe({
+    this.productService.addProduct({
+      ...this.productForm.value,
+      brandId: 1,
+      stockQuantity: this.productForm.value.stock,
+      salesPercentage: this.productForm.value.salesPercentage || 0
+    }).subscribe({
       next: (response) => {
         console.log("Response", response);
 

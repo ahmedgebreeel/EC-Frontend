@@ -33,7 +33,7 @@
         <span class="sale-price">{{ productData().finalPrice | currency : 'USD' }}</span>
         <span class="regular-price"><del>{{ productData().price | currency : 'USD' }}</del></span>
         }@else{
-        <span class="final-price">{{ productData().finalPrice | currency : 'USD' }}</span>
+        <span class="final-price">{{ productData().price | currency : 'USD' }}</span>
         } 
       </div>
       <div class="product-rating" [ngClass]="viewType()">
