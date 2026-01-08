@@ -74,14 +74,20 @@
               <h1 class="product-name">{{productData().name}}</h1>
 
               <div class="pricing-section">
+                @if (productData().salesPercentage && productData().salesPercentage > 0) {
                 <div class="price-display">
-                  <span class="sale-price">$189.99</span>
+                  <span class="sale-price">${{productData().finalPrice.toFixed(2)}}</span>
                   <span class="regular-price">${{productData().price}}</span>
                 </div>
                 <div class="savings-info">
-                  <span class="save-amount">Save $50.00</span>
-                  <span class="discount-percent">(21% off)</span>
+                  <span class="save-amount">${{(productData().price - productData().finalPrice).toFixed(1)}}</span>
+                  <span class="discount-percent">{{productData().salesPercentage}}% off</span>
                 </div>
+              } @else {
+                <div class="price-display">
+                  <span class="final-price">${{productData().finalPrice.toFixed(2)}}</span>
+                </div>
+              }
               </div>
 
               <div class="product-description">
