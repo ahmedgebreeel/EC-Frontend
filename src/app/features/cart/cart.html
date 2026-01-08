@@ -63,7 +63,14 @@
                 </div>
                 <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
                   <div class="price-tag">
-                    <span class="current-price">${{ item.price }}</span>
+                    @if(item.salesPercentage && item.salesPercentage > 0){
+                    <div class="price-section">
+                      <span class="sale-price">${{ item.finalPrice.toFixed(2) }}</span>
+                      <span class="regular-price"><del>${{ item.price.toFixed(2) }}</del></span>
+                    </div>
+                    }@else{
+                    <span class="current-price">${{ item.price.toFixed(2) }}</span>
+                    }
                   </div>
                 </div>
                 <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
