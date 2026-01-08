@@ -18,8 +18,8 @@
     </div>
     @if(productData().new){
     <div class="product-badge new">New</div>
-    } @if(productData().sale){
-    <div class="product-badge sale">-25%</div>
+    } @if(productData().salesPercentage && productData().salesPercentage > 0){
+    <div class="product-badge sale">-{{productData().salesPercentage}}%</div>
     }
   </div>
   <div class="product-details" [ngClass]="viewType()">
@@ -29,12 +29,14 @@
     </h4>
     <div class="product-meta">
       <div class="product-price" [ngClass]="viewType()">
-        {{ productData().price | currency : 'USD' }}
-        @if(productData().delPrice){
-        <span class="original-price">{{ productData().delPrice | currency : 'USD' }}</span>
-        }
+        @if(productData().salesPercentage && productData().salesPercentage > 0){
+        <span class="sale-price">{{ productData().finalPrice | currency : 'USD' }}</span>
+        <span class="regular-price"><del>{{ productData().price | currency : 'USD' }}</del></span>
+        }@else{
+        <span class="final-price">{{ productData().price | currency : 'USD' }}</span>
+        } 
       </div>
-      <div class="product-rating" [ngClass]="viewType">
+      <div class="product-rating" [ngClass]="viewType()">
         <i class="bi bi-star-fill"></i>
         4.6 <span>({{ productData().rating??0 }})</span>
       </div>

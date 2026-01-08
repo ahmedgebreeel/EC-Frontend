@@ -50,6 +50,7 @@
             <th>Product Name</th>
             <th>Category</th>
             <th>Price</th>
+            <th>Sale %</th>
             <th>Stock</th>
             <th>Status</th>
             <!-- <th>Created Date</th> -->
@@ -79,6 +80,11 @@
               </td>
               <td>
                 <span class="price-text">${{ product.price | number:'1.2-2' }}</span>
+              </td>
+              <td>
+                <span class="sale-percentage" [ngClass]="product.salesPercentage > 0 ? 'has-sale' : 'no-sale'">
+                  {{ product.salesPercentage || 0 }}%
+                </span>
               </td>
               <td>
                 <span class="stock-number">{{ product.stockQuantity }}</span>

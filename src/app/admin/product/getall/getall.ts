@@ -11,6 +11,7 @@ interface Product {
   description: string;
   categoryBreadcrumb: string;
   price: number;
+  salesPercentage: number;
   stockQuantity: number;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   createdDate: string;

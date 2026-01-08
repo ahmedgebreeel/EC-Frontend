@@ -79,7 +79,8 @@ export class ProductEditComponent implements OnInit {
       description: ['', [Validators.maxLength(this.maxDescriptionLength)]],
       categoryId: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0.01), Validators.max(999999)]],
-      stock: ['', [Validators.required, Validators.min(0), Validators.max(999999)]]
+      stock: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
+      salesPercentage: ['', [Validators.min(0), Validators.max(100)]]
     });
 
     // Subscribe to description changes
@@ -108,7 +109,8 @@ export class ProductEditComponent implements OnInit {
             description: product.description,
             categoryId: product.categoryId,
             price: product.price,
-            stock: product.stockQuantity
+            stock: product.stockQuantity,
+            salesPercentage: product.salesPercentage || 0
           });
       
           // Set product name for display
@@ -264,6 +266,7 @@ export class ProductEditComponent implements OnInit {
       brandId: 1,
       price: formData.price,
       stockQuantity: formData.stock,
+      salesPercentage: formData.salesPercentage || 0
     }).subscribe({
       next: (response) => {
         console.log("Response", response);
