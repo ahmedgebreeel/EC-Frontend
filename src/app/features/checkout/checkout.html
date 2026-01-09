@@ -209,35 +209,28 @@
                 </div>
               </div>
 
-                <!-- Payment Method -->
-                <div class="checkout-section" id="payment-method">
-                  <div class="section-header">
-                    <div class="section-number">3</div>
-                    <h3>Payment Method</h3>
-                  </div>
-                  <div class="section-content">
-                    <div class="payment-options">
-                      <div class="payment-option active">
-                        <input type="radio" name="payment-method" id="credit-card" checked="">
-                        <label for="credit-card">
-                          <span class="payment-icon"><i class="bi bi-credit-card-2-front"></i></span>
-                          <span class="payment-label">Credit / Debit Card</span>
-                        </label>
-                      </div>
-                      <div class="payment-option">
-                        <input type="radio" name="payment-method" id="cash">
-                        <label for="cash">
-                          <span class="payment-icon"><i class="bi bi-cash"></i></span>
-                          <span class="payment-label">Cash on Delivery</span>
-                        </label>
-                      </div>
-                      <!-- <div class="payment-option">
-                        <input type="radio" name="payment-method" id="apple-pay">
-                        <label for="apple-pay">
-                          <span class="payment-icon"><i class="bi bi-apple"></i></span>
-                          <span class="payment-label">Apple Pay</span>
-                        </label>
-                      </div> -->
+              <!-- Payment Method -->
+              <div class="checkout-section" id="payment-method">
+                <div class="section-header">
+                  <div class="section-number">3</div>
+                  <h3>Payment Method</h3>
+                </div>
+                <div class="section-content">
+                  <div class="payment-options">
+                    <div class="payment-option" [class.selected]="selectedPaymentMethod() === PaymentMethod.CreditCard"
+                      (click)="selectPaymentMethod(PaymentMethod.CreditCard)">
+                      <input type="radio" name="paymentMethod" id="credit-card"
+                        [checked]="selectedPaymentMethod() === PaymentMethod.CreditCard"
+                        (change)="selectPaymentMethod(PaymentMethod.CreditCard)">
+                      <label for="credit-card" class="payment-label">
+                        <div class="payment-info">
+                          <span class="payment-icon"><i class="bi bi-credit-card"></i></span>
+                          <div class="payment-details">
+                            <span class="payment-name">Credit / Debit Card</span>
+                            <span class="payment-desc">Pay securely with your card</span>
+                          </div>
+                        </div>
+                      </label>
                     </div>
 
                     <div class="payment-option"
