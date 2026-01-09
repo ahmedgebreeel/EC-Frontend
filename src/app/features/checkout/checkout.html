@@ -61,37 +61,40 @@
                     <div class="row">
                       <div class="col-md-6 mb-3">
                         <label class="form-label">First Name</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().firstName"
-                          (ngModelChange)="newAddress.update(v => ({...v, firstName: $event}))" placeholder="John">
+                        <input type="text" class="form-control" [ngModel]="newAddress().firstName" name="firstName"
+                          (ngModelChange)="updateAddressField('firstName', $event)" placeholder="John">
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Last Name</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().lastName"
-                          (ngModelChange)="newAddress.update(v => ({...v, lastName: $event}))" placeholder="Doe">
+                        <input type="text" class="form-control" [ngModel]="newAddress().lastName" name="lastName"
+                          (ngModelChange)="updateAddressField('lastName', $event)" placeholder="Doe">
                       </div>
                       <div class="col-12 mb-3">
                         <label class="form-label">Street Address</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().street"
-                          (ngModelChange)="newAddress.update(v => ({...v, street: $event}))" placeholder="123 Main St">
+                        <input type="text" class="form-control" [ngModel]="newAddress().street" name="street"
+                          (ngModelChange)="updateAddressField('street', $event)" placeholder="123 Main St">
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">City</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().city"
-                          (ngModelChange)="newAddress.update(v => ({...v, city: $event}))" placeholder="Cairo">
+                        <input type="text" class="form-control" [ngModel]="newAddress().city" name="city"
+                          (ngModelChange)="updateAddressField('city', $event)" placeholder="Cairo">
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Governorate / State</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().state"
-                          (ngModelChange)="newAddress.update(v => ({...v, state: $event}))" placeholder="Cairo">
+                        <input type="text" class="form-control" [ngModel]="newAddress().state" name="state"
+                          (ngModelChange)="updateAddressField('state', $event)" placeholder="Cairo">
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Zip Code</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().zipCode"
-                          (ngModelChange)="newAddress.update(v => ({...v, zipCode: $event}))" placeholder="11311">
+                        <input type="text" class="form-control" [ngModel]="newAddress().zipCode" name="zipCode"
+                          (ngModelChange)="updateAddressField('zipCode', $event)" placeholder="11311">
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Country</label>
-                        <input type="text" class="form-control bg-light" [value]="newAddress().country" disabled>
+                        <select class="form-select" [ngModel]="newAddress().country" name="country"
+                          (ngModelChange)="updateAddressField('country', $event)">
+                          <option value="Egypt">Egypt</option>
+                        </select>
                       </div>
                     </div>
                     <div class="d-flex gap-2 justify-content-end mt-2">

@@ -208,6 +208,13 @@ export class Checkout {
     });
   }
 
+  updateAddressField(field: string, value: string) {
+    this.newAddress.update((current: any) => ({
+      ...current,
+      [field]: value
+    }));
+  }
+
   selectShippingMethod(method: ShippingMethod) {
     this.selectedShippingMethod.set(method);
   }
