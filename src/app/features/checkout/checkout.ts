@@ -46,16 +46,12 @@ export class Checkout {
   // New Address signals
   showNewAddressForm = signal<boolean>(false);
   newAddress = signal<{
-    firstName: string,
-    lastName: string,
     street: string,
     city: string,
     state: string,
     zipCode: string,
     country: string
   }>({
-    firstName: '',
-    lastName: '',
     street: '',
     city: '',
     state: '',
@@ -160,7 +156,7 @@ export class Checkout {
     const address = this.newAddress();
 
     // Basic validation
-    if (!address.firstName || !address.lastName || !address.street || !address.city || !address.state || !address.zipCode) {
+    if (!address.street || !address.city || !address.state || !address.zipCode) {
       this.toastr.warning('Please fill in all required address fields');
       return;
     }
@@ -169,8 +165,8 @@ export class Checkout {
 
     // Map to backend expected format
     const addressPayload = {
-      firstName: address.firstName,
-      lastName: address.lastName,
+      // firstName: address.firstName,
+      // lastName: address.lastName,
       street: address.street,
       city: address.city,
       state: address.state, // governorate
@@ -188,8 +184,6 @@ export class Checkout {
 
         // Reset form
         this.newAddress.set({
-          firstName: '',
-          lastName: '',
           street: '',
           city: '',
           state: '',
