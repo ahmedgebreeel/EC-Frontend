@@ -1,0 +1,25 @@
+.price-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.price-section .sale-price {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.price-section .regular-price {
+  font-size: 14px;
+  color: #999;
+}
+
+.price-section .regular-price del {
+  text-decoration: line-through;
+}
+
+.price-tag .current-price {
+  font-weight: 600;
+  font-size: 18px;
+}
