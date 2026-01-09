@@ -8,7 +8,7 @@ export interface PaymentRequest{
   amount:number;
   quantity:number;
   userEmail:string;
-  // orderId:number;
+  orderId:number;
 }
 export interface PaymentResponse{
   sessionId:string;

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PaymentService } from '../../core/services/payment.service';
+import { CartService } from '../../core/services';
 
 @Component({
   selector: 'app-payment-success',
@@ -17,6 +18,8 @@ export class PaymentSuccess implements OnInit {
   constructor(
     private route:ActivatedRoute,
     private paymentService:PaymentService,
+    private router:Router,
+    private cartService:CartService
   ){}
 
   ngOnInit(): void {
@@ -42,6 +45,7 @@ export class PaymentSuccess implements OnInit {
         // redirect to order confirmation after verification
         // this.router.navigate(['/orderconfirmation']);
         console.log('Payment details:',details);
+        this.router.navigate(['/orderconfirmation']);
       },
       error:(error)=>{
         console.error('Payment verification error:', error);

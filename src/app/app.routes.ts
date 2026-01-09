@@ -44,6 +44,16 @@ export const routes: Routes = [
                 canActivate: [authGuard]
             },
             {
+                path: "payment-success",
+                loadComponent: () => import('./features/payment-success/payment-success').then(m => m.PaymentSuccess),
+                canActivate: [authGuard]
+            },
+            {
+                path: "payment-cancel",
+                loadComponent: () => import('./features/payment-cancel/payment-cancel').then(m => m.PaymentCancel),
+                canActivate: [authGuard]
+            },
+            {
                 path: "about",
                 loadComponent: () => import('./features/about/about').then(m => m.About)
             },

@@ -7,6 +7,7 @@ import { OrderService } from '../../core/services/order.service';
 import { AddressService } from '../../core/services/address.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { PaymentService } from '../../core/services/payment.service';
 
 export enum ShippingMethod {
   Standard = 0,
@@ -29,6 +30,7 @@ export class Checkout {
   private orderService = inject(OrderService);
   private addressService = inject(AddressService);
   private authService = inject(AuthService);
+  private paymentService = inject(PaymentService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
 
@@ -42,6 +44,11 @@ export class Checkout {
   isLoading = signal<boolean>(true);
   isSubmitting = signal<boolean>(false);
   termsAccepted = signal<boolean>(false);
+
+  //stripe payment
+  isProcessingPayment = signal<boolean>(false);
+  paymentError = signal<string>('');
+  userEmail = signal<string>('');
 
   // New Address signals
   showNewAddressForm = signal<boolean>(false);
@@ -111,6 +118,7 @@ export class Checkout {
 
     // Load user's addresses (pass userId to filter for current user)
     const currentUserId = this.authService.user()?.id;
+    this.userEmail.set(this.authService.user()?.email || '');
     this.addressService.getUserAddresses(currentUserId).subscribe({
       next: (res) => {
         console.log('Addresses loaded:', res);
@@ -262,6 +270,36 @@ export class Checkout {
     return isValid;
   }
 
+   procceedToPayment(): void {
+    if (!this.userEmail()) {
+      this.paymentError.set('Please login to proceed with payment.');
+      return;
+    }
+    this.isProcessingPayment.set(true);
+    this.paymentError.set(''); 
+
+    const paymentRequest = {
+      amount:this.cartTotal() , // Convert to cents
+      quantity: this.itemCount(),
+      userEmail: this.userEmail(),
+      orderId: 0// Placeholder, backend can assign order ID
+    };
+    this.paymentService.createPaymentSession(paymentRequest).subscribe({
+      next: (response) => {
+        console.log('Payment session created:', response.sessionId);
+
+        this.paymentService.redirectToCheckout(response.sessionUrl);
+      },
+      error: (error) => {
+        this.isProcessingPayment.set(false);
+        this.paymentError.set(
+          error?.error?.message || 'An error occurred while creating payment session.'
+        );
+        console.error('Payment session creation error:', error);
+      },
+    });
+  }
+
   canPlaceOrder(): boolean {
     return (
       this.selectedAddressId() !== null &&
@@ -286,10 +324,7 @@ export class Checkout {
 
     // Validate Credit Card if selected
     if (this.selectedPaymentMethod() === PaymentMethod.CreditCard) {
-      if (!this.validateCard()) {
-        this.toastr.warning('Please correct the errors in the payment details');
-        return;
-      }
+      this.procceedToPayment();
     }
 
     this.isSubmitting.set(true);
