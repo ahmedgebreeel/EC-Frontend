@@ -1,0 +1,560 @@
+/* Loading State */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.loading-container p {
+    color: var(--default-color);
+    font-size: 1.1rem;
+}
+
+/* Empty Cart Message */
+.empty-cart-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+.empty-cart-message i {
+    font-size: 4rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.empty-cart-message h3 {
+    margin-bottom: 0.5rem;
+    color: var(--heading-color);
+}
+
+.empty-cart-message p {
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+    margin-bottom: 1.5rem;
+}
+
+/* Address Cards */
+.address-cards {
+    display: grid;
+    gap: 1rem;
+}
+
+.address-card {
+    background: var(--surface-color);
+    border: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.address-card:hover {
+    border-color: color-mix(in srgb, var(--accent-color), transparent 50%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.address-card.selected {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+}
+
+.address-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+}
+
+.address-card-header input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+}
+
+.address-label {
+    font-weight: 600;
+    color: var(--heading-color);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.address-card-body p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--default-color);
+    font-size: 0.95rem;
+}
+
+.address-name {
+    font-weight: 600;
+    color: var(--heading-color) !important;
+}
+
+.address-phone {
+    margin-top: 0.5rem !important;
+    color: color-mix(in srgb, var(--default-color), transparent 20%) !important;
+}
+
+.address-phone i {
+    margin-right: 0.5rem;
+}
+
+/* No Addresses Message */
+.no-addresses-message {
+    text-align: center;
+    padding: 2rem;
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+    border-radius: 12px;
+    border: 2px dashed color-mix(in srgb, var(--accent-color), transparent 60%);
+}
+
+.no-addresses-message i {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 0.75rem;
+}
+
+.no-addresses-message p {
+    margin-bottom: 1rem;
+    color: var(--default-color);
+}
+
+/* Shipping Options */
+.shipping-options {
+    display: grid;
+    gap: 1rem;
+}
+
+.shipping-option {
+    background: var(--surface-color);
+    border: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.shipping-option:hover {
+    border-color: color-mix(in srgb, var(--accent-color), transparent 50%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.shipping-option.selected {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+}
+
+.shipping-option input[type="radio"] {
+    display: none;
+}
+
+.shipping-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.shipping-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.shipping-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent-color), transparent 85%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shipping-icon i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.shipping-option.selected .shipping-icon {
+    background: var(--accent-color);
+}
+
+.shipping-option.selected .shipping-icon i {
+    color: #fff;
+}
+
+.shipping-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.shipping-name {
+    font-weight: 600;
+    color: var(--heading-color);
+    font-size: 1rem;
+}
+
+.shipping-time {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+.shipping-price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+}
+
+/* Payment Options */
+.payment-options {
+    display: grid;
+    gap: 1rem;
+}
+
+.payment-option {
+    background: var(--surface-color);
+    border: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.payment-option:hover {
+    border-color: color-mix(in srgb, var(--accent-color), transparent 50%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.payment-option.selected {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-label {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.payment-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.payment-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent-color), transparent 85%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-icon i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.payment-option.selected .payment-icon {
+    background: var(--accent-color);
+}
+
+.payment-option.selected .payment-icon i {
+    color: #fff;
+}
+
+.payment-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-name {
+    font-weight: 600;
+    color: var(--heading-color);
+    font-size: 1rem;
+}
+
+.payment-desc {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+/* Order Summary Enhancements */
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item-image {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.order-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-quantity-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-item-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-item-details h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--heading-color);
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-item-price .price {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+.order-item-total {
+    font-weight: 600;
+    color: var(--heading-color);
+    white-space: nowrap;
+}
+
+/* Order Totals */
+.order-totals {
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 85%);
+}
+
+.order-totals>div {
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.order-total {
+    padding-top: 1rem !important;
+    margin-top: 0.5rem;
+    border-top: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+    font-size: 1.15rem !important;
+    font-weight: 700;
+    color: var(--heading-color);
+}
+
+/* Secure Checkout */
+.secure-checkout {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.secure-checkout-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.secure-checkout-header i {
+    font-size: 1.25rem;
+}
+
+.secure-text {
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+    margin: 0;
+}
+
+/* Place Order Button */
+.place-order-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.place-order-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-price {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+/* Terms Check */
+.terms-check {
+    margin-bottom: 1.5rem;
+}
+
+.terms-check a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.terms-check a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .shipping-label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .shipping-price {
+        align-self: flex-end;
+    }
+
+    .order-item {
+        flex-wrap: wrap;
+    }
+
+    .order-item-total {
+        width: 100%;
+        text-align: right;
+        padding-top: 0.5rem;
+    }
+}
+
+/* Credit Card Form */
+.credit-card-details {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.card-number-wrapper,
+.cvv-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.card-icons {
+    position: absolute;
+    right: 12px;
+    color: var(--default-color);
+    font-size: 1.25rem;
+    pointer-events: none;
+}
+
+.cvv-hint {
+    position: absolute;
+    right: 12px;
+    color: var(--accent-color);
+    cursor: help;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--heading-color);
+    font-size: 0.95rem;
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 80%);
+    background-color: var(--surface-color);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color), transparent 90%);
+    outline: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* New Address Form */
+.new-address-form {
+    padding: 1.5rem;
+    background: var(--surface-color);
+    border: 2px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.new-address-form h4 {
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
