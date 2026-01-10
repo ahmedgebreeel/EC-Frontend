@@ -1,5 +1,4 @@
 <main class="main">
-
   <!-- Page Title -->
   <div class="page-title light-background">
     <div class="container d-lg-flex justify-content-between align-items-center">
@@ -12,7 +11,8 @@
         </ol>
       </nav>
     </div>
-  </div><!-- End Page Title -->
+  </div>
+  <!-- End Page Title -->
 
   <!-- Loading State -->
   @if (isLoading()) {
@@ -47,7 +47,6 @@
           <!-- Checkout Form -->
           <div class="checkout-container" data-aos="fade-up">
             <form class="checkout-form" (ngSubmit)="placeOrder()">
-
               <!-- Shipping Address Selection -->
               <div class="checkout-section" id="shipping-address">
                 <div class="section-header">
@@ -59,7 +58,6 @@
                   <div class="new-address-form" data-aos="fade-in">
                     <h4 class="mb-3 fs-6 text-uppercase text-secondary">New Address Details</h4>
                     <div class="row">
-
                       <!-- <div class="col-md-6 mb-3">
                         <label class="form-label">First Name</label>
                         <input type="text" class="form-control" [ngModel]="newAddress().firstName" name="firstName"
@@ -74,66 +72,108 @@
 
                       <div class="col-12 mb-3">
                         <label class="form-label">Street Address</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().street" name="street"
-                          (ngModelChange)="updateAddressField('street', $event)" placeholder="123 Main St">
+                        <input
+                          type="text"
+                          class="form-control"
+                          [ngModel]="newAddress().street"
+                          name="street"
+                          (ngModelChange)="updateAddressField('street', $event)"
+                          placeholder="123 Main St"
+                        />
                       </div>
 
                       <div class="col-md-6 mb-3">
                         <label class="form-label">City</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().city" name="city"
-                          (ngModelChange)="updateAddressField('city', $event)" placeholder="Cairo">
+                        <input
+                          type="text"
+                          class="form-control"
+                          [ngModel]="newAddress().city"
+                          name="city"
+                          (ngModelChange)="updateAddressField('city', $event)"
+                          placeholder="Cairo"
+                        />
                       </div>
 
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Governorate / State</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().state" name="state"
-                          (ngModelChange)="updateAddressField('state', $event)" placeholder="Cairo">
+                        <input
+                          type="text"
+                          class="form-control"
+                          [ngModel]="newAddress().state"
+                          name="state"
+                          (ngModelChange)="updateAddressField('state', $event)"
+                          placeholder="Cairo"
+                        />
                       </div>
 
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Zip Code</label>
-                        <input type="text" class="form-control" [ngModel]="newAddress().zipCode" name="zipCode"
-                          (ngModelChange)="updateAddressField('zipCode', $event)" placeholder="11311">
+                        <input
+                          type="text"
+                          class="form-control"
+                          [ngModel]="newAddress().zipCode"
+                          name="zipCode"
+                          (ngModelChange)="updateAddressField('zipCode', $event)"
+                          placeholder="11311"
+                        />
                       </div>
 
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Country</label>
-                        <select class="form-select" [ngModel]="newAddress().country" name="country"
-                          (ngModelChange)="updateAddressField('country', $event)">
+                        <select
+                          class="form-select"
+                          [ngModel]="newAddress().country"
+                          name="country"
+                          (ngModelChange)="updateAddressField('country', $event)"
+                        >
                           <option value="Egypt">Egypt</option>
                         </select>
                       </div>
-
                     </div>
                     <div class="d-flex gap-2 justify-content-end mt-2">
-                      <button type="button" class="btn btn-outline-secondary"
-                        (click)="cancelNewAddress()">Cancel</button>
-                      <button type="button" class="btn btn-primary" (click)="saveNewAddress()"
-                        [disabled]="isSubmitting()">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        (click)="cancelNewAddress()"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="saveNewAddress()"
+                        [disabled]="isSubmitting()"
+                      >
                         @if(isSubmitting()) {
-                        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
-                        } @else {
-                        Save Address
-                        }
+                        <span class="spinner-border spinner-border-sm me-2"></span> Saving... }
+                        @else { Save Address }
                       </button>
                     </div>
                   </div>
-                  } @else {
-                  @if (addresses().length === 0) {
+                  } @else { @if (addresses().length === 0) {
                   <div class="no-addresses-message">
                     <i class="bi bi-geo-alt"></i>
                     <p>No saved addresses found.</p>
-                    <button type="button" class="btn btn-primary" (click)="toggleNewAddressForm()">Add New
-                      Address</button>
+                    <button type="button" class="btn btn-primary" (click)="toggleNewAddressForm()">
+                      Add New Address
+                    </button>
                   </div>
                   } @else {
                   <div class="address-cards">
                     @for (address of addresses(); track address.id) {
-                    <div class="address-card" [class.selected]="selectedAddressId() === address.id"
-                      (click)="selectAddress(address.id)">
+                    <div
+                      class="address-card"
+                      [class.selected]="selectedAddressId() === address.id"
+                      (click)="selectAddress(address.id)"
+                    >
                       <div class="address-card-header">
-                        <input type="radio" name="shippingAddress" [id]="'address-' + address.id"
-                          [checked]="selectedAddressId() === address.id" (change)="selectAddress(address.id)">
+                        <input
+                          type="radio"
+                          name="shippingAddress"
+                          [id]="'address-' + address.id"
+                          [checked]="selectedAddressId() === address.id"
+                          (change)="selectAddress(address.id)"
+                        />
                         <label [for]="'address-' + address.id" class="address-label">
                           {{ address.label || 'Address' }}
                         </label>
@@ -147,20 +187,24 @@
                         <p class="address-city">{{ address.city }}, {{ address.governorate }}</p>
                         <p class="address-country">Egypt</p>
                         @if (address.phoneNumber) {
-                        <p class="address-phone"><i class="bi bi-telephone"></i> {{ address.phoneNumber }}</p>
+                        <p class="address-phone">
+                          <i class="bi bi-telephone"></i> {{ address.phoneNumber }}
+                        </p>
                         }
                       </div>
                     </div>
                     }
                   </div>
                   <div class="mt-3">
-                    <button type="button" class="btn btn-outline-primary w-100 py-2 fw-bold"
-                      (click)="toggleNewAddressForm()">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary w-100 py-2 fw-bold"
+                      (click)="toggleNewAddressForm()"
+                    >
                       <i class="bi bi-plus-circle me-2"></i> Add Another Address
                     </button>
                   </div>
-                  }
-                  }
+                  } }
                 </div>
               </div>
 
@@ -172,11 +216,18 @@
                 </div>
                 <div class="section-content">
                   <div class="shipping-options">
-                    <div class="shipping-option" [class.selected]="selectedShippingMethod() === ShippingMethod.Standard"
-                      (click)="selectShippingMethod(ShippingMethod.Standard)">
-                      <input type="radio" name="shippingMethod" id="standard-shipping"
+                    <div
+                      class="shipping-option"
+                      [class.selected]="selectedShippingMethod() === ShippingMethod.Standard"
+                      (click)="selectShippingMethod(ShippingMethod.Standard)"
+                    >
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        id="standard-shipping"
                         [checked]="selectedShippingMethod() === ShippingMethod.Standard"
-                        (change)="selectShippingMethod(ShippingMethod.Standard)">
+                        (change)="selectShippingMethod(ShippingMethod.Standard)"
+                      />
                       <label for="standard-shipping" class="shipping-label">
                         <div class="shipping-info">
                           <span class="shipping-icon"><i class="bi bi-truck"></i></span>
@@ -189,11 +240,18 @@
                       </label>
                     </div>
 
-                    <div class="shipping-option" [class.selected]="selectedShippingMethod() === ShippingMethod.Express"
-                      (click)="selectShippingMethod(ShippingMethod.Express)">
-                      <input type="radio" name="shippingMethod" id="express-shipping"
+                    <div
+                      class="shipping-option"
+                      [class.selected]="selectedShippingMethod() === ShippingMethod.Express"
+                      (click)="selectShippingMethod(ShippingMethod.Express)"
+                    >
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        id="express-shipping"
                         [checked]="selectedShippingMethod() === ShippingMethod.Express"
-                        (change)="selectShippingMethod(ShippingMethod.Express)">
+                        (change)="selectShippingMethod(ShippingMethod.Express)"
+                      />
                       <label for="express-shipping" class="shipping-label">
                         <div class="shipping-info">
                           <span class="shipping-icon"><i class="bi bi-lightning"></i></span>
@@ -217,11 +275,18 @@
                 </div>
                 <div class="section-content">
                   <div class="payment-options">
-                    <div class="payment-option" [class.selected]="selectedPaymentMethod() === PaymentMethod.CreditCard"
-                      (click)="selectPaymentMethod(PaymentMethod.CreditCard)">
-                      <input type="radio" name="paymentMethod" id="credit-card"
+                    <div
+                      class="payment-option"
+                      [class.selected]="selectedPaymentMethod() === PaymentMethod.CreditCard"
+                      (click)="selectPaymentMethod(PaymentMethod.CreditCard)"
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        id="credit-card"
                         [checked]="selectedPaymentMethod() === PaymentMethod.CreditCard"
-                        (change)="selectPaymentMethod(PaymentMethod.CreditCard)">
+                        (change)="selectPaymentMethod(PaymentMethod.CreditCard)"
+                      />
                       <label for="credit-card" class="payment-label">
                         <div class="payment-info">
                           <span class="payment-icon"><i class="bi bi-credit-card"></i></span>
@@ -233,12 +298,18 @@
                       </label>
                     </div>
 
-                    <div class="payment-option"
+                    <div
+                      class="payment-option"
                       [class.selected]="selectedPaymentMethod() === PaymentMethod.CashOnDelivery"
-                      (click)="selectPaymentMethod(PaymentMethod.CashOnDelivery)">
-                      <input type="radio" name="paymentMethod" id="cash-on-delivery"
+                      (click)="selectPaymentMethod(PaymentMethod.CashOnDelivery)"
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        id="cash-on-delivery"
                         [checked]="selectedPaymentMethod() === PaymentMethod.CashOnDelivery"
-                        (change)="selectPaymentMethod(PaymentMethod.CashOnDelivery)">
+                        (change)="selectPaymentMethod(PaymentMethod.CashOnDelivery)"
+                      />
                       <label for="cash-on-delivery" class="payment-label">
                         <div class="payment-info">
                           <span class="payment-icon"><i class="bi bi-cash-coin"></i></span>
@@ -253,8 +324,18 @@
 
                   <!-- Credit Card Details (shown when credit card is selected) -->
                   @if (selectedPaymentMethod() === PaymentMethod.CreditCard) {
-                  <div class="credit-card-details" data-aos="fade-in">
-                    <div class="form-group mb-3">
+                  <div class="credit-card-details d-flex flex-column align-items-center " data-aos="fade-in">
+                    <button type="button" class="btn btn-dark mb-3"
+                     (click)="procceedToPayment()"
+                     [disabled]="!canPlaceOrder()">
+                      <i class="bi bi-lock-fill me-2"></i>
+                      Pay with Stripe
+                    </button>
+                    <small class="text-muted d-block mt-2 text-center">
+                      You will be redirected to Stripe to complete your payment securely.
+                    </small>
+
+                    <!-- <div class="form-group mb-3">
                       <label for="card-number" class="form-label">Card Number</label>
                       <div class="card-number-wrapper">
                         <input type="text" class="form-control" [class.is-invalid]="cardErrors().number"
@@ -301,7 +382,7 @@
                       @if (cardErrors().name) {
                       <div class="invalid-feedback d-block">{{ cardErrors().name }}</div>
                       }
-                    </div>
+                    </div> -->
                   </div>
                   }
                 </div>
@@ -315,21 +396,31 @@
                 </div>
                 <div class="section-content">
                   <div class="form-check terms-check">
-                    <input class="form-check-input" type="checkbox" id="terms" name="terms" [checked]="termsAccepted()"
-                      (change)="termsAccepted.set($any($event.target).checked)">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="terms"
+                      name="terms"
+                      [checked]="termsAccepted()"
+                      (change)="termsAccepted.set($any($event.target).checked)"
+                    />
                     <label class="form-check-label" for="terms">
-                      I agree to the <a routerLink="/tos">Terms and Conditions</a> and <a routerLink="/privacy">Privacy
-                        Policy</a>
+                      I agree to the <a routerLink="/tos">Terms and Conditions</a> and
+                      <a routerLink="/privacy">Privacy Policy</a>
                     </label>
                   </div>
                   <div class="place-order-container">
-                    <button type="submit" class="btn btn-primary place-order-btn" [disabled]="!canPlaceOrder()">
+                    <button
+                      type="submit"
+                      class="btn btn-primary place-order-btn"
+                      [disabled]="!canPlaceOrder()"
+                    >
                       @if (isSubmitting()) {
                       <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                       <span class="btn-text">Processing...</span>
                       } @else {
                       <span class="btn-text">Place Order</span>
-                      <span class="btn-price">{{ totalAmount() | number:'1.2-2' }} EGP</span>
+                      <span class="btn-price">{{ totalAmount() | number : '1.2-2' }} EGP</span>
                       }
                     </button>
                   </div>
@@ -344,7 +435,9 @@
           <div class="order-summary" data-aos="fade-left" data-aos-delay="200">
             <div class="order-summary-header">
               <h3>Order Summary</h3>
-              <span class="item-count">{{ itemCount() }} {{ itemCount() === 1 ? 'Item' : 'Items' }}</span>
+              <span class="item-count"
+                >{{ itemCount() }} {{ itemCount() === 1 ? 'Item' : 'Items' }}</span
+              >
             </div>
 
             <div class="order-summary-content">
@@ -352,18 +445,21 @@
                 @for (item of cartItems(); track item.id) {
                 <div class="order-item">
                   <div class="order-item-image">
-                    <img [src]="item.productImageUrl" [alt]="item.productName" class="img-fluid" loading="lazy">
+                    <img
+                      [src]="item.productImageUrl"
+                      [alt]="item.productName"
+                      class="img-fluid"
+                      loading="lazy"
+                    />
                     <span class="item-quantity-badge">{{ item.quantity }}</span>
                   </div>
                   <div class="order-item-details">
                     <h4>{{ item.productName }}</h4>
                     <div class="order-item-price">
-                      <span class="price">{{ item.price | number:'1.2-2' }} EGP</span>
+                      <span class="price">{{ item.price | number : '1.2-2' }} EGP</span>
                     </div>
                   </div>
-                  <div class="order-item-total">
-                    {{ item.total | number:'1.2-2' }} EGP
-                  </div>
+                  <div class="order-item-total">{{ item.total | number : '1.2-2' }} EGP</div>
                 </div>
                 }
               </div>
@@ -371,19 +467,19 @@
               <div class="order-totals">
                 <div class="order-subtotal d-flex justify-content-between">
                   <span>Subtotal</span>
-                  <span>{{ subtotal() | number:'1.2-2' }} EGP</span>
+                  <span>{{ subtotal() | number : '1.2-2' }} EGP</span>
                 </div>
                 <div class="order-shipping d-flex justify-content-between">
                   <span>Shipping</span>
-                  <span>{{ shippingFees() | number:'1.2-2' }} EGP</span>
+                  <span>{{ shippingFees() | number : '1.2-2' }} EGP</span>
                 </div>
                 <div class="order-tax d-flex justify-content-between">
                   <span>Tax (14%)</span>
-                  <span>{{ taxes() | number:'1.2-2' }} EGP</span>
+                  <span>{{ taxes() | number : '1.2-2' }} EGP</span>
                 </div>
                 <div class="order-total d-flex justify-content-between">
                   <span>Total</span>
-                  <span>{{ totalAmount() | number:'1.2-2' }} EGP</span>
+                  <span>{{ totalAmount() | number : '1.2-2' }} EGP</span>
                 </div>
               </div>
 
@@ -399,7 +495,7 @@
         </div>
       </div>
     </div>
-  </section><!-- /Checkout Section -->
+  </section>
+  <!-- /Checkout Section -->
   }
-
 </main>
